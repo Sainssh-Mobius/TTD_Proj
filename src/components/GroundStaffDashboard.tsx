@@ -837,6 +837,173 @@ const GroundStaffDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* FIELD SCENARIOS - Column 1 */}
+          <div className="space-y-6">
+            <h4 className="font-bold text-gray-800 text-lg flex items-center space-x-2">
+              <Radio className="w-5 h-5" />
+              <span>Field Scenarios</span>
+            </h4>
+
+            {/* Realistic Scenario Configuration */}
+            <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-6 border border-green-200">
+              {/* Day Type Selection */}
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">🗓️ Day Type</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {dayTypes.map(day => (
+                    <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="dayType"
+                        value={day.id}
+                        checked={dayType === day.id}
+                        onChange={(e) => setDayType(e.target.value)}
+                        className="text-green-600"
+                      />
+                      <span className="text-sm text-gray-700">{day.name}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* TTD Special Days */}
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">🛕 TTD Special Days</label>
+                <div className="space-y-1">
+                  {ttdSpecialDaysConfig.map(day => (
+                    <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={ttdSpecialDays.includes(day.id)}
+                        onChange={() => handleTtdSpecialDayToggle(day.id)}
+                        className="text-purple-600"
+                      />
+                      <span className="text-sm text-gray-700">{day.name}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Regional Festivals */}
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">🌍 Regional Festivals</label>
+                <div className="space-y-1">
+                  {regionalFestivalsConfig.map(festival => (
+                    <label key={festival.id} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={regionalFestivals.includes(festival.id)}
+                        onChange={() => handleRegionalFestivalToggle(festival.id)}
+                        className="text-teal-600"
+                      />
+                      <span className="text-sm text-gray-700">{festival.name}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Calculated Impact */}
+              <div className="mt-4 p-3 bg-white/70 rounded-lg border border-green-300">
+                <div className="text-sm font-semibold text-gray-700">🧠 Calculated Impact</div>
+                <div className="text-lg font-bold text-green-600">
+                  {calculatedMultiplier > 1 ? '+' : ''}{((calculatedMultiplier - 1) * 100).toFixed(0)}% Workload Increase
+                </div>
+                <div className="text-xs text-gray-600 mt-1">
+                  Multiplier: {calculatedMultiplier.toFixed(2)}x
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* WHAT-IF SCENARIOS - Column 2 */}
+          <div className="flex flex-col justify-between space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {whatIfScenarios.map(scenario => (
+                <div
+                  key={scenario.id}
+                  onClick={() => setWhatIfScenario(scenario.id)}
+                  className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${whatIfScenario === scenario.id
+                      ? 'border-green-500 bg-green-50 shadow-md'
+                      : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                    }`}
+                >
+                  <div className="font-semibold text-gray-800 mb-1">{scenario.name}</div>
+                  <div className="text-xs text-gray-600 mb-2">{scenario.description}</div>
+                  <div className="text-xs text-green-600 font-semibold">
+                    Base Workload: {scenario.multiplier > 1 ? '+' : ''}{((scenario.multiplier - 1) * 100).toFixed(0)}%
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={runFieldAnalysis}
+              className="w-full bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg"
+            >
+              Run Field Analysis
+            </button>
+          </div>
+
+          {/* FIELD INSIGHTS - Column 3 */}
+          <div className="space-y-4">
+            <h4 className="font-bold text-gray-800 text-lg flex items-center space-x-2">
+              <Zap className="w-5 h-5" />
+              <span>Field Insights</span>
+            </h4>
+
+            {simulationResults ? (
+              <div className="space-y-3">
+                <div className="p-4 bg-gray-50 rounded-xl">
+                  <div className="text-sm font-semibold text-gray-700">Active Scenario</div>
+                  <div className="text-lg font-bold text-green-600">{simulationResults.scenario}</div>
+                  {simulationResults.dayType && (
+                    <div className="text-xs text-gray-600 mt-1">Day: {simulationResults.dayType}</div>
+                  )}
+                </div>
+
+                <div className="p-4 bg-teal-50 rounded-xl">
+                  <div className="text-sm font-semibold text-gray-700">Total Multiplier</div>
+                  <div className="text-lg font-bold text-teal-600">{simulationResults.calculatedMultiplier.toFixed(2)}x</div>
+                </div>
+
+                <div className="p-4 bg-blue-50 rounded-xl">
+                  <div className="text-sm font-semibold text-gray-700">Workload</div>
+                  <div className="text-lg font-bold text-blue-600">{simulationResults.projectedWorkload}</div>
+                </div>
+
+                <div className="p-4 bg-yellow-50 rounded-xl">
+                  <div className="text-sm font-semibold text-gray-700">Response Time</div>
+                  <div className="text-lg font-bold text-yellow-600">{simulationResults.projectedResponseTime.toFixed(1)} min</div>
+                </div>
+
+                <div className="p-4 bg-red-50 rounded-xl">
+                  <div className="text-sm font-semibold text-gray-700">Workload Strain</div>
+                  <div className="text-lg font-bold text-red-600">{simulationResults.workloadStrain.toFixed(1)}%</div>
+                </div>
+
+                {simulationResults.fieldRecommendations.length > 0 && (
+                  <div className="p-4 bg-amber-50 rounded-xl">
+                    <div className="text-sm font-semibold text-gray-700 mb-2">Field Actions</div>
+                    <ul className="text-xs text-amber-800 space-y-1">
+                      {simulationResults.fieldRecommendations.map((rec, index) => (
+                        <li key={index} className="flex items-start space-x-1">
+                          <span>•</span>
+                          <span>{rec}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="p-8 text-center text-gray-500">
+                <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p className="text-sm">Run analysis to see field insights</p>
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Field Operations Simulation */}
         <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
@@ -944,173 +1111,6 @@ const GroundStaffDashboard: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* FIELD SCENARIOS - Column 1 */}
-            <div className="space-y-6">
-              <h4 className="font-bold text-gray-800 text-lg flex items-center space-x-2">
-                <Radio className="w-5 h-5" />
-                <span>Field Scenarios</span>
-              </h4>
-
-              {/* Realistic Scenario Configuration */}
-              <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-6 border border-green-200">
-                {/* Day Type Selection */}
-                <div className="mb-4">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">🗓️ Day Type</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {dayTypes.map(day => (
-                      <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="dayType"
-                          value={day.id}
-                          checked={dayType === day.id}
-                          onChange={(e) => setDayType(e.target.value)}
-                          className="text-green-600"
-                        />
-                        <span className="text-sm text-gray-700">{day.name}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* TTD Special Days */}
-                <div className="mb-4">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">🛕 TTD Special Days</label>
-                  <div className="space-y-1">
-                    {ttdSpecialDaysConfig.map(day => (
-                      <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={ttdSpecialDays.includes(day.id)}
-                          onChange={() => handleTtdSpecialDayToggle(day.id)}
-                          className="text-purple-600"
-                        />
-                        <span className="text-sm text-gray-700">{day.name}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Regional Festivals */}
-                <div className="mb-4">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">🌍 Regional Festivals</label>
-                  <div className="space-y-1">
-                    {regionalFestivalsConfig.map(festival => (
-                      <label key={festival.id} className="flex items-center space-x-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={regionalFestivals.includes(festival.id)}
-                          onChange={() => handleRegionalFestivalToggle(festival.id)}
-                          className="text-teal-600"
-                        />
-                        <span className="text-sm text-gray-700">{festival.name}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Calculated Impact */}
-                <div className="mt-4 p-3 bg-white/70 rounded-lg border border-green-300">
-                  <div className="text-sm font-semibold text-gray-700">🧠 Calculated Impact</div>
-                  <div className="text-lg font-bold text-green-600">
-                    {calculatedMultiplier > 1 ? '+' : ''}{((calculatedMultiplier - 1) * 100).toFixed(0)}% Workload Increase
-                  </div>
-                  <div className="text-xs text-gray-600 mt-1">
-                    Multiplier: {calculatedMultiplier.toFixed(2)}x
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* WHAT-IF SCENARIOS - Column 2 */}
-            <div className="flex flex-col justify-between space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {whatIfScenarios.map(scenario => (
-                  <div
-                    key={scenario.id}
-                    onClick={() => setWhatIfScenario(scenario.id)}
-                    className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${whatIfScenario === scenario.id
-                        ? 'border-green-500 bg-green-50 shadow-md'
-                        : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
-                      }`}
-                  >
-                    <div className="font-semibold text-gray-800 mb-1">{scenario.name}</div>
-                    <div className="text-xs text-gray-600 mb-2">{scenario.description}</div>
-                    <div className="text-xs text-green-600 font-semibold">
-                      Base Workload: {scenario.multiplier > 1 ? '+' : ''}{((scenario.multiplier - 1) * 100).toFixed(0)}%
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                onClick={runFieldAnalysis}
-                className="w-full bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg"
-              >
-                Run Field Analysis
-              </button>
-            </div>
-
-            {/* FIELD INSIGHTS - Column 3 */}
-            <div className="space-y-4">
-              <h4 className="font-bold text-gray-800 text-lg flex items-center space-x-2">
-                <Zap className="w-5 h-5" />
-                <span>Field Insights</span>
-              </h4>
-
-              {simulationResults ? (
-                <div className="space-y-3">
-                  <div className="p-4 bg-gray-50 rounded-xl">
-                    <div className="text-sm font-semibold text-gray-700">Active Scenario</div>
-                    <div className="text-lg font-bold text-green-600">{simulationResults.scenario}</div>
-                    {simulationResults.dayType && (
-                      <div className="text-xs text-gray-600 mt-1">Day: {simulationResults.dayType}</div>
-                    )}
-                  </div>
-
-                  <div className="p-4 bg-teal-50 rounded-xl">
-                    <div className="text-sm font-semibold text-gray-700">Total Multiplier</div>
-                    <div className="text-lg font-bold text-teal-600">{simulationResults.calculatedMultiplier.toFixed(2)}x</div>
-                  </div>
-
-                  <div className="p-4 bg-blue-50 rounded-xl">
-                    <div className="text-sm font-semibold text-gray-700">Workload</div>
-                    <div className="text-lg font-bold text-blue-600">{simulationResults.projectedWorkload}</div>
-                  </div>
-
-                  <div className="p-4 bg-yellow-50 rounded-xl">
-                    <div className="text-sm font-semibold text-gray-700">Response Time</div>
-                    <div className="text-lg font-bold text-yellow-600">{simulationResults.projectedResponseTime.toFixed(1)} min</div>
-                  </div>
-
-                  <div className="p-4 bg-red-50 rounded-xl">
-                    <div className="text-sm font-semibold text-gray-700">Workload Strain</div>
-                    <div className="text-lg font-bold text-red-600">{simulationResults.workloadStrain.toFixed(1)}%</div>
-                  </div>
-
-                  {simulationResults.fieldRecommendations.length > 0 && (
-                    <div className="p-4 bg-amber-50 rounded-xl">
-                      <div className="text-sm font-semibold text-gray-700 mb-2">Field Actions</div>
-                      <ul className="text-xs text-amber-800 space-y-1">
-                        {simulationResults.fieldRecommendations.map((rec, index) => (
-                          <li key={index} className="flex items-start space-x-1">
-                            <span>•</span>
-                            <span>{rec}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="p-8 text-center text-gray-500">
-                  <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p className="text-sm">Run analysis to see field insights</p>
-                </div>
-              )}
-            </div>
-          </div>
 
 
         </div>
