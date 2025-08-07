@@ -1117,7 +1117,6 @@ const CLevelDashboard: React.FC = () => {
               <button
                 onClick={() =>{
                   setSimulationMode(!simulationMode)
-                  runStrategicAnalysis()
                 } 
 
                 }
