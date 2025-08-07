@@ -149,7 +149,11 @@ const ChatBot: React.FC<ChatBotProps> = ({ onClose }) => {
               </option>
             ))}
           </select>
-          <button onClick={onClose} className="hover:bg-white/20 p-1 rounded">
+          <button 
+            onClick={onClose} 
+            className="hover:bg-white/20 p-1 rounded transition-colors"
+            title="Close chat"
+          >
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -202,6 +206,21 @@ const ChatBot: React.FC<ChatBotProps> = ({ onClose }) => {
 
       {/* Input */}
       <div className="p-5 border-t border-gray-200">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-xs text-gray-500">Quick Actions:</span>
+          <div className="flex space-x-2">
+            {['darshan', 'queue', 'shuttle', 'parking'].map(action => (
+              <button
+                key={action}
+                onClick={() => setInputMessage(action)}
+                className="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded transition-colors capitalize"
+              >
+                {action}
+              </button>
+            ))}
+          </div>
+        </div>
+        
         <div className="flex space-x-2">
           <input
             type="text"
@@ -215,8 +234,25 @@ const ChatBot: React.FC<ChatBotProps> = ({ onClose }) => {
             onClick={handleSendMessage}
             disabled={!inputMessage.trim()}
             className="bg-gradient-to-r from-amber-500 to-red-600 text-white p-3 rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            title="Send message"
           >
             <Send className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => {
+              setMessages([{
+                id: '1',
+                type: 'bot',
+                content: 'నమస్కారం! I am TTD AI Assistant. How can I help you today? (తెలుగు, English, தமிழ், हिंदी)',
+                timestamp: new Date(),
+                language: 'multi'
+              }]);
+              alert('Chat history cleared.');
+            }}
+            className="bg-gray-200 hover:bg-gray-300 text-gray-700 p-3 rounded-xl transition-colors"
+            title="Clear chat"
+          >
+            <RefreshCw className="w-4 h-4" />
           </button>
         </div>
       </div>

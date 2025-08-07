@@ -60,6 +60,8 @@ const TrafficConsole: React.FC = () => {
 
   const runWhatIfAnalysis = () => {
     const scenario = whatIfScenarios.find(s => s.id === whatIfScenario);
+    if (!scenario) return;
+    
     const projectedVehicles = Math.floor(vehicleCount * scenario!.multiplier);
     const projectedCongestion = Math.min(100, (projectedVehicles / trafficParameters.roadCapacity) * 100);
     const estimatedDelay = Math.max(0, (projectedCongestion - 70) * 2);
@@ -71,6 +73,8 @@ const TrafficConsole: React.FC = () => {
       estimatedDelay,
       recommendedActions: getRecommendations(projectedCongestion, estimatedDelay)
     });
+    
+    alert(`Analysis complete for ${scenario.name}. Check results panel for details.`);
   };
 
   const getRecommendations = (congestion: number, delay: number) => {
@@ -120,6 +124,19 @@ const TrafficConsole: React.FC = () => {
             >
               <Play className="w-4 h-4" />
               <span>{simulationMode ? 'Stop Simulation' : 'Start Simulation'}</span>
+            </button>
+            
+            <button
+              onClick={() => {
+                setVehicleCount(1247);
+                setParkingData(prev => prev.map(lot => ({...lot, occupied: Math.floor(lot.capacity * 0.7)})));
+                setSimulationResults(null);
+                alert('Traffic data reset to default values.');
+              }}
+              className="btn-mobius-secondary flex items-center space-x-2"
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span>Reset Data</span>
             </button>
           </div>
         </div>
@@ -313,6 +330,13 @@ const TrafficConsole: React.FC = () => {
           <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
             Optimize Routes
           </button>
+          
+          <button 
+            onClick={() => alert('Exporting parking utilization report...')}
+            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            Export Report
+          </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -374,6 +398,15 @@ const TrafficConsole: React.FC = () => {
                   <button className="text-xs bg-white/50 hover:bg-white/80 px-2 py-1 rounded transition-colors">
                     Update Route
                   </button>
+                  <button 
+                    onClick={() => {
+                      setIncidents(prev => prev.filter(i => i.id !== incident.id));
+                      alert('Incident resolved and removed from active list.');
+                    }}
+                    className="text-xs bg-white/50 hover:bg-white/80 px-2 py-1 rounded transition-colors"
+                  >
+                    Resolve
+                  </button>
                 </div>
               </div>
             ))}
@@ -421,6 +454,12 @@ const TrafficConsole: React.FC = () => {
                   <button className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded transition-colors">
                     View Route
                   </button>
+                  <button 
+                    onClick={() => alert(`Manual override activated for ${bus.route}. You now have direct control.`)}
+                    className="text-xs bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1 rounded transition-colors"
+                  >
+                    Override
+                  </button>
                 </div>
               </div>
             ))}
@@ -446,6 +485,12 @@ const TrafficConsole: React.FC = () => {
             <Navigation className="w-12 h-12 mx-auto mb-2 animate-spin" />
             <p>Real-time traffic visualization loading...</p>
             <p className="text-sm mt-2">Integrating with Google Maps & Drone feeds</p>
+            <button
+              onClick={() => alert('Opening full-screen traffic map with live camera feeds...')}
+              className="mt-4 btn-mobius-primary"
+            >
+              Open Full Map
+            </button>
           </div>
         </div>
       </div>
