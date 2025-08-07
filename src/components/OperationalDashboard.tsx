@@ -1269,9 +1269,8 @@ const OperationalDashboard: React.FC = () => {
       isOpen={showVIPModal}
       onClose={() => setShowVIPModal(false)} 
     />
-    
-    <VIPMovementModal 
-);
+    </div>
+  );
 };
 
 export default OperationalDashboard;
