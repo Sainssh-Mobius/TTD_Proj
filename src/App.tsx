@@ -83,7 +83,7 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Side Panel */}
-      <div className={`${sidebarCollapsed ? 'w-16' : 'w-80'} bg-white border-r border-gray-200 shadow-sm flex flex-col transition-all duration-300 ease-in-out relative fixed left-0 top-0 h-screen z-30`}>
+      <div className={`${sidebarCollapsed ? 'w-16' : 'w-80'} bg-white border-r border-gray-200 shadow-sm flex flex-col transition-all duration-300 ease-in-out relative`}>
         {/* Collapse Toggle Button */}
         <button
           onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -181,9 +181,9 @@ function App() {
       </div>
 
       {/* Main Content Area */}
-      <div className={`flex-1 flex flex-col ${sidebarCollapsed ? 'ml-16' : 'ml-80'} transition-all duration-300 ease-in-out`}>
+      <div className="flex-1 flex flex-col">
       {/* Header */}
-        <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-20">
+        <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
           <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Left side - Current View Title */}
