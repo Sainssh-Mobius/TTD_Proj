@@ -191,6 +191,9 @@ const CLevelDashboard: React.FC = () => {
       return newState;
     });
 
+    setWhatIfScenario(key)
+
+
     setHasCheckboxChanges(true);
   };
 
@@ -210,6 +213,7 @@ const CLevelDashboard: React.FC = () => {
 
   const runStrategicAnalysis = () => {
     const scenario = whatIfScenarios.find(s => s.id === whatIfScenario);
+
     if (!scenario) return;
 
     const finalMultiplier = scenario.multiplier * calculatedMultiplier;
@@ -1111,8 +1115,13 @@ const CLevelDashboard: React.FC = () => {
               </div>
 
               <button
-                // onClick={() => setSimulationMode(!simulationMode)}
-                onClick={runStrategicAnalysis}
+                onClick={() =>{
+                  setSimulationMode(!simulationMode)
+                  runStrategicAnalysis()
+                } 
+
+                }
+                // onClick={runStrategicAnalysis}
 
                 className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${simulationMode
                   ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg'
@@ -1340,7 +1349,7 @@ const CLevelDashboard: React.FC = () => {
                   //Data Yaha pe 
                 }
 
-                <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 ">
+                {/* <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 ">
                   <h4 className="font-bold text-gray-800 mb-4 flex items-center space-x-2">
                     <BarChart3 className="w-5 h-5" />
                     <span>Prediction vs Actual</span>
@@ -1380,7 +1389,27 @@ const CLevelDashboard: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {whatIfScenarios.map(scenario => (
+                    <div
+                      key={scenario.id}
+                      onClick={() => setWhatIfScenario(scenario.id)}
+                      className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
+                        whatIfScenario === scenario.id
+                          ? 'border-purple-500 bg-purple-50 shadow-md'
+                          : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                      }`}
+                    >
+                      <div className="font-semibold text-gray-800 mb-1">{scenario.name}</div>
+                      <div className="text-xs text-gray-600 mb-2">{scenario.description}</div>
+                      <div className="text-xs text-purple-600 font-semibold">
+                        Base Impact: {scenario.multiplier > 1 ? '+' : ''}{((scenario.multiplier - 1) * 100).toFixed(0)}%
+                      </div>
+                    </div>
+                  ))}
+                </div>  
               </div>
 
               {/* Analysis Results */}
