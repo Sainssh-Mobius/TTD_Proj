@@ -49,6 +49,21 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (notifications.length === 0) return;
+
+    const timers = notifications.map((n) =>
+      setTimeout(() => {
+        setNotifications((prev) => prev.filter((notif) => notif.id !== n.id));
+      }, 5000) // Auto-remove after 10 seconds
+    );
+
+    return () => {
+      timers.forEach(clearTimeout);
+    };
+  }, [notifications]);
+
+
   const renderPersonaDashboard = () => {
     switch (currentPersona) {
       case 'c-level':
@@ -80,7 +95,7 @@ function App() {
                 <p className="text-xs text-gray-600">Tirumala Tirupathi Devasthanam</p>
               </div>
             </div>
-            
+
             {/* Center - Persona Toggle */}
             <div className="flex items-center">
               {/* Persona Toggle */}
@@ -91,11 +106,10 @@ function App() {
                     <button
                       key={persona.id}
                       onClick={() => setCurrentPersona(persona.id)}
-                      className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 font-medium text-sm ${
-                        currentPersona === persona.id
+                      className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 font-medium text-sm ${currentPersona === persona.id
                           ? 'bg-white text-indigo-600 shadow-sm font-semibold'
                           : 'text-gray-600 hover:text-gray-900 hover:bg-white/60'
-                      }`}
+                        }`}
                     >
                       <IconComponent className="w-5 h-5" />
                       <span>{persona.name}</span>
@@ -115,7 +129,7 @@ function App() {
             </div>
           </div>
         </div>
-        
+
         {/* Persona Description Bar */}
         <div className="border-t border-gray-100 bg-gray-50/30">
           <div className="max-w-full mx-auto px-6 py-2">
