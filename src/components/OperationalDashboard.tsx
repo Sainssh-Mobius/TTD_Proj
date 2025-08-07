@@ -88,7 +88,7 @@ const OperationalDashboard: React.FC = () => {
 
   const [simulationMode, setSimulationMode] = useState(false);
   const [simulationSpeed, setSimulationSpeed] = useState(1);
-  const [whatIfScenario, setWhatIfScenario] = useState('normal');
+  const [whatIfScenario, setWhatIfScenario] = useState('weather-impact');
   const [simulationResults, setSimulationResults] = useState<any>(null);
 
   // Realistic Scenario State

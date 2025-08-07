@@ -64,7 +64,7 @@ const GroundStaffDashboard: React.FC = () => {
 
   const [simulationMode, setSimulationMode] = useState(false);
   const [simulationSpeed, setSimulationSpeed] = useState(1);
-  const [whatIfScenario, setWhatIfScenario] = useState('normal');
+  const [whatIfScenario, setWhatIfScenario] = useState('weather-impact');
   const [simulationResults, setSimulationResults] = useState<any>(null);
 
   // Baseline values to show difference between current and simulation
@@ -271,6 +271,7 @@ const GroundStaffDashboard: React.FC = () => {
     if (!simulationMode) {
       setTimeout(() => {
         setSimulationMode(false);
+        setBaselinePilgrimKPIs(null);
         console.log('Ground Staff Simulation auto-stopped after 30 minutes');
       }, 1800000); // 30 minutes = 30 * 60 * 1000 = 1800000 milliseconds
     }
@@ -1059,8 +1060,15 @@ const GroundStaffDashboard: React.FC = () => {
               </div> */}
               <button
                 onClick={() => {
-                  setSimulationMode(!simulationMode);
-                  if (!simulationMode) runFieldAnalysis();
+                  if (simulationMode) {
+                    // Stop simulation and reset baseline
+                    setSimulationMode(false);
+                    setBaselinePilgrimKPIs(null);
+                  } else {
+                    // Start simulation
+                    setSimulationMode(true);
+                    runFieldAnalysis();
+                  }
                 }}
                 className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${simulationMode
                   ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg'
