@@ -40,7 +40,7 @@ const CLevelDashboard: React.FC = () => {
   const [scenarioCheckboxes, setScenarioCheckboxes] = useState<{ [key: string]: boolean }>({});
   const [isApplyingScenario, setIsApplyingScenario] = useState(false);
   const [hasCheckboxChanges, setHasCheckboxChanges] = useState(false);
-  const [whatIfScenario, setWhatIfScenario] = useState('normal');
+  const [whatIfScenario, setWhatIfScenario] = useState('weather-impact');
   const [simulationResults, setSimulationResults] = useState<any>(null);
   const [simulationMode, setSimulationMode] = useState(false);
   const [simulationSpeed, setSimulationSpeed] = useState(1);
