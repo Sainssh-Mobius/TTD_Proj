@@ -1114,23 +1114,7 @@ const CLevelDashboard: React.FC = () => {
                 </div>
               </div>
 
-              <button
-                onClick={() =>{
-                  setSimulationMode(!simulationMode)
-                  runStrategicAnalysis()
-                } 
-
-                }
-                // onClick={runStrategicAnalysis}
-
-                className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${simulationMode
-                  ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg'
-                  : 'bg-green-500 hover:bg-green-600 text-white shadow-lg'
-                  }`}
-              >
-                <Activity className="w-5 h-5" />
-                <span>{simulationMode ? 'Stop Simulation' : 'Run Strategy Analysis'}</span>
-              </button>
+              
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -1409,6 +1393,7 @@ const CLevelDashboard: React.FC = () => {
                       </div>
                     </div>
                   ))}
+                  
                 </div>  
               </div>
 
@@ -1528,54 +1513,101 @@ const CLevelDashboard: React.FC = () => {
               </div>
             </div> */}
 
-            {/* Hourly Predictions Chart */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 mt-8">
-              <h4 className="font-bold text-gray-800 mb-4 flex items-center space-x-2">
-                <Clock className="w-5 h-5" />
-                <span>24-Hour Predictions</span>
-              </h4>
-
-              <div className="h-48 relative mb-4">
+            {/* 24-Hour Operations Chart */}
+            <div className="bg-gray-50 rounded-xl p-6 mt-8">
+              <div className="flex items-center justify-between mb-6">
+                <h4 className="font-bold text-gray-800 text-lg">24-Hour Operations Trends</h4>
+                <div className="flex items-center space-x-6">
+                  <div className="flex space-x-4 text-sm">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <span>Current</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                      <span>AI Predicted</span>
+                    </div>
+                    {simulationMode && (
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span>Simulation</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <button
+                    onClick={() =>{
+                      setSimulationMode(!simulationMode)
+                      runStrategicAnalysis()
+                    }}
+                    className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${simulationMode
+                      ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg'
+                      : 'bg-green-500 hover:bg-green-600 text-white shadow-lg'
+                      }`}
+                  >
+                    <Activity className="w-5 h-5" />
+                    <span>{simulationMode ? 'Stop Simulation' : 'Run Strategy Analysis'}</span>
+                  </button>
+                </div>
+              </div>
+              
+              <div className="h-64 relative">
                 <div className="absolute inset-0 flex items-end justify-between px-2">
-                  {hourlyPredictions.slice(0, 12).map((prediction, i) => {
-                    const height = Math.max(20, Math.min(90, (prediction.predicted / 2000) * 100));
+                  {Array.from({length: 24}, (_, i) => {
+                    const hour = i;
+                    const currentHeight = Math.max(20, Math.min(90, 35 + Math.sin(i * 0.5) * 25 + Math.random() * 10));
+                    const predictedHeight = Math.max(20, Math.min(90, currentHeight + 12 + Math.sin(i * 0.3) * 18));
+                    const simulationHeight = simulationMode ? 
+                      Math.max(20, Math.min(90, currentHeight * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))) : 
+                      currentHeight;
+                    
                     return (
                       <div key={i} className="flex flex-col items-center space-y-1 flex-1">
-                        <div className="flex items-end space-x-1 h-32">
-                          <div
-                            className="w-3 bg-gradient-to-t from-blue-500 to-purple-500 rounded-t transition-all duration-500"
-                            style={{ height: `${height}%` }}
-                            title={`${prediction.predicted} pilgrims (${prediction.confidence}% confidence)`}
+                        <div className="flex items-end space-x-1 h-48">
+                          <div 
+                            className="w-2 bg-blue-500 rounded-t transition-all duration-500"
+                            style={{height: `${currentHeight}%`}}
+                            title={`Current: ${Math.floor(1200 + Math.sin(i * 0.5) * 400)} pilgrims`}
                           ></div>
+                          <div 
+                            className="w-2 bg-purple-500 rounded-t opacity-70 transition-all duration-500"
+                            style={{height: `${predictedHeight}%`}}
+                            title={`Predicted: ${Math.floor(1400 + Math.sin(i * 0.3) * 500)} pilgrims`}
+                          ></div>
+                          {simulationMode && (
+                            <div 
+                              className="w-2 bg-green-500 rounded-t animate-pulse transition-all duration-500"
+                              style={{height: `${simulationHeight}%`}}
+                              title={`Simulation: ${Math.floor((1200 + Math.sin(i * 0.5) * 400) * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))} pilgrims`}
+                            ></div>
+                          )}
                         </div>
                         <div className="text-xs text-gray-600 transform -rotate-45 origin-center">
-                          {prediction.hour.toString().padStart(2, '0')}:00
+                          {hour.toString().padStart(2, '0')}:00
                         </div>
                       </div>
                     );
                   })}
                 </div>
               </div>
-
-              <div className="grid grid-cols-3 gap-4 text-center">
+              
+              <div className="mt-4 grid grid-cols-3 gap-4 text-center">
                 <div className="p-3 bg-blue-50 rounded-lg">
-                  <div className="text-lg font-bold text-blue-600">
-                    {Math.max(...hourlyPredictions.map(p => p.predicted)).toLocaleString()}
-                  </div>
-                  <div className="text-xs text-blue-800">Peak Hour</div>
-                </div>
-                <div className="p-3 bg-green-50 rounded-lg">
-                  <div className="text-lg font-bold text-green-600">
-                    {Math.round(hourlyPredictions.reduce((sum, p) => sum + p.confidence, 0) / hourlyPredictions.length)}%
-                  </div>
-                  <div className="text-xs text-green-800">Avg Confidence</div>
+                  <div className="text-lg font-bold text-blue-600">{pilgrimKPIs.current.toLocaleString()}</div>
+                  <div className="text-xs text-blue-800">Current Load</div>
                 </div>
                 <div className="p-3 bg-purple-50 rounded-lg">
-                  <div className="text-lg font-bold text-purple-600">
-                    {hourlyPredictions.reduce((sum, p) => sum + p.predicted, 0).toLocaleString()}
-                  </div>
-                  <div className="text-xs text-purple-800">24hr Total</div>
+                  <div className="text-lg font-bold text-purple-600">{pilgrimKPIs.aiPredictedPeak.toLocaleString()}</div>
+                  <div className="text-xs text-purple-800">AI Predicted</div>
                 </div>
+                {simulationMode && (
+                  <div className="p-3 bg-green-50 rounded-lg">
+                    <div className="text-lg font-bold text-green-600">
+                      {Math.floor(pilgrimKPIs.current * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1)).toLocaleString()}
+                    </div>
+                    <div className="text-xs text-green-800">Simulation Load</div>
+                  </div>
+                )}
               </div>
             </div>
             
