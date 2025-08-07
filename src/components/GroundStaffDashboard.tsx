@@ -837,17 +837,18 @@ const GroundStaffDashboard: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1">
           {/* FIELD SCENARIOS - Column 1 */}
-          <div className="space-y-6">
-            <h4 className="font-bold text-gray-800 text-lg flex items-center space-x-2">
-              <Radio className="w-5 h-5" />
-              <span>Field Scenarios</span>
-            </h4>
+           <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200 flex w-full justify-between">
+              <h5 className="font-bold text-gray-800 mb-4 flex items-center space-x-2">
+                  <Target className="w-4 h-4" />
+                  <span>Realistic Scenario Builder</span>
+              </h5>
 
             {/* Realistic Scenario Configuration */}
-            <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-6 border border-green-200">
+            
               {/* Day Type Selection */}
+              <div className='flex w-2/3 flex-row justify-evenly'>
               <div className="mb-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">🗓️ Day Type</label>
                 <div className="grid grid-cols-2 gap-2">
@@ -902,9 +903,10 @@ const GroundStaffDashboard: React.FC = () => {
                   ))}
                 </div>
               </div>
+              </div>
 
               {/* Calculated Impact */}
-              <div className="mt-4 p-3 bg-white/70 rounded-lg border border-green-300">
+              {/* <div className="mt-4 p-3 bg-white/70 rounded-lg border border-green-300">
                 <div className="text-sm font-semibold text-gray-700">🧠 Calculated Impact</div>
                 <div className="text-lg font-bold text-green-600">
                   {calculatedMultiplier > 1 ? '+' : ''}{((calculatedMultiplier - 1) * 100).toFixed(0)}% Workload Increase
@@ -912,12 +914,12 @@ const GroundStaffDashboard: React.FC = () => {
                 <div className="text-xs text-gray-600 mt-1">
                   Multiplier: {calculatedMultiplier.toFixed(2)}x
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
 
           {/* WHAT-IF SCENARIOS - Column 2 */}
-          <div className="flex flex-col justify-between space-y-6">
+          {/* <div className="flex flex-col justify-between space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {whatIfScenarios.map(scenario => (
                 <div
@@ -943,10 +945,10 @@ const GroundStaffDashboard: React.FC = () => {
             >
               Run Field Analysis
             </button>
-          </div>
+          </div> */}
 
           {/* FIELD INSIGHTS - Column 3 */}
-          <div className="space-y-4">
+          {/* <div className="space-y-4">
             <h4 className="font-bold text-gray-800 text-lg flex items-center space-x-2">
               <Zap className="w-5 h-5" />
               <span>Field Insights</span>
@@ -982,28 +984,28 @@ const GroundStaffDashboard: React.FC = () => {
                   <div className="text-lg font-bold text-red-600">{simulationResults.workloadStrain.toFixed(1)}%</div>
                 </div>
 
-                {simulationResults.fieldRecommendations.length > 0 && (
-                  <div className="p-4 bg-amber-50 rounded-xl">
-                    <div className="text-sm font-semibold text-gray-700 mb-2">Field Actions</div>
-                    <ul className="text-xs text-amber-800 space-y-1">
-                      {simulationResults.fieldRecommendations.map((rec, index) => (
-                        <li key={index} className="flex items-start space-x-1">
-                          <span>•</span>
-                          <span>{rec}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="p-8 text-center text-gray-500">
-                <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                <p className="text-sm">Run analysis to see field insights</p>
-              </div>
-            )}
-          </div>
-        </div>
+                  {simulationResults.fieldRecommendations.length > 0 && (
+                    <div className="p-4 bg-amber-50 rounded-xl">
+                      <div className="text-sm font-semibold text-gray-700 mb-2">Field Actions</div>
+                      <ul className="text-xs text-amber-800 space-y-1">
+                        {simulationResults.fieldRecommendations.map((rec: string, index: number) => (
+                          <li key={index} className="flex items-start space-x-1">
+                            <span>•</span>
+                            <span>{rec}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="p-8 text-center text-gray-500">
+                  <Users className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                  <p className="text-sm">Run analysis to see field insights</p>
+                </div>
+              )}
+            </div> */}
+          
 
         {/* Field Operations Simulation */}
         <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
