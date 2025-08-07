@@ -52,7 +52,7 @@ function App() {
   useEffect(() => {
     if (notifications.length === 0) return;
 
-    const timers = notifications.map((n) =>
+    const timers = notifications.map((n) => 
       setTimeout(() => {
         setNotifications((prev) => prev.filter((notif) => notif.id !== n.id));
       }, 5000) // Auto-remove after 10 seconds
