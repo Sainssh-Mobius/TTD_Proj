@@ -5,6 +5,7 @@ import OperationalDashboard from './components/OperationalDashboard';
 import GroundStaffDashboard from './components/GroundStaffDashboard';
 import FloatingAlerts from './components/FloatingAlerts';
 import ChatBot from './components/ChatBot';
+import NotificationCenter from './components/NotificationCenter';
 
 type Persona = 'c-level' | 'operational' | 'ground-staff';
 
@@ -194,6 +195,7 @@ function App() {
 
             {/* Right side - Actions */}
             <div className="flex items-center space-x-3">
+              <NotificationCenter notifications={notifications} />
               <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
                 <div className="text-xs font-medium text-blue-600 uppercase tracking-wide">Active View</div>
                 <div className="text-sm font-bold text-blue-900">{getCurrentPersona()?.name}</div>
