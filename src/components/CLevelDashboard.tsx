@@ -79,7 +79,7 @@ const CLevelDashboard: React.FC = () => {
   // Time-Specific Forecasting State
   const [selectedTimeSlot, setSelectedTimeSlot] = useState('06:30');
   const [timeSlotPredictions, setTimeSlotPredictions] = useState<any>(null);
-  const [currentWeather, setCurrentWeather] = useState('normal');
+  const [currentWeather, setCurrentWeather] = useState('weather-crisis');
 
   // Enhanced C-Level KPIs
   const [executiveKPIs, setExecutiveKPIs] = useState({
@@ -380,7 +380,7 @@ const CLevelDashboard: React.FC = () => {
           confidence: Math.max(70, Math.min(99, item.confidence + Math.floor(Math.random() * 6 - 3)))
         })));
       }
-    }, 5000);
+    }, simulationMode ? 1800000 : 5000); // 1800000ms = 30 minutes for simulation updates
 
     return () => clearInterval(interval);
   }, [simulationMode, whatIfScenario, simulationSpeed]);
