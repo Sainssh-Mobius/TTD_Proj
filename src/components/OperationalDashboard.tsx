@@ -1264,9 +1264,13 @@ const OperationalDashboard: React.FC = () => {
         </div>
       </div>
     </div>
-    <VIPMovementModal isOpen={showVIPModal}
-      onClose={() => setShowVIPModal(false)} />
-  </div>
+    
+    <VIPMovementModal 
+      isOpen={showVIPModal}
+      onClose={() => setShowVIPModal(false)} 
+    />
+    
+    <VIPMovementModal 
 );
 };
 
