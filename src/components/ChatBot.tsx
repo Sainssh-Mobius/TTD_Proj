@@ -125,7 +125,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 w-96 h-96 card-elevated flex flex-col z-50 shadow-2xl">
+    <div className="fixed bottom-6 right-6 w-96 h-96 card-elevated flex flex-col z-50 shadow-2xl bg-white">
       {/* Header */}
       <div className="flex items-center justify-between p-5 border-b border-gray-200 bg-gradient-to-r from-amber-500 to-red-600 text-white rounded-t-2xl">
         <div className="flex items-center space-x-3">

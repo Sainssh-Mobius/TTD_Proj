@@ -359,81 +359,81 @@ const CLevelDashboard: React.FC = () => {
   }, [simulationMode, whatIfScenario, simulationSpeed]);
 
   const getStrategicRecommendations = (
-  multiplier: number,
-  pilgrimStrain: number,
-  trafficStrain: number,
-  overbookingRisk: number
-) => {
-  const recommendations: string[] = [];
+    multiplier: number,
+    pilgrimStrain: number,
+    trafficStrain: number,
+    overbookingRisk: number
+  ) => {
+    const recommendations: string[] = [];
 
-  // ➤ Load Multiplier Rules
-  if (multiplier > 3.0) {
-    recommendations.push('Declare Level-3 surge alert; activate statewide emergency coordination');
-    recommendations.push('Suspend routine maintenance and reallocate all available staff to operations');
-  } else if (multiplier > 2.0) {
-    recommendations.push('Activate emergency capacity protocols');
-    recommendations.push('Notify upstream travel hubs to initiate controlled entry throttling');
-  } else if (multiplier > 1.5) {
-    recommendations.push('Scale up operational resources and reserve capacity buffers');
-  } else if (multiplier < 0.5) {
-    recommendations.push('Enter low-load mode; optimize cost structure, reschedule non-critical services');
-  }
+    // ➤ Load Multiplier Rules
+    if (multiplier > 3.0) {
+      recommendations.push('Declare Level-3 surge alert; activate statewide emergency coordination');
+      recommendations.push('Suspend routine maintenance and reallocate all available staff to operations');
+    } else if (multiplier > 2.0) {
+      recommendations.push('Activate emergency capacity protocols');
+      recommendations.push('Notify upstream travel hubs to initiate controlled entry throttling');
+    } else if (multiplier > 1.5) {
+      recommendations.push('Scale up operational resources and reserve capacity buffers');
+    } else if (multiplier < 0.5) {
+      recommendations.push('Enter low-load mode; optimize cost structure, reschedule non-critical services');
+    }
 
-  // ➤ Pilgrim Strain Rules
-  if (pilgrimStrain > 95) {
-    recommendations.push('Restrict new pilgrim entries and initiate priority access only');
-    recommendations.push('Setup real-time crowd density alerts at choke points');
-  } else if (pilgrimStrain > 90) {
-    recommendations.push('Implement pilgrim flow restrictions at temple queues and lodging areas');
-  } else if (pilgrimStrain > 80) {
-    recommendations.push('Deploy additional crowd management volunteers in peak zones');
-  } else if (pilgrimStrain < 40 && multiplier < 1) {
-    recommendations.push('Encourage flexible slot bookings and promote travel during off-peak hours');
-  }
+    // ➤ Pilgrim Strain Rules
+    if (pilgrimStrain > 95) {
+      recommendations.push('Restrict new pilgrim entries and initiate priority access only');
+      recommendations.push('Setup real-time crowd density alerts at choke points');
+    } else if (pilgrimStrain > 90) {
+      recommendations.push('Implement pilgrim flow restrictions at temple queues and lodging areas');
+    } else if (pilgrimStrain > 80) {
+      recommendations.push('Deploy additional crowd management volunteers in peak zones');
+    } else if (pilgrimStrain < 40 && multiplier < 1) {
+      recommendations.push('Encourage flexible slot bookings and promote travel during off-peak hours');
+    }
 
-  // ➤ Traffic Strain Rules
-  if (trafficStrain > 95) {
-    recommendations.push('Impose vehicle access control to core areas and activate bypass routes');
-    recommendations.push('Divert heavy vehicles to night-time slots');
-  } else if (trafficStrain > 85) {
-    recommendations.push('Deploy additional traffic personnel and mobile command posts');
-  } else if (trafficStrain > 75) {
-    recommendations.push('Coordinate shuttle frequencies and dynamic route assignments');
-  } else if (trafficStrain < 50 && multiplier > 2.5) {
-    recommendations.push('Issue travel advisories for underutilized entry corridors');
-  }
+    // ➤ Traffic Strain Rules
+    if (trafficStrain > 95) {
+      recommendations.push('Impose vehicle access control to core areas and activate bypass routes');
+      recommendations.push('Divert heavy vehicles to night-time slots');
+    } else if (trafficStrain > 85) {
+      recommendations.push('Deploy additional traffic personnel and mobile command posts');
+    } else if (trafficStrain > 75) {
+      recommendations.push('Coordinate shuttle frequencies and dynamic route assignments');
+    } else if (trafficStrain < 50 && multiplier > 2.5) {
+      recommendations.push('Issue travel advisories for underutilized entry corridors');
+    }
 
-  // ➤ Overbooking Risk Rules
-  if (overbookingRisk > 60) {
-    recommendations.push('Freeze new slot issuance and implement fallback queuing strategy');
-    recommendations.push('Send bulk alerts to high-risk slot holders for possible deferral');
-  } else if (overbookingRisk > 40) {
-    recommendations.push('Introduce adaptive slot allocation using real-time attendance data');
-  } else if (overbookingRisk > 20) {
-    recommendations.push('Implement slot overbooking prevention measures');
-  } else if (overbookingRisk < 10 && multiplier < 0.8) {
-    recommendations.push('Allow dynamic upscaling of slot issuance for low-risk time blocks');
-  }
+    // ➤ Overbooking Risk Rules
+    if (overbookingRisk > 60) {
+      recommendations.push('Freeze new slot issuance and implement fallback queuing strategy');
+      recommendations.push('Send bulk alerts to high-risk slot holders for possible deferral');
+    } else if (overbookingRisk > 40) {
+      recommendations.push('Introduce adaptive slot allocation using real-time attendance data');
+    } else if (overbookingRisk > 20) {
+      recommendations.push('Implement slot overbooking prevention measures');
+    } else if (overbookingRisk < 10 && multiplier < 0.8) {
+      recommendations.push('Allow dynamic upscaling of slot issuance for low-risk time blocks');
+    }
 
-  // ➤ Cross-Parameter Logic
-  if (multiplier > 2 && trafficStrain > 90 && pilgrimStrain > 90) {
-    recommendations.push('Trigger multi-agency crisis coordination with traffic-police-temple joint control');
-  }
+    // ➤ Cross-Parameter Logic
+    if (multiplier > 2 && trafficStrain > 90 && pilgrimStrain > 90) {
+      recommendations.push('Trigger multi-agency crisis coordination with traffic-police-temple joint control');
+    }
 
-  if (overbookingRisk > 50 && pilgrimStrain > 85) {
-    recommendations.push('Activate real-time rebooking mechanism and walk-in rescheduling counters');
-  }
+    if (overbookingRisk > 50 && pilgrimStrain > 85) {
+      recommendations.push('Activate real-time rebooking mechanism and walk-in rescheduling counters');
+    }
 
-  if (multiplier < 1 && trafficStrain < 60 && overbookingRisk < 20) {
-    recommendations.push('Design pilot incentives for weekday visits and off-peak demand stimulation');
-  }
+    if (multiplier < 1 && trafficStrain < 60 && overbookingRisk < 20) {
+      recommendations.push('Design pilot incentives for weekday visits and off-peak demand stimulation');
+    }
 
-  if (multiplier > 1.5 && pilgrimStrain > 85 && trafficStrain > 85) {
-    recommendations.push('Trigger Tier-2 surge planning for food, sanitation, and health kiosks');
-  }
+    if (multiplier > 1.5 && pilgrimStrain > 85 && trafficStrain > 85) {
+      recommendations.push('Trigger Tier-2 surge planning for food, sanitation, and health kiosks');
+    }
 
-  return recommendations;
-};
+    return recommendations;
+  };
 
 
   // Generate contextual AI Executive Summary
@@ -1114,7 +1114,17 @@ const CLevelDashboard: React.FC = () => {
                 </div>
               </div>
 
-              
+              {/* <button
+                onClick={runStrategicAnalysis}
+
+
+                // onClick={runStrategicAnalysis}
+
+                className="w-fit flex space-x-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg"
+              >
+                <Activity className="w-5 h-5" />
+                <span>{simulationMode ? 'Stop Strategy Analysis' : 'Run Strategy Analysis'}</span>
+              </button> */}
             </div>
 
             <div className="grid grid-cols-1 gap-8">
@@ -1178,7 +1188,7 @@ const CLevelDashboard: React.FC = () => {
                       ))}
                     </div>
                   </div>
-                  
+
                   {/* TTD Special Days */}
                   <div className="mb-4">
                     <label className="block text-sm font-semibold text-gray-700 mb-2">🛕 TTD Special Days</label>
@@ -1197,7 +1207,7 @@ const CLevelDashboard: React.FC = () => {
                     </div>
                     
                   </div>
-                  
+
                   {/* Regional Festivals */}
                   <div className="mb-4">
                     <label className="block text-sm font-semibold text-gray-700 mb-2">🌍 Regional Festivals</label>
@@ -1382,45 +1392,45 @@ const CLevelDashboard: React.FC = () => {
                       <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
                       <span>AI Predicted</span>
                     </div>
-                    {simulationMode && (
+                    {/* {simulationMode && (
                       <div className="flex items-center space-x-2">
                         <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                         <span>Simulation</span>
                       </div>
-                    )}
+                    )} */}
                   </div>
                   
                  
                 </div>
               </div>
-              
+
               <div className="h-64 relative">
                 <div className="absolute inset-0 flex items-end justify-between px-2">
-                  {Array.from({length: 24}, (_, i) => {
+                  {Array.from({ length: 24 }, (_, i) => {
                     const hour = i;
                     const currentHeight = Math.max(20, Math.min(90, 35 + Math.sin(i * 0.5) * 25 + Math.random() * 10));
                     const predictedHeight = Math.max(20, Math.min(90, currentHeight + 12 + Math.sin(i * 0.3) * 18));
-                    const simulationHeight = simulationMode ? 
-                      Math.max(20, Math.min(90, currentHeight * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))) : 
+                    const simulationHeight = simulationMode ?
+                      Math.max(20, Math.min(90, currentHeight * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))) :
                       currentHeight;
-                    
+
                     return (
                       <div key={i} className="flex flex-col items-center space-y-1 flex-1">
                         <div className="flex items-end space-x-1 h-48">
-                          <div 
+                          <div
                             className="w-2 bg-blue-500 rounded-t transition-all duration-500"
-                            style={{height: `${currentHeight}%`}}
+                            style={{ height: `${currentHeight}%` }}
                             title={`Current: ${Math.floor(1200 + Math.sin(i * 0.5) * 400)} pilgrims`}
                           ></div>
-                          <div 
+                          <div
                             className="w-2 bg-purple-500 rounded-t opacity-70 transition-all duration-500"
-                            style={{height: `${predictedHeight}%`}}
+                            style={{ height: `${predictedHeight}%` }}
                             title={`Predicted: ${Math.floor(1400 + Math.sin(i * 0.3) * 500)} pilgrims`}
                           ></div>
                           {simulationMode && (
-                            <div 
+                            <div
                               className="w-2 bg-green-500 rounded-t animate-pulse transition-all duration-500"
-                              style={{height: `${simulationHeight}%`}}
+                              style={{ height: `${simulationHeight}%` }}
                               title={`Simulation: ${Math.floor((1200 + Math.sin(i * 0.5) * 400) * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))} pilgrims`}
                             ></div>
                           )}
@@ -1433,7 +1443,7 @@ const CLevelDashboard: React.FC = () => {
                   })}
                 </div>
               </div>
-              
+
               <div className="mt-4 grid grid-cols-3 gap-4 text-center">
                 <div className="p-3 bg-blue-50 rounded-lg">
                   <div className="text-lg font-bold text-blue-600">{pilgrimKPIs.current.toLocaleString()}</div>

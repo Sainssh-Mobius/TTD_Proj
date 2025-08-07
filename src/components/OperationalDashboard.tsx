@@ -852,20 +852,20 @@ const OperationalDashboard: React.FC = () => {
           </div>
         </div>
         {/* Operational Scenarios */}
-         <div className="lg:col-span-2 space-y-6">
+         <div className="space-y-6">
               <h4 className="font-bold text-gray-800 text-lg flex items-center space-x-2">
                 <BarChart3 className="w-5 h-5" />
                 <span>Operational Scenarios</span>
               </h4>
               
               {/* Realistic Scenario Configuration */}
-              <div className='flex flex-row gap-2'>
-              <div className="bg-gradient-to-r w-[49%] from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200">
+              <div className='flex flex-col md:flex-row gap-6'>
+              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200 flex w-full justify-between">
                 <h5 className="font-bold text-gray-800 mb-4 flex items-center space-x-2">
                   <Target className="w-4 h-4" />
                   <span>Realistic Scenario Builder</span>
                 </h5>
-                
+                <div className='flex w-2/3 flex-row justify-evenly'>
                 {/* Day Type Selection */}
                 <div className="mb-4">
                   <label className="block text-sm font-semibold text-gray-700 mb-2">🗓️ Day Type</label>
@@ -921,9 +921,10 @@ const OperationalDashboard: React.FC = () => {
                     ))}
                   </div>
                 </div>
+                </div>
                 
                 {/* Calculated Impact */}
-                <div className="mt-4 p-3 bg-white/70 rounded-lg border border-blue-300">
+                {/* <div className="mt-4 p-3 bg-white/70 rounded-lg border border-blue-300">
                   <div className="text-sm font-semibold text-gray-700">🧠 Calculated Impact</div>
                   <div className="text-lg font-bold text-blue-600">
                     {calculatedMultiplier > 1 ? '+' : ''}{((calculatedMultiplier - 1) * 100).toFixed(0)}% Load Increase
@@ -931,10 +932,10 @@ const OperationalDashboard: React.FC = () => {
                   <div className="text-xs text-gray-600 mt-1">
                     Multiplier: {calculatedMultiplier.toFixed(2)}x
                   </div>
-                </div>
+                </div> */}
               </div>
               
-              <div className="grid w-[49%] grid-cols-1 md:grid-cols-2 gap-3">
+              {/* <div className="grid w-[49%] grid-cols-1 md:grid-cols-2 gap-3">
                 {whatIfScenarios.map(scenario => (
                   <div
                     key={scenario.id}
@@ -958,7 +959,7 @@ const OperationalDashboard: React.FC = () => {
               >
                 Run Operational Analysis
               </button>
-              </div>
+              </div> */}
               
               </div>
             </div>
