@@ -1093,7 +1093,7 @@ const GroundStaffDashboard: React.FC = () => {
                     <div className="p-4 bg-amber-50 rounded-xl">
                       <div className="text-sm font-semibold text-gray-700 mb-2">Field Actions</div>
                       <ul className="text-xs text-amber-800 space-y-1">
-                        {simulationResults.fieldRecommendations.map((rec, index) => (
+                        {simulationResults.fieldRecommendations.map((rec: string, index: number) => (
                           <li key={index} className="flex items-start space-x-1">
                             <span>•</span>
                             <span>{rec}</span>

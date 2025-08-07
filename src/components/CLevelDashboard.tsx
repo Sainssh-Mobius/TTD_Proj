@@ -1117,7 +1117,7 @@ const CLevelDashboard: React.FC = () => {
               
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 gap-8">
               {/* Simulation Controls */}
               <div className="space-y-6">
                 {/* <div className="bg-gray-50 rounded-xl p-6">
@@ -1153,12 +1153,12 @@ const CLevelDashboard: React.FC = () => {
                 </div> */}
 
                 {/* Realistic Scenario Builder */}
-                <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200">
+                <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200 flex flex-row justify-between">
                   <h5 className="font-bold text-gray-800 mb-4 flex items-center space-x-2">
                     <Target className="w-4 h-4" />
                     <span>Realistic Scenario Builder</span>
                   </h5>
-                  
+                  <div className='flex flex-row justify-evenly w-2/3'>
                   {/* Day Type Selection */}
                   <div className="mb-4">
                     <label className="block text-sm font-semibold text-gray-700 mb-2">🗓️ Day Type</label>
@@ -1195,6 +1195,7 @@ const CLevelDashboard: React.FC = () => {
                         </label>
                       ))}
                     </div>
+                    
                   </div>
                   
                   {/* Regional Festivals */}
@@ -1213,10 +1214,14 @@ const CLevelDashboard: React.FC = () => {
                         </label>
                       ))}
                     </div>
+                    
                   </div>
+                  </div>
+
+                  
                   
                   {/* Calculated Impact */}
-                  <div className="mt-4 p-3 bg-white/70 rounded-lg border border-blue-300">
+                  {/* <div className="mt-4 p-3 bg-white/70 rounded-lg border border-blue-300">
                     <div className="text-sm font-semibold text-gray-700">🧠 Calculated Impact</div>
                     <div className="text-lg font-bold text-blue-600">
                       {calculatedMultiplier > 1 ? '+' : ''}{((calculatedMultiplier - 1) * 100).toFixed(0)}% Load Increase
@@ -1224,181 +1229,31 @@ const CLevelDashboard: React.FC = () => {
                     <div className="text-xs text-gray-600 mt-1">
                       Multiplier: {calculatedMultiplier.toFixed(2)}x
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
+                  <div className='w-full flex justify-end'>
+                  <button
+                    onClick={() =>{
+                      setSimulationMode(!simulationMode)
+                      runStrategicAnalysis()
+                    }}
+                    className={`flex w-1/6 items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${simulationMode
+                      ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg'
+                      : 'bg-green-500 hover:bg-green-600 text-white shadow-lg'
+                      }`}
+                  >
+                    <Activity className="w-5 h-5" />
+                    <span>{simulationMode ? 'Stop Simulation' : 'Run Strategy Analysis'}</span>
+                  </button>
+
+                  </div> 
 
               {/* Strategic Scenarios */}
-              <div className="lg:col-span-2 space-y-6">
-                {/* <h4 className="font-bold text-gray-800 text-lg flex items-center space-x-2">
-                  <BarChart3 className="w-5 h-5" />
-                  <span>Strategic Scenarios</span>
-                </h4> */}
-
-                {/* Realistic Scenario Configuration */}
-                {/* <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
-                  <h5 className="font-bold text-gray-800 mb-4 flex items-center space-x-2">
-                    <Target className="w-4 h-4" />
-                    <span>Realistic Scenario Builder</span>
-                  </h5>
-                  <div className="mb-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">🗓️ Day Type</label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {dayTypes.map(day => (
-                        <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="dayType"
-                            value={day.id}
-                            checked={dayType === day.id}
-                            onChange={(e) => setDayType(e.target.value)}
-                            className="text-blue-600"
-                          />
-                          <span className="text-sm text-gray-700">{day.name}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">🛕 TTD Special Days</label>
-                    <div className="space-y-1">
-                      {ttdSpecialDaysConfig.map(day => (
-                        <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={ttdSpecialDays.includes(day.id)}
-                            onChange={() => handleTtdSpecialDayToggle(day.id)}
-                            className="text-purple-600"
-                          />
-                          <span className="text-sm text-gray-700">{day.name}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="mb-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">🌍 Regional Festivals</label>
-                    <div className="space-y-1">
-                      {regionalFestivalsConfig.map(festival => (
-                        <label key={festival.id} className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={regionalFestivals.includes(festival.id)}
-                            onChange={() => handleRegionalFestivalToggle(festival.id)}
-                            className="text-green-600"
-                          />
-                          <span className="text-sm text-gray-700">{festival.name}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="mt-4 p-3 bg-white/70 rounded-lg border border-blue-300">
-                    <div className="text-sm font-semibold text-gray-700">🧠 Calculated Impact</div>
-                    <div className="text-lg font-bold text-blue-600">
-                      {calculatedMultiplier > 1 ? '+' : ''}{((calculatedMultiplier - 1) * 100).toFixed(0)}% Load Increase
-                    </div>
-                    <div className="text-xs text-gray-600 mt-1">
-                      Multiplier: {calculatedMultiplier.toFixed(2)}x
-                    </div>
-                  </div>
-                </div>
-                 */}
-                {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {whatIfScenarios.map(scenario => (
-                    <div
-                      key={scenario.id}
-                      onClick={() => setWhatIfScenario(scenario.id)}
-                      className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
-                        whatIfScenario === scenario.id
-                          ? 'border-purple-500 bg-purple-50 shadow-md'
-                          : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
-                      }`}
-                    >
-                      <div className="font-semibold text-gray-800 mb-1">{scenario.name}</div>
-                      <div className="text-xs text-gray-600 mb-2">{scenario.description}</div>
-                      <div className="text-xs text-purple-600 font-semibold">
-                        Base Impact: {scenario.multiplier > 1 ? '+' : ''}{((scenario.multiplier - 1) * 100).toFixed(0)}%
-                      </div>
-                    </div>
-                  ))}
-                </div> */}
-
-                {/* <button
-                  onClick={runStrategicAnalysis}
-                  className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg"
-                >
-                  Run Strategic Analysis
-                </button> */}
-
-                {
-                  //Data Yaha pe 
-                }
-
-                {/* <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 ">
-                  <h4 className="font-bold text-gray-800 mb-4 flex items-center space-x-2">
-                    <BarChart3 className="w-5 h-5" />
-                    <span>Prediction vs Actual</span>
-                  </h4>
-
-                  <div className="space-y-4">
-                    <div className="p-4 bg-blue-50 rounded-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-semibold text-blue-800">Hourly Accuracy</span>
-                        <span className="text-lg font-bold text-blue-600">{predictionAccuracy.hourly.accuracy.toFixed(1)}%</span>
-                      </div>
-                      <div className="text-xs text-blue-700">
-                        Predicted: {predictionAccuracy.hourly.predicted.toLocaleString()} |
-                        Actual: {predictionAccuracy.hourly.actual.toLocaleString()}
-                      </div>
-                    </div>
-
-                    <div className="p-4 bg-green-50 rounded-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-semibold text-green-800">Daily Accuracy</span>
-                        <span className="text-lg font-bold text-green-600">{predictionAccuracy.daily.accuracy.toFixed(1)}%</span>
-                      </div>
-                      <div className="text-xs text-green-700">
-                        Predicted: {predictionAccuracy.daily.predicted.toLocaleString()} |
-                        Actual: {predictionAccuracy.daily.actual.toLocaleString()}
-                      </div>
-                    </div>
-
-                    <div className="p-4 bg-purple-50 rounded-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-semibold text-purple-800">Weekly Accuracy</span>
-                        <span className="text-lg font-bold text-purple-600">{predictionAccuracy.weekly.accuracy.toFixed(1)}%</span>
-                      </div>
-                      <div className="text-xs text-purple-700">
-                        Predicted: {predictionAccuracy.weekly.predicted.toLocaleString()} |
-                        Actual: {predictionAccuracy.weekly.actual.toLocaleString()}
-                      </div>
-                    </div>
-                  </div>
-                </div> */}
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {whatIfScenarios.map(scenario => (
-                    <div
-                      key={scenario.id}
-                      onClick={() => setWhatIfScenario(scenario.id)}
-                      className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
-                        whatIfScenario === scenario.id
-                          ? 'border-purple-500 bg-purple-50 shadow-md'
-                          : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
-                      }`}
-                    >
-                      <div className="font-semibold text-gray-800 mb-1">{scenario.name}</div>
-                      <div className="text-xs text-gray-600 mb-2">{scenario.description}</div>
-                      <div className="text-xs text-purple-600 font-semibold">
-                        Base Impact: {scenario.multiplier > 1 ? '+' : ''}{((scenario.multiplier - 1) * 100).toFixed(0)}%
-                      </div>
-                    </div>
-                  ))}
-                  
-                </div>  
-              </div>
+              
 
               {/* Analysis Results */}
-              <div className="space-y-4">
+              {/* <div className="space-y-4">
                 <h4 className="font-bold text-gray-800 text-lg flex items-center space-x-2">
                   <Zap className="w-5 h-5" />
                   <span>Strategic Insights</span>
@@ -1467,7 +1322,7 @@ const CLevelDashboard: React.FC = () => {
                     <p className="text-sm">Run analysis to see strategic insights</p>
                   </div>
                 )}
-              </div>
+              </div> */}
             </div>
 
             {/* Prediction vs Actual Analysis */}
@@ -1535,19 +1390,92 @@ const CLevelDashboard: React.FC = () => {
                     )}
                   </div>
                   
-                  <button
-                    onClick={() =>{
-                      setSimulationMode(!simulationMode)
-                      runStrategicAnalysis()
-                    }}
-                    className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${simulationMode
-                      ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg'
-                      : 'bg-green-500 hover:bg-green-600 text-white shadow-lg'
-                      }`}
-                  >
-                    <Activity className="w-5 h-5" />
-                    <span>{simulationMode ? 'Stop Simulation' : 'Run Strategy Analysis'}</span>
-                  </button>
+                 
+                </div>
+              </div>
+              
+              <div className="h-64 relative">
+                <div className="absolute inset-0 flex items-end justify-between px-2">
+                  {Array.from({length: 24}, (_, i) => {
+                    const hour = i;
+                    const currentHeight = Math.max(20, Math.min(90, 35 + Math.sin(i * 0.5) * 25 + Math.random() * 10));
+                    const predictedHeight = Math.max(20, Math.min(90, currentHeight + 12 + Math.sin(i * 0.3) * 18));
+                    const simulationHeight = simulationMode ? 
+                      Math.max(20, Math.min(90, currentHeight * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))) : 
+                      currentHeight;
+                    
+                    return (
+                      <div key={i} className="flex flex-col items-center space-y-1 flex-1">
+                        <div className="flex items-end space-x-1 h-48">
+                          <div 
+                            className="w-2 bg-blue-500 rounded-t transition-all duration-500"
+                            style={{height: `${currentHeight}%`}}
+                            title={`Current: ${Math.floor(1200 + Math.sin(i * 0.5) * 400)} pilgrims`}
+                          ></div>
+                          <div 
+                            className="w-2 bg-purple-500 rounded-t opacity-70 transition-all duration-500"
+                            style={{height: `${predictedHeight}%`}}
+                            title={`Predicted: ${Math.floor(1400 + Math.sin(i * 0.3) * 500)} pilgrims`}
+                          ></div>
+                          {simulationMode && (
+                            <div 
+                              className="w-2 bg-green-500 rounded-t animate-pulse transition-all duration-500"
+                              style={{height: `${simulationHeight}%`}}
+                              title={`Simulation: ${Math.floor((1200 + Math.sin(i * 0.5) * 400) * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))} pilgrims`}
+                            ></div>
+                          )}
+                        </div>
+                        <div className="text-xs text-gray-600 transform -rotate-45 origin-center">
+                          {hour.toString().padStart(2, '0')}:00
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              
+              <div className="mt-4 grid grid-cols-3 gap-4 text-center">
+                <div className="p-3 bg-blue-50 rounded-lg">
+                  <div className="text-lg font-bold text-blue-600">{pilgrimKPIs.current.toLocaleString()}</div>
+                  <div className="text-xs text-blue-800">Current Load</div>
+                </div>
+                <div className="p-3 bg-purple-50 rounded-lg">
+                  <div className="text-lg font-bold text-purple-600">{pilgrimKPIs.aiPredictedPeak.toLocaleString()}</div>
+                  <div className="text-xs text-purple-800">AI Predicted</div>
+                </div>
+                {simulationMode && (
+                  <div className="p-3 bg-green-50 rounded-lg">
+                    <div className="text-lg font-bold text-green-600">
+                      {Math.floor(pilgrimKPIs.current * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1)).toLocaleString()}
+                    </div>
+                    <div className="text-xs text-green-800">Simulation Load</div>
+                  </div>
+                )}
+              </div>
+            </div>
+            {/* 24-Hour Operations Chart */}
+            <div className="bg-gray-50 rounded-xl p-6 mt-8">
+              <div className="flex items-center justify-between mb-6">
+                <h4 className="font-bold text-gray-800 text-lg">24-Hour Operations Trends</h4>
+                <div className="flex items-center space-x-6">
+                  <div className="flex space-x-4 text-sm">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <span>Current</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                      <span>AI Predicted</span>
+                    </div>
+                    {simulationMode && (
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span>Simulation</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                 
                 </div>
               </div>
               
