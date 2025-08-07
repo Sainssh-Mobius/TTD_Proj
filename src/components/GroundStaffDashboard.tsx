@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, MapPin, AlertTriangle, Clock, Radio, Shield, Activity, Zap, Target, Bell, MessageSquare, Navigation, Brain, Bus, Search, Car, Eye, CheckCircle, UserCheck, X } from 'lucide-react';
+import { Users, MapPin, AlertTriangle, Radio, Activity, Zap, Target, Bell, MessageSquare, Bus, Search, Car, Eye, CheckCircle, UserCheck, X } from 'lucide-react';
 
 const GroundStaffDashboard: React.FC = () => {
   // Pilgrim Management KPIs (Ground Staff View)
@@ -9,16 +9,6 @@ const GroundStaffDashboard: React.FC = () => {
     assistanceProvided: 78,
     crowdAlerts: 12,
     queueManagement: 23
-  });
-
-  // Traffic Management KPIs (Ground Staff View)
-  const [trafficKPIs, setTrafficKPIs] = useState({
-    vehicleGuidance: 34,
-    parkingAssistance: 28,
-    trafficIncidents: 3,
-    shuttleCoordination: 15,
-    roadClearance: 8,
-    emergencyVehicles: 2
   });
 
   // Field Operations KPIs
@@ -162,7 +152,7 @@ const GroundStaffDashboard: React.FC = () => {
   ]);
 
   const [showTriggerModal, setShowTriggerModal] = useState(false);
-  const [selectedTrigger, setSelectedTrigger] = useState(null);
+  const [selectedTrigger, setSelectedTrigger] = useState<typeof activeAlerts[0] | null>(null);
   const [selectedTriggerFilter, setSelectedTriggerFilter] = useState('all');
 
   useEffect(() => {
@@ -180,16 +170,6 @@ const GroundStaffDashboard: React.FC = () => {
           queueManagement: Math.max(0, prev.queueManagement + Math.floor((Math.random() * 6 - 3) * scenarioMultiplier))
         }));
 
-        setTrafficKPIs(prev => ({
-          ...prev,
-          vehicleGuidance: Math.max(0, prev.vehicleGuidance + Math.floor((Math.random() * 6 - 3) * scenarioMultiplier * speedMultiplier)),
-          parkingAssistance: Math.max(0, prev.parkingAssistance + Math.floor((Math.random() * 4 - 2) * scenarioMultiplier * speedMultiplier)),
-          trafficIncidents: Math.max(0, prev.trafficIncidents + Math.floor((Math.random() * 2 - 1) * scenarioMultiplier)),
-          shuttleCoordination: Math.max(0, prev.shuttleCoordination + Math.floor((Math.random() * 4 - 2) * scenarioMultiplier)),
-          roadClearance: Math.max(0, prev.roadClearance + Math.floor((Math.random() * 3 - 1) * scenarioMultiplier)),
-          emergencyVehicles: Math.max(0, prev.emergencyVehicles + Math.floor((Math.random() * 2 - 1) * scenarioMultiplier))
-        }));
-
         setFieldKPIs(prev => ({
           ...prev,
           completedTasks: Math.max(0, prev.completedTasks + Math.floor((Math.random() * 6 - 3) * scenarioMultiplier * speedMultiplier)),
@@ -204,7 +184,7 @@ const GroundStaffDashboard: React.FC = () => {
         setCrowdKPIs(prev => ({
           ...prev,
           currentCrowdCount: Math.max(1000, Math.min(5000, 
-            prev.currentCrowdCount + Math.floor((Math.random() * 100 - 50) * scenarioMultiplier * simulationMultiplier))),
+            prev.currentCrowdCount + Math.floor((Math.random() * 100 - 50) * scenarioMultiplier * speedMultiplier))),
           densityAlerts: Math.max(0, Math.min(10, 
             prev.densityAlerts + Math.floor((Math.random() * 2 - 1) * scenarioMultiplier))),
           averageDensity: Math.max(30, Math.min(95, 
@@ -214,10 +194,58 @@ const GroundStaffDashboard: React.FC = () => {
         setAreaStatus(prev => prev.map(area => ({
           ...area,
           crowdCount: Math.max(10, Math.min(area.capacity, 
-            area.crowdCount + Math.floor((Math.random() * 20 - 10) * scenarioMultiplier * simulationMultiplier))),
+            area.crowdCount + Math.floor((Math.random() * 20 - 10) * scenarioMultiplier * speedMultiplier))),
           density: Math.max(20, Math.min(100, 
             (area.crowdCount / area.capacity) * 100 + (Math.random() * 6 - 3)))
         })));
+
+        // Update guidance metrics
+        setGuidanceMetrics(prev => ({
+          ...prev,
+          activeGuidance: Math.max(0, Math.min(50, 
+            prev.activeGuidance + Math.floor((Math.random() * 4 - 2) * scenarioMultiplier))),
+          completedGuidance: prev.completedGuidance + Math.floor((Math.random() * 3) * scenarioMultiplier),
+          specialAssistance: Math.max(0, Math.min(20, 
+            prev.specialAssistance + Math.floor((Math.random() * 2 - 1) * scenarioMultiplier)))
+        }));
+
+        // Update density alerts
+        setDensityAlerts(prev => {
+          const newAlerts = [...prev];
+          if (Math.random() < 0.3 * scenarioMultiplier) {
+            // Add new alert
+            const zones = ['Main Temple Entrance', 'Prasadam Counter', 'Queue Complex A', 'Exit Gate B', 'Rest Area'];
+            const levels = ['normal', 'moderate', 'high', 'critical'];
+            const actions = ['none', 'watch', 'monitor', 'immediate'];
+            const newAlert = {
+              id: Date.now(),
+              zone: zones[Math.floor(Math.random() * zones.length)],
+              level: levels[Math.floor(Math.random() * levels.length)],
+              density: Math.floor(Math.random() * 40) + 60,
+              time: 'Just now',
+              action: actions[Math.floor(Math.random() * actions.length)]
+            };
+            newAlerts.push(newAlert);
+          }
+          // Remove old alerts occasionally
+          if (Math.random() < 0.2 && newAlerts.length > 0) {
+            newAlerts.shift();
+          }
+          return newAlerts.slice(0, 10); // Keep max 10 alerts
+        });
+
+        // Update assigned tasks occasionally
+        if (Math.random() < 0.1) {
+          setAssignedTasks(prev => prev.map(task => {
+            if (task.status === 'pending' && Math.random() < 0.3) {
+              return { ...task, status: 'in-progress' };
+            }
+            if (task.status === 'in-progress' && Math.random() < 0.2) {
+              return { ...task, status: 'completed' };
+            }
+            return task;
+          }));
+        }
       }
     }, simulationMode ? 1000 / simulationSpeed : 4000);
 
@@ -316,17 +344,6 @@ const GroundStaffDashboard: React.FC = () => {
     }
   };
 
-  const getCategoryColor = (color: string) => {
-    switch (color) {
-      case 'yellow': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'red': return 'bg-red-100 text-red-800 border-red-200';
-      case 'orange': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'purple': return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'blue': return 'bg-blue-100 text-blue-800 border-blue-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
-
   const handleTriggerAction = (triggerId: number, action: 'acknowledge' | 'delegate') => {
     setActiveAlerts(prev => prev.map(alert => 
       alert.id === triggerId 
@@ -337,7 +354,7 @@ const GroundStaffDashboard: React.FC = () => {
     setSelectedTrigger(null);
   };
 
-  const openTriggerModal = (trigger: any) => {
+  const openTriggerModal = (trigger: typeof activeAlerts[0]) => {
     setSelectedTrigger(trigger);
     setShowTriggerModal(true);
   };
@@ -854,7 +871,7 @@ const GroundStaffDashboard: React.FC = () => {
           </div>
 
           {/* Time Series Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <div className="grid grid-cols-1 gap-8 mb-8">
             {/* Field Workload Time Series */}
             <div className="bg-gray-50 rounded-xl p-6">
               <div className="flex items-center justify-between mb-6">
