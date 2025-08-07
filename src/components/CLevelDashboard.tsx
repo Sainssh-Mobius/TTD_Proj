@@ -1168,154 +1168,80 @@ const CLevelDashboard: React.FC = () => {
                   </div>
                 </div> */}
 
-                {/* Scenario Checkboxes */}
-                <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
-                  <h4 className="font-bold text-blue-800 mb-4">Scenario Factors</h4>
-                  <div className="space-y-3">
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['rainy-day'] || false}
-                        onChange={(e) => handleCheckboxChange('rainy-day', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Rainy Day</span>
-                    </label>
-
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['clear-weather'] || false}
-                        onChange={(e) => handleCheckboxChange('clear-weather', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Clear Weather</span>
-                    </label>
-
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['vaikunta-ekadashi'] || false}
-                        onChange={(e) => handleCheckboxChange('vaikunta-ekadashi', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Vaikunta Ekadashi</span>
-                    </label>
-
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['brahmotsavam'] || false}
-                        onChange={(e) => handleCheckboxChange('brahmotsavam', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Brahmotsavam</span>
-                    </label>
-
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['annual-festival'] || false}
-                        onChange={(e) => handleCheckboxChange('annual-festival', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Annual Festival</span>
-                    </label>
-
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['andhra-pradesh'] || false}
-                        onChange={(e) => handleCheckboxChange('andhra-pradesh', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Andhra Pradesh Holiday</span>
-                    </label>
-
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['tamil-nadu'] || false}
-                        onChange={(e) => handleCheckboxChange('tamil-nadu', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Tamil Nadu Holiday</span>
-                    </label>
-
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['karnataka'] || false}
-                        onChange={(e) => handleCheckboxChange('karnataka', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Karnataka Holiday</span>
-                    </label>
-
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['political-vip'] || false}
-                        onChange={(e) => handleCheckboxChange('political-vip', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">VIP Visit</span>
-                    </label>
-
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['celebrity-visit'] || false}
-                        onChange={(e) => handleCheckboxChange('celebrity-visit', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Celebrity Visit</span>
-                    </label>
-
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['media-coverage'] || false}
-                        onChange={(e) => handleCheckboxChange('media-coverage', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Media Coverage</span>
-                    </label>
-
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['cultural-event'] || false}
-                        onChange={(e) => handleCheckboxChange('cultural-event', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Cultural Event</span>
-                    </label>
+                {/* Realistic Scenario Builder */}
+                <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200">
+                  <h5 className="font-bold text-gray-800 mb-4 flex items-center space-x-2">
+                    <Target className="w-4 h-4" />
+                    <span>Realistic Scenario Builder</span>
+                  </h5>
+                  
+                  {/* Day Type Selection */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">🗓️ Day Type</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {dayTypes.map(day => (
+                        <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="dayType"
+                            value={day.id}
+                            checked={dayType === day.id}
+                            onChange={(e) => setDayType(e.target.value)}
+                            className="text-blue-600"
+                          />
+                          <span className="text-sm text-gray-700">{day.name}</span>
+                        </label>
+                      ))}
+                    </div>
                   </div>
-
-                  {/* Apply Scenario Button */}
-                  <div className="mt-6 flex justify-center">
-                    <button
-                      onClick={applyScenario}
-                      disabled={!hasCheckboxChanges || isApplyingScenario}
-                      className={`px-8 py-3 rounded-lg font-semibold transition-all duration-200 ${hasCheckboxChanges && !isApplyingScenario
-                        ? 'bg-blue-500 hover:bg-blue-600 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                        }`}
-                    >
-                      {isApplyingScenario ? (
-                        <div className="flex items-center space-x-2">
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          <span>Applying Scenario...</span>
-                        </div>
-                      ) : (
-                        'Apply Scenario'
-                      )}
-                    </button>
+                  
+                  {/* TTD Special Days */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">🛕 TTD Special Days</label>
+                    <div className="space-y-1">
+                      {ttdSpecialDaysConfig.map(day => (
+                        <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={ttdSpecialDays.includes(day.id)}
+                            onChange={() => handleTtdSpecialDayToggle(day.id)}
+                            className="text-purple-600"
+                          />
+                          <span className="text-sm text-gray-700">{day.name}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Regional Festivals */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">🌍 Regional Festivals</label>
+                    <div className="space-y-1">
+                      {regionalFestivalsConfig.map(festival => (
+                        <label key={festival.id} className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={regionalFestivals.includes(festival.id)}
+                            onChange={() => handleRegionalFestivalToggle(festival.id)}
+                            className="text-green-600"
+                          />
+                          <span className="text-sm text-gray-700">{festival.name}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Calculated Impact */}
+                  <div className="mt-4 p-3 bg-white/70 rounded-lg border border-blue-300">
+                    <div className="text-sm font-semibold text-gray-700">🧠 Calculated Impact</div>
+                    <div className="text-lg font-bold text-blue-600">
+                      {calculatedMultiplier > 1 ? '+' : ''}{((calculatedMultiplier - 1) * 100).toFixed(0)}% Load Increase
+                    </div>
+                    <div className="text-xs text-gray-600 mt-1">
+                      Multiplier: {calculatedMultiplier.toFixed(2)}x
+                    </div>
                   </div>
                 </div>
-
-                
               </div>
 
               {/* Strategic Scenarios */}
@@ -1652,6 +1578,8 @@ const CLevelDashboard: React.FC = () => {
                 </div>
               </div>
             </div>
+            
+            
           </div>
         </div>
       )}
