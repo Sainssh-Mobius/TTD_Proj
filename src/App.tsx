@@ -81,9 +81,9 @@ function App() {
   const getCurrentPersona = () => personas.find(p => p.id === currentPersona);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50">
       {/* Side Panel */}
-      <div className={`${sidebarCollapsed ? 'w-16' : 'w-80'} bg-white border-r border-gray-200 shadow-sm flex flex-col transition-all duration-300 ease-in-out relative`}>
+      <div className={`fixed left-0 top-0 h-full ${sidebarCollapsed ? 'w-16' : 'w-80'} bg-white border-r border-gray-200 shadow-sm flex flex-col transition-all duration-300 ease-in-out z-50`}>
         {/* Collapse Toggle Button */}
         <button
           onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -181,7 +181,7 @@ function App() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
+      <div className={`flex-1 flex flex-col transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-80'}`}>
       {/* Header */}
         <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
           <div className="px-6 py-4">
