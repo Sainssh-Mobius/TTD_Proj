@@ -235,7 +235,7 @@ const OperationalDashboard: React.FC = () => {
             gate.waitTime + Math.floor((Math.random() * 4 - 2) * scenarioMultiplier)))
         })));
       }
-    }, simulationMode ? 1000 / simulationSpeed : 3000);
+    }, simulationMode ? 1800000 : 3000); // 1800000ms = 30 minutes for simulation updates
 
     return () => clearInterval(interval);
   }, [simulationMode, simulationSpeed, whatIfScenario]);

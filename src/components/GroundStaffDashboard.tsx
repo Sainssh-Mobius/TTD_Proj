@@ -67,6 +67,9 @@ const GroundStaffDashboard: React.FC = () => {
   const [whatIfScenario, setWhatIfScenario] = useState('normal');
   const [simulationResults, setSimulationResults] = useState<any>(null);
 
+  // Baseline values to show difference between current and simulation
+  const [baselinePilgrimKPIs, setBaselinePilgrimKPIs] = useState<any>(null);
+
   // Realistic Scenario State
   const [dayType, setDayType] = useState('normal-day');
   const [ttdSpecialDays, setTtdSpecialDays] = useState<string[]>([]);
@@ -247,12 +250,31 @@ const GroundStaffDashboard: React.FC = () => {
           }));
         }
       }
-    }, simulationMode ? 1000 / simulationSpeed : 4000);
+    }, simulationMode ? 1800000 : 4000); // 1800000ms = 30 minutes for simulation updates
 
     return () => clearInterval(interval);
   }, [simulationMode, simulationSpeed, whatIfScenario]);
 
   const runFieldAnalysis = () => {
+    // Capture baseline values when starting simulation
+    if (!simulationMode) {
+      setBaselinePilgrimKPIs({
+        assignedPilgrims: pilgrimKPIs.assignedPilgrims,
+        guidanceRequests: pilgrimKPIs.guidanceRequests,
+        assistanceProvided: pilgrimKPIs.assistanceProvided,
+        crowdAlerts: pilgrimKPIs.crowdAlerts,
+        queueManagement: pilgrimKPIs.queueManagement
+      });
+    }
+
+    // Auto-stop simulation after 30 minutes (1800000 milliseconds)
+    if (!simulationMode) {
+      setTimeout(() => {
+        setSimulationMode(false);
+        console.log('Ground Staff Simulation auto-stopped after 30 minutes');
+      }, 1800000); // 30 minutes = 30 * 60 * 1000 = 1800000 milliseconds
+    }
+
     const scenario = whatIfScenarios.find(s => s.id === whatIfScenario);
     const finalMultiplier = scenario!.multiplier * calculatedMultiplier;
     const projectedWorkload = Math.floor(pilgrimKPIs.assignedPilgrims * finalMultiplier);
@@ -1020,8 +1042,26 @@ const GroundStaffDashboard: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              {/* <div className="flex items-center space-x-2">
+                <label className="text-sm font-medium text-gray-700">Speed:</label>
+                <select
+                  value={simulationSpeed}
+                  onChange={(e) => setSimulationSpeed(Number(e.target.value))}
+                  className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500"
+                  disabled={simulationMode}
+                >
+                  <option value={1}>1x</option>
+                  <option value={5}>5x</option>
+                  <option value={10}>10x</option>
+                  <option value={30}>30x</option>
+                  <option value={60}>60x</option>
+                </select>
+              </div> */}
               <button
-                onClick={() => setSimulationMode(!simulationMode)}
+                onClick={() => {
+                  setSimulationMode(!simulationMode);
+                  if (!simulationMode) runFieldAnalysis();
+                }}
                 className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${simulationMode
                   ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg'
                   : 'bg-green-500 hover:bg-green-600 text-white shadow-lg'
@@ -1094,17 +1134,21 @@ const GroundStaffDashboard: React.FC = () => {
 
               <div className="mt-4 grid grid-cols-3 gap-4 text-center">
                 <div className="p-3 bg-blue-50 rounded-lg">
-                  <div className="text-lg font-bold text-blue-600">{pilgrimKPIs.assignedPilgrims}</div>
+                  <div className="text-lg font-bold text-blue-600">
+                    {simulationMode && baselinePilgrimKPIs ? baselinePilgrimKPIs.assignedPilgrims : pilgrimKPIs.assignedPilgrims}
+                  </div>
                   <div className="text-xs text-blue-800">Current Workload</div>
                 </div>
                 <div className="p-3 bg-purple-50 rounded-lg">
-                  <div className="text-lg font-bold text-purple-600">{Math.floor(pilgrimKPIs.assignedPilgrims * 1.3)}</div>
+                  <div className="text-lg font-bold text-purple-600">
+                    {Math.floor((simulationMode && baselinePilgrimKPIs ? baselinePilgrimKPIs.assignedPilgrims : pilgrimKPIs.assignedPilgrims) * 1.3)}
+                  </div>
                   <div className="text-xs text-purple-800">Predicted Peak</div>
                 </div>
                 {simulationMode && (
                   <div className="p-3 bg-green-50 rounded-lg">
                     <div className="text-lg font-bold text-green-600">
-                      {Math.floor(pilgrimKPIs.assignedPilgrims * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))}
+                      {pilgrimKPIs.assignedPilgrims}
                     </div>
                     <div className="text-xs text-green-800">Simulation Load</div>
                   </div>

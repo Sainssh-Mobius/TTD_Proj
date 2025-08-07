@@ -251,6 +251,33 @@ const CLevelDashboard: React.FC = () => {
       overbookingRisk,
       strategicRecommendations: getStrategicRecommendations(finalMultiplier, capacityStrain, trafficStrain, overbookingRisk)
     });
+
+    // Auto-stop simulation after 5 seconds and save status
+    if (simulationMode === false) {
+      setTimeout(() => {
+        // Save the current chart status to localStorage before stopping
+        const chartStatus = {
+          timestamp: new Date().toISOString(),
+          scenario: scenario!.name,
+          finalMultiplier,
+          projectedPilgrims,
+          projectedVehicles,
+          capacityStrain,
+          trafficStrain,
+          dayType: dayTypes.find(d => d.id === dayType)?.name,
+          specialDays: ttdSpecialDays,
+          regionalFestivals: regionalFestivals,
+          simulationCompleted: true
+        };
+        
+        localStorage.setItem('ttd-simulation-status', JSON.stringify(chartStatus));
+        console.log('Simulation status saved:', chartStatus);
+        
+        // Stop the simulation
+        setSimulationMode(false);
+        console.log('Simulation auto-stopped after 5 seconds - analysis complete');
+      }, 5000); // 5 seconds
+    }
   };
 
   useEffect(() => {
@@ -1463,29 +1490,33 @@ const CLevelDashboard: React.FC = () => {
                 )}
               </div>
             </div>
-            {/* 24-Hour Operations Chart */}
-            <div className="bg-gray-50 rounded-xl p-6 mt-8">
+
+            {/* Resource Allocation Simulation Chart */}
+            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 mt-8 border border-indigo-200">
               <div className="flex items-center justify-between mb-6">
-                <h4 className="font-bold text-gray-800 text-lg">24-Hour Operations Trends</h4>
+                <div className="flex items-center space-x-3">
+                  <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-2 rounded-lg text-white">
+                    <Activity className="w-5 h-5" />
+                  </div>
+                  <h4 className="font-bold text-gray-800 text-lg">Resource Allocation Simulation</h4>
+                </div>
                 <div className="flex items-center space-x-6">
                   <div className="flex space-x-4 text-sm">
                     <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      <span>Current</span>
+                      <div className="w-3 h-3 bg-indigo-500 rounded-full"></div>
+                      <span>Staff Level</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                      <span>AI Predicted</span>
+                      <div className="w-3 h-3 bg-teal-500 rounded-full"></div>
+                      <span>Transport</span>
                     </div>
                     {simulationMode && (
                       <div className="flex items-center space-x-2">
-                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                        <span>Simulation</span>
+                        <div className="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>
+                        <span>Emergency</span>
                       </div>
                     )}
                   </div>
-                  
-                 
                 </div>
               </div>
               
@@ -1493,34 +1524,34 @@ const CLevelDashboard: React.FC = () => {
                 <div className="absolute inset-0 flex items-end justify-between px-2">
                   {Array.from({length: 24}, (_, i) => {
                     const hour = i;
-                    const currentHeight = Math.max(20, Math.min(90, 35 + Math.sin(i * 0.5) * 25 + Math.random() * 10));
-                    const predictedHeight = Math.max(20, Math.min(90, currentHeight + 12 + Math.sin(i * 0.3) * 18));
-                    const simulationHeight = simulationMode ? 
-                      Math.max(20, Math.min(90, currentHeight * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))) : 
-                      currentHeight;
+                    const staffLevel = Math.max(25, Math.min(85, 40 + Math.sin(i * 0.3) * 20 + Math.random() * 12));
+                    const transportLevel = Math.max(25, Math.min(85, staffLevel - 15 + Math.sin(i * 0.4) * 15));
+                    const emergencyLevel = simulationMode ? 
+                      Math.max(30, Math.min(95, staffLevel * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1) * 0.8)) : 
+                      staffLevel;
                     
                     return (
                       <div key={i} className="flex flex-col items-center space-y-1 flex-1">
                         <div className="flex items-end space-x-1 h-48">
                           <div 
-                            className="w-2 bg-blue-500 rounded-t transition-all duration-500"
-                            style={{height: `${currentHeight}%`}}
-                            title={`Current: ${Math.floor(1200 + Math.sin(i * 0.5) * 400)} pilgrims`}
+                            className="w-2 bg-gradient-to-t from-indigo-600 to-indigo-400 rounded-t transition-all duration-500 shadow-sm"
+                            style={{height: `${staffLevel}%`}}
+                            title={`Staff: ${Math.floor(120 + Math.sin(i * 0.3) * 40)} members`}
                           ></div>
                           <div 
-                            className="w-2 bg-purple-500 rounded-t opacity-70 transition-all duration-500"
-                            style={{height: `${predictedHeight}%`}}
-                            title={`Predicted: ${Math.floor(1400 + Math.sin(i * 0.3) * 500)} pilgrims`}
+                            className="w-2 bg-gradient-to-t from-teal-600 to-teal-400 rounded-t opacity-80 transition-all duration-500 shadow-sm"
+                            style={{height: `${transportLevel}%`}}
+                            title={`Transport: ${Math.floor(45 + Math.sin(i * 0.4) * 15)} vehicles`}
                           ></div>
                           {simulationMode && (
                             <div 
-                              className="w-2 bg-green-500 rounded-t animate-pulse transition-all duration-500"
-                              style={{height: `${simulationHeight}%`}}
-                              title={`Simulation: ${Math.floor((1200 + Math.sin(i * 0.5) * 400) * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))} pilgrims`}
+                              className="w-2 bg-gradient-to-t from-orange-600 to-orange-400 rounded-t animate-pulse transition-all duration-500 shadow-md"
+                              style={{height: `${emergencyLevel}%`}}
+                              title={`Emergency: ${Math.floor((120 + Math.sin(i * 0.3) * 40) * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1) * 0.8)} units`}
                             ></div>
                           )}
                         </div>
-                        <div className="text-xs text-gray-600 transform -rotate-45 origin-center">
+                        <div className="text-xs text-gray-600 transform -rotate-45 origin-center font-medium">
                           {hour.toString().padStart(2, '0')}:00
                         </div>
                       </div>
@@ -1530,20 +1561,20 @@ const CLevelDashboard: React.FC = () => {
               </div>
               
               <div className="mt-4 grid grid-cols-3 gap-4 text-center">
-                <div className="p-3 bg-blue-50 rounded-lg">
-                  <div className="text-lg font-bold text-blue-600">{pilgrimKPIs.current.toLocaleString()}</div>
-                  <div className="text-xs text-blue-800">Current Load</div>
+                <div className="p-3 bg-indigo-50 rounded-lg border border-indigo-200">
+                  <div className="text-lg font-bold text-indigo-700">{Math.floor(120 + Math.random() * 80)}</div>
+                  <div className="text-xs text-indigo-800 font-semibold">Staff Deployed</div>
                 </div>
-                <div className="p-3 bg-purple-50 rounded-lg">
-                  <div className="text-lg font-bold text-purple-600">{pilgrimKPIs.aiPredictedPeak.toLocaleString()}</div>
-                  <div className="text-xs text-purple-800">AI Predicted</div>
+                <div className="p-3 bg-teal-50 rounded-lg border border-teal-200">
+                  <div className="text-lg font-bold text-teal-700">{Math.floor(45 + Math.random() * 25)}</div>
+                  <div className="text-xs text-teal-800 font-semibold">Transport Units</div>
                 </div>
                 {simulationMode && (
-                  <div className="p-3 bg-green-50 rounded-lg">
-                    <div className="text-lg font-bold text-green-600">
-                      {Math.floor(pilgrimKPIs.current * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1)).toLocaleString()}
+                  <div className="p-3 bg-orange-50 rounded-lg border border-orange-200 animate-pulse">
+                    <div className="text-lg font-bold text-orange-700">
+                      {Math.floor((120 + Math.random() * 80) * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1) * 0.9)}
                     </div>
-                    <div className="text-xs text-green-800">Simulation Load</div>
+                    <div className="text-xs text-orange-800 font-semibold">Emergency Response</div>
                   </div>
                 )}
               </div>
