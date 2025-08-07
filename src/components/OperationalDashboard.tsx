@@ -91,7 +91,7 @@ const OperationalDashboard: React.FC = () => {
 
   const [simulationMode, setSimulationMode] = useState(false);
   const [simulationSpeed, setSimulationSpeed] = useState(1);
-  const [whatIfScenario, setWhatIfScenario] = useState('normal');
+  const [whatIfScenario, setWhatIfScenario] = useState('weather-impact');
   const [simulationResults, setSimulationResults] = useState<any>(null);
 
   // Realistic Scenario State
@@ -238,7 +238,7 @@ const OperationalDashboard: React.FC = () => {
             gate.waitTime + Math.floor((Math.random() * 4 - 2) * scenarioMultiplier)))
         })));
       }
-    }, simulationMode ? 1000 / simulationSpeed : 3000);
+    }, simulationMode ? 1800000 : 3000); // 1800000ms = 30 minutes for simulation updates
 
     return () => clearInterval(interval);
   }, [simulationMode, simulationSpeed, whatIfScenario]);
@@ -635,13 +635,7 @@ const OperationalDashboard: React.FC = () => {
           </div>
         </div>
 
-        <button
-          onClick={() => setShowVIPModal(true)}
-          className="bg-gradient-to-r from-amber-500 to-red-600 hover:shadow-lg text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center space-x-2"
-        >
-          <Shield className="w-5 h-5" />
-          <span>Manage VIP Movement</span>
-        </button>
+        
 
         {/* VIP Movement & Gate Status */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -684,6 +678,16 @@ const OperationalDashboard: React.FC = () => {
               <div className="text-xs text-red-700">
                 {vipMovement.protocolActive ? 'VIP protocols active • Enhanced security measures' : 'Standard operations'}
               </div>
+            </div>
+            
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={() => setShowVIPModal(true)}
+                className="bg-gradient-to-r from-amber-500 to-red-600 hover:shadow-lg text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center space-x-2"
+              >
+                <Shield className="w-5 h-5" />
+                <span>Manage VIP Movement</span>
+              </button>
             </div>
           </div>
 
@@ -1164,13 +1168,11 @@ const OperationalDashboard: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
-    
-    <VIPMovementModal 
-      isOpen={showVIPModal}
-      onClose={() => setShowVIPModal(false)}
-    >
-        </VIPMovementModal>
+
+      <VIPMovementModal 
+        isOpen={showVIPModal}
+        onClose={() => setShowVIPModal(false)}
+      />
     </div>
   );
 };
