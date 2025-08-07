@@ -1,0 +1,420 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import Inter font for modern typography */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Custom font classes inspired by Möbius platform */
+@layer base {
+  html {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    background-color: #f8fafc;
+  }
+  
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    background-color: #f8fafc;
+    color: #334155;
+  }
+}
+
+@layer components {
+  /* Möbius-inspired color palette */
+  .bg-mobius-primary { background-color: #6366f1; }
+  .bg-mobius-secondary { background-color: #8b5cf6; }
+  .bg-mobius-accent { background-color: #06b6d4; }
+  .bg-mobius-success { background-color: #10b981; }
+  .bg-mobius-warning { background-color: #f59e0b; }
+  .bg-mobius-error { background-color: #ef4444; }
+  .bg-mobius-orange { background-color: #ea580c; }
+  .bg-mobius-blue { background-color: #3b82f6; }
+  .bg-mobius-purple { background-color: #8b5cf6; }
+  .bg-mobius-teal { background-color: #14b8a6; }
+  .bg-mobius-gray { background-color: #64748b; }
+  
+  .text-mobius-primary { color: #6366f1; }
+  .text-mobius-secondary { color: #8b5cf6; }
+  .text-mobius-accent { color: #06b6d4; }
+  .text-mobius-success { color: #10b981; }
+  .text-mobius-warning { color: #f59e0b; }
+  .text-mobius-error { color: #ef4444; }
+  .text-mobius-orange { color: #ea580c; }
+  .text-mobius-blue { color: #3b82f6; }
+  .text-mobius-purple { color: #8b5cf6; }
+  .text-mobius-teal { color: #14b8a6; }
+  .text-mobius-gray { color: #64748b; }
+  .text-mobius-dark { color: #1e293b; }
+  .text-mobius-light { color: #64748b; }
+
+  /* Typography scale inspired by Möbius */
+  .text-display-2xl {
+    font-size: 3.5rem;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+  
+  .text-display-xl {
+    font-size: 2.75rem;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  
+  .text-display-lg {
+    font-size: 2.25rem;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  
+  .text-display-md {
+    font-size: 1.875rem;
+    line-height: 1.3;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  
+  .text-display-sm {
+    font-size: 1.5rem;
+    line-height: 1.4;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+  }
+  
+  .text-body-xl {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+  
+  .text-body-lg {
+    font-size: 1.125rem;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+  
+  .text-body-md {
+    font-size: 1rem;
+    line-height: 1.5;
+    font-weight: 400;
+  }
+  
+  .text-body-sm {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    font-weight: 400;
+  }
+  
+  .text-label-lg {
+    font-size: 1rem;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+  
+  .text-label-md {
+    font-size: 0.875rem;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+  
+  .text-label-sm {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    font-weight: 500;
+    letter-spacing: 0.025em;
+    text-transform: uppercase;
+  }
+  
+  /* Enhanced card styles inspired by Möbius */
+  .card-mobius {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .card-mobius:hover {
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1), 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
+  }
+
+  .card-mobius-elevated {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .card-mobius-elevated:hover {
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transform: translateY(-2px);
+  }
+  
+  /* Status indicators inspired by Möbius */
+  .status-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.025em;
+  }
+  
+  .status-success {
+    background-color: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+  }
+  
+  .status-warning {
+    background-color: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+  }
+  
+  .status-error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+  
+  .status-info {
+    background-color: #dbeafe;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+  }
+
+  .status-purple {
+    background-color: #f3e8ff;
+    color: #7c3aed;
+    border: 1px solid #ddd6fe;
+  }
+
+  .status-teal {
+    background-color: #f0fdfa;
+    color: #0f766e;
+    border: 1px solid #99f6e4;
+  }
+  
+  /* Enhanced buttons inspired by Möbius */
+  .btn-mobius-primary {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: white;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    font-size: 0.875rem;
+  }
+  
+  .btn-mobius-primary:hover {
+    background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%);
+    box-shadow: 0 4px 12px 0 rgba(99, 102, 241, 0.3);
+    transform: translateY(-1px);
+  }
+  
+  .btn-mobius-secondary {
+    background: white;
+    color: #475569;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease-in-out;
+    font-size: 0.875rem;
+  }
+  
+  .btn-mobius-secondary:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+  }
+
+  .btn-mobius-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    font-size: 0.875rem;
+  }
+
+  .btn-mobius-success:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    box-shadow: 0 4px 12px 0 rgba(16, 185, 129, 0.3);
+    transform: translateY(-1px);
+  }
+
+  .btn-mobius-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    font-size: 0.875rem;
+  }
+
+  .btn-mobius-warning:hover {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    box-shadow: 0 4px 12px 0 rgba(245, 158, 11, 0.3);
+    transform: translateY(-1px);
+  }
+
+  .btn-mobius-error {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    font-size: 0.875rem;
+  }
+
+  .btn-mobius-error:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    box-shadow: 0 4px 12px 0 rgba(239, 68, 68, 0.3);
+    transform: translateY(-1px);
+  }
+
+  /* Möbius-inspired gradient backgrounds */
+  .bg-gradient-mobius-primary {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  }
+
+  .bg-gradient-mobius-secondary {
+    background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+  }
+
+  .bg-gradient-mobius-accent {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  }
+
+  .bg-gradient-mobius-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+
+  .bg-gradient-mobius-warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  }
+
+  .bg-gradient-mobius-error {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  }
+
+  /* Möbius-inspired background patterns */
+  .bg-pattern-dots {
+    background-image: radial-gradient(circle, #e2e8f0 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .bg-pattern-grid {
+    background-image: linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  /* Enhanced form elements */
+  .input-mobius {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease-in-out;
+    color: #334155;
+  }
+
+  .input-mobius:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  }
+
+  .select-mobius {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    transition: all 0.2s ease-in-out;
+    color: #334155;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+  }
+
+  .select-mobius:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  }
+
+  /* Möbius-inspired spacing system */
+  .space-mobius-xs { gap: 0.25rem; }
+  .space-mobius-sm { gap: 0.5rem; }
+  .space-mobius-md { gap: 1rem; }
+  .space-mobius-lg { gap: 1.5rem; }
+  .space-mobius-xl { gap: 2rem; }
+  .space-mobius-2xl { gap: 3rem; }
+
+  /* Enhanced animations */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { 
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from { 
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to { 
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
