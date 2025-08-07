@@ -105,39 +105,39 @@ const GroundStaffDashboard: React.FC = () => {
   // Auto-calculate multiplier based on selections
   useEffect(() => {
     let baseMultiplier = dayTypes.find(d => d.id === dayType)?.multiplier || 1.0;
-    
+
     ttdSpecialDays.forEach(dayId => {
       const specialDay = ttdSpecialDaysConfig.find(d => d.id === dayId);
       if (specialDay) {
         baseMultiplier *= specialDay.multiplier;
       }
     });
-    
+
     regionalFestivals.forEach(festivalId => {
       const festival = regionalFestivalsConfig.find(f => f.id === festivalId);
       if (festival) {
         baseMultiplier *= festival.multiplier;
       }
     });
-    
+
     if (ttdSpecialDays.includes('vaikunta-ekadashi') && regionalFestivals.includes('telangana')) {
       baseMultiplier *= 1.15;
     }
-    
+
     setCalculatedMultiplier(Math.min(baseMultiplier, 5.0));
   }, [dayType, ttdSpecialDays, regionalFestivals]);
 
   const handleTtdSpecialDayToggle = (dayId: string) => {
-    setTtdSpecialDays(prev => 
-      prev.includes(dayId) 
+    setTtdSpecialDays(prev =>
+      prev.includes(dayId)
         ? prev.filter(id => id !== dayId)
         : [...prev, dayId]
     );
   };
 
   const handleRegionalFestivalToggle = (festivalId: string) => {
-    setRegionalFestivals(prev => 
-      prev.includes(festivalId) 
+    setRegionalFestivals(prev =>
+      prev.includes(festivalId)
         ? prev.filter(id => id !== festivalId)
         : [...prev, festivalId]
     );
@@ -160,7 +160,7 @@ const GroundStaffDashboard: React.FC = () => {
       if (simulationMode) {
         const scenarioMultiplier = whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1;
         const speedMultiplier = simulationSpeed;
-        
+
         setPilgrimKPIs(prev => ({
           ...prev,
           assignedPilgrims: Math.max(0, prev.assignedPilgrims + Math.floor((Math.random() * 10 - 5) * scenarioMultiplier * speedMultiplier)),
@@ -183,29 +183,29 @@ const GroundStaffDashboard: React.FC = () => {
         // Update Ground Staff specific KPIs
         setCrowdKPIs(prev => ({
           ...prev,
-          currentCrowdCount: Math.max(1000, Math.min(5000, 
+          currentCrowdCount: Math.max(1000, Math.min(5000,
             prev.currentCrowdCount + Math.floor((Math.random() * 100 - 50) * scenarioMultiplier * speedMultiplier))),
-          densityAlerts: Math.max(0, Math.min(10, 
+          densityAlerts: Math.max(0, Math.min(10,
             prev.densityAlerts + Math.floor((Math.random() * 2 - 1) * scenarioMultiplier))),
-          averageDensity: Math.max(30, Math.min(95, 
+          averageDensity: Math.max(30, Math.min(95,
             prev.averageDensity + (Math.random() * 4 - 2) * scenarioMultiplier))
         }));
 
         setAreaStatus(prev => prev.map(area => ({
           ...area,
-          crowdCount: Math.max(10, Math.min(area.capacity, 
+          crowdCount: Math.max(10, Math.min(area.capacity,
             area.crowdCount + Math.floor((Math.random() * 20 - 10) * scenarioMultiplier * speedMultiplier))),
-          density: Math.max(20, Math.min(100, 
+          density: Math.max(20, Math.min(100,
             (area.crowdCount / area.capacity) * 100 + (Math.random() * 6 - 3)))
         })));
 
         // Update guidance metrics
         setGuidanceMetrics(prev => ({
           ...prev,
-          activeGuidance: Math.max(0, Math.min(50, 
+          activeGuidance: Math.max(0, Math.min(50,
             prev.activeGuidance + Math.floor((Math.random() * 4 - 2) * scenarioMultiplier))),
           completedGuidance: prev.completedGuidance + Math.floor((Math.random() * 3) * scenarioMultiplier),
-          specialAssistance: Math.max(0, Math.min(20, 
+          specialAssistance: Math.max(0, Math.min(20,
             prev.specialAssistance + Math.floor((Math.random() * 2 - 1) * scenarioMultiplier)))
         }));
 
@@ -259,7 +259,7 @@ const GroundStaffDashboard: React.FC = () => {
     const projectedTasks = Math.floor(pilgrimKPIs.guidanceRequests * finalMultiplier);
     const projectedResponseTime = fieldKPIs.responseTime * (finalMultiplier > 1 ? finalMultiplier * 0.8 : 1);
     const workloadStrain = Math.min(100, (projectedWorkload / 200) * 100);
-    
+
     setSimulationResults({
       scenario: scenario!.name,
       dayType: dayTypes.find(d => d.id === dayType)?.name,
@@ -345,8 +345,8 @@ const GroundStaffDashboard: React.FC = () => {
   };
 
   const handleTriggerAction = (triggerId: number, action: 'acknowledge' | 'delegate') => {
-    setActiveAlerts(prev => prev.map(alert => 
-      alert.id === triggerId 
+    setActiveAlerts(prev => prev.map(alert =>
+      alert.id === triggerId
         ? { ...alert, status: action === 'acknowledge' ? 'acknowledged' : 'delegated' }
         : alert
     ));
@@ -359,7 +359,7 @@ const GroundStaffDashboard: React.FC = () => {
     setShowTriggerModal(true);
   };
 
-  const filteredAlerts = selectedTriggerFilter === 'all' 
+  const filteredAlerts = selectedTriggerFilter === 'all'
     ? activeAlerts.filter(alert => alert.status === 'pending')
     : activeAlerts.filter(alert => alert.type === selectedTriggerFilter && alert.status === 'pending');
 
@@ -413,7 +413,7 @@ const GroundStaffDashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-yellow-50 rounded-xl p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -426,7 +426,7 @@ const GroundStaffDashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-purple-50 rounded-xl p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -453,7 +453,7 @@ const GroundStaffDashboard: React.FC = () => {
                 <p className="text-sm text-gray-600">Real-time crowd data</p>
               </div>
             </div>
-            
+
             {/* Crowd Metrics */}
             <div className="space-y-4">
               <div className="bg-red-50 rounded-xl p-4">
@@ -468,7 +468,7 @@ const GroundStaffDashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-orange-50 rounded-xl p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -481,7 +481,7 @@ const GroundStaffDashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-yellow-50 rounded-xl p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -508,18 +508,17 @@ const GroundStaffDashboard: React.FC = () => {
                 <p className="text-sm text-gray-600">{assignedTasks.filter(t => t.status !== 'completed').length} active tasks</p>
               </div>
             </div>
-            
+
             {/* Task List */}
             <div className="space-y-3 max-h-64 overflow-y-auto">
               {assignedTasks.slice(0, 3).map(task => (
                 <div key={task.id} className={`p-3 rounded-lg border ${getTaskStatusColor(task.status)}`}>
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-semibold text-sm">{task.task}</span>
-                    <span className={`text-xs px-2 py-1 rounded ${
-                      task.priority === 'high' ? 'bg-red-100 text-red-800' :
+                    <span className={`text-xs px-2 py-1 rounded ${task.priority === 'high' ? 'bg-red-100 text-red-800' :
                       task.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-green-100 text-green-800'
-                    }`}>
+                        'bg-green-100 text-green-800'
+                      }`}>
                       {task.priority}
                     </span>
                   </div>
@@ -530,7 +529,7 @@ const GroundStaffDashboard: React.FC = () => {
                   </div>
                 </div>
               ))}
-              
+
               {assignedTasks.length === 0 && (
                 <div className="text-center py-8 text-gray-500">
                   <CheckCircle className="w-8 h-8 mx-auto mb-2 opacity-50" />
@@ -551,7 +550,7 @@ const GroundStaffDashboard: React.FC = () => {
                 <p className="text-sm text-gray-600">Pilgrim assistance</p>
               </div>
             </div>
-            
+
             {/* Guidance Metrics */}
             <div className="space-y-4">
               <div className="bg-purple-50 rounded-xl p-4">
@@ -566,7 +565,7 @@ const GroundStaffDashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-green-50 rounded-xl p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -579,7 +578,7 @@ const GroundStaffDashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="bg-blue-50 rounded-xl p-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -607,23 +606,22 @@ const GroundStaffDashboard: React.FC = () => {
                   <p className="text-sm text-gray-600">{filteredAlerts.length} pending actions</p>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={() => setShowTriggerModal(true)}
                 className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-lg transition-colors"
               >
                 View All
               </button>
             </div>
-            
+
             {/* Category Filter */}
             <div className="flex flex-wrap gap-2 mb-4">
               <button
                 onClick={() => setSelectedTriggerFilter('all')}
-                className={`text-xs px-3 py-1 rounded-full transition-colors ${
-                  selectedTriggerFilter === 'all'
-                    ? 'bg-gray-800 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
+                className={`text-xs px-3 py-1 rounded-full transition-colors ${selectedTriggerFilter === 'all'
+                  ? 'bg-gray-800 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
               >
                 All ({activeAlerts.filter(a => a.status === 'pending').length})
               </button>
@@ -639,23 +637,22 @@ const GroundStaffDashboard: React.FC = () => {
                   <button
                     key={category.id}
                     onClick={() => setSelectedTriggerFilter(category.id)}
-                    className={`text-xs px-3 py-1 rounded-full transition-colors ${
-                      selectedTriggerFilter === category.id
-                        ? `bg-${category.color}-500 text-white`
-                        : `bg-${category.color}-100 text-${category.color}-700 hover:bg-${category.color}-200`
-                    }`}
+                    className={`text-xs px-3 py-1 rounded-full transition-colors ${selectedTriggerFilter === category.id
+                      ? `bg-${category.color}-500 text-white`
+                      : `bg-${category.color}-100 text-${category.color}-700 hover:bg-${category.color}-200`
+                      }`}
                   >
                     {category.name} ({count})
                   </button>
                 );
               })}
             </div>
-            
+
             {/* Trigger List */}
             <div className="space-y-3 max-h-64 overflow-y-auto">
               {filteredAlerts.slice(0, 3).map(alert => (
-                <div 
-                  key={alert.id} 
+                <div
+                  key={alert.id}
                   onClick={() => openTriggerModal(alert)}
                   className={`p-3 rounded-lg border cursor-pointer transition-all hover:shadow-sm ${getPriorityColor(alert.priority)}`}
                 >
@@ -673,7 +670,7 @@ const GroundStaffDashboard: React.FC = () => {
                   <div className="text-xs text-gray-500 mt-2">Click to manage →</div>
                 </div>
               ))}
-              
+
               {filteredAlerts.length === 0 && (
                 <div className="text-center py-8 text-gray-500">
                   <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
@@ -712,25 +709,24 @@ const GroundStaffDashboard: React.FC = () => {
                       {area.density.toFixed(1)}%
                     </span>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>Occupancy</span>
                       <span className="font-semibold">{area.crowdCount}/{area.capacity}</span>
                     </div>
-                    
+
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
-                        className={`h-2 rounded-full transition-all duration-300 ${
-                          area.density >= 90 ? 'bg-red-500' :
+                      <div
+                        className={`h-2 rounded-full transition-all duration-300 ${area.density >= 90 ? 'bg-red-500' :
                           area.density >= 70 ? 'bg-yellow-500' :
-                          area.density >= 50 ? 'bg-orange-500' :
-                          'bg-green-500'
-                        }`}
-                        style={{width: `${area.density}%`}}
+                            area.density >= 50 ? 'bg-orange-500' :
+                              'bg-green-500'
+                          }`}
+                        style={{ width: `${area.density}%` }}
                       ></div>
                     </div>
-                    
+
                     <div className="flex justify-between text-xs text-gray-600">
                       <span className="capitalize">{area.status.replace('-', ' ')}</span>
                       <span>{(area.capacity - area.crowdCount)} available</span>
@@ -765,12 +761,11 @@ const GroundStaffDashboard: React.FC = () => {
                   </div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm">Density: {alert.density}%</span>
-                    <span className={`text-xs px-2 py-1 rounded uppercase font-medium ${
-                      alert.level === 'critical' ? 'bg-red-100 text-red-800' :
+                    <span className={`text-xs px-2 py-1 rounded uppercase font-medium ${alert.level === 'critical' ? 'bg-red-100 text-red-800' :
                       alert.level === 'high' ? 'bg-orange-100 text-orange-800' :
-                      alert.level === 'moderate' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-green-100 text-green-800'
-                    }`}>
+                        alert.level === 'moderate' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-green-100 text-green-800'
+                      }`}>
                       {alert.level}
                     </span>
                   </div>
@@ -858,11 +853,10 @@ const GroundStaffDashboard: React.FC = () => {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => setSimulationMode(!simulationMode)}
-                className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
-                  simulationMode 
-                    ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg' 
-                    : 'bg-green-500 hover:bg-green-600 text-white shadow-lg'
-                }`}
+                className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${simulationMode
+                  ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg'
+                  : 'bg-green-500 hover:bg-green-600 text-white shadow-lg'
+                  }`}
               >
                 <Activity className="w-5 h-5" />
                 <span>{simulationMode ? 'Stop Simulation' : 'Start Simulation'}</span>
@@ -891,32 +885,32 @@ const GroundStaffDashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="h-64 relative">
                 <div className="absolute inset-0 flex items-end justify-between px-2">
-                  {Array.from({length: 24}, (_, i) => {
+                  {Array.from({ length: 24 }, (_, i) => {
                     const hour = i;
                     const currentHeight = Math.max(25, Math.min(85, 40 + Math.sin(i * 0.6) * 20 + Math.random() * 8));
                     const predictedHeight = Math.max(25, Math.min(85, currentHeight + 8 + Math.sin(i * 0.4) * 12));
-                    const simulationHeight = simulationMode ? 
-                      Math.max(25, Math.min(85, currentHeight * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))) : 
+                    const simulationHeight = simulationMode ?
+                      Math.max(25, Math.min(85, currentHeight * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))) :
                       currentHeight;
-                    
+
                     return (
                       <div key={i} className="flex flex-col items-center space-y-1 flex-1">
                         <div className="flex items-end space-x-1 h-48">
-                          <div 
+                          <div
                             className="w-2 bg-blue-500 rounded-t transition-all duration-500"
-                            style={{height: `${currentHeight}%`}}
+                            style={{ height: `${currentHeight}%` }}
                           ></div>
-                          <div 
+                          <div
                             className="w-2 bg-purple-500 rounded-t opacity-70 transition-all duration-500"
-                            style={{height: `${predictedHeight}%`}}
+                            style={{ height: `${predictedHeight}%` }}
                           ></div>
                           {simulationMode && (
-                            <div 
+                            <div
                               className="w-2 bg-green-500 rounded-t animate-pulse transition-all duration-500"
-                              style={{height: `${simulationHeight}%`}}
+                              style={{ height: `${simulationHeight}%` }}
                             ></div>
                           )}
                         </div>
@@ -928,7 +922,7 @@ const GroundStaffDashboard: React.FC = () => {
                   })}
                 </div>
               </div>
-              
+
               <div className="mt-4 grid grid-cols-3 gap-4 text-center">
                 <div className="p-3 bg-blue-50 rounded-lg">
                   <div className="text-lg font-bold text-blue-600">{pilgrimKPIs.assignedPilgrims}</div>
@@ -949,53 +943,17 @@ const GroundStaffDashboard: React.FC = () => {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Field Controls */}
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* FIELD SCENARIOS - Column 1 */}
             <div className="space-y-6">
-              <h4 className="font-bold text-gray-800 text-lg flex items-center space-x-2">
-                <Target className="w-5 h-5" />
-                <span>Field Controls</span>
-              </h4>
-              
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">Simulation Speed</label>
-                <input
-                  type="range"
-                  min="0.5"
-                  max="5"
-                  step="0.5"
-                  value={simulationSpeed}
-                  onChange={(e) => setSimulationSpeed(parseFloat(e.target.value))}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                />
-                <div className="text-sm text-gray-600 mt-2 font-medium">{simulationSpeed}x speed</div>
-              </div>
-
-              <div className="p-4 bg-green-50 rounded-xl border border-green-200">
-                <div className="text-sm font-semibold text-green-800 mb-2">Field Status</div>
-                <div className="text-xs text-green-700">
-                  {simulationMode ? 'Training Mode' : 'Live Operations'}
-                </div>
-                <div className="text-xs text-green-600 mt-1">
-                  Areas: {fieldKPIs.areasCovered} zones covered
-                </div>
-              </div>
-            </div>
-
-            {/* Field Scenarios */}
-            <div className="lg:col-span-2 space-y-6">
               <h4 className="font-bold text-gray-800 text-lg flex items-center space-x-2">
                 <Radio className="w-5 h-5" />
                 <span>Field Scenarios</span>
               </h4>
-              
+
               {/* Realistic Scenario Configuration */}
               <div className="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-6 border border-green-200">
-                <h5 className="font-bold text-gray-800 mb-4 flex items-center space-x-2">
-                  <Target className="w-4 h-4" />
-                  <span>Realistic Scenario Builder</span>
-                </h5>
-                
                 {/* Day Type Selection */}
                 <div className="mb-4">
                   <label className="block text-sm font-semibold text-gray-700 mb-2">🗓️ Day Type</label>
@@ -1015,7 +973,7 @@ const GroundStaffDashboard: React.FC = () => {
                     ))}
                   </div>
                 </div>
-                
+
                 {/* TTD Special Days */}
                 <div className="mb-4">
                   <label className="block text-sm font-semibold text-gray-700 mb-2">🛕 TTD Special Days</label>
@@ -1033,7 +991,7 @@ const GroundStaffDashboard: React.FC = () => {
                     ))}
                   </div>
                 </div>
-                
+
                 {/* Regional Festivals */}
                 <div className="mb-4">
                   <label className="block text-sm font-semibold text-gray-700 mb-2">🌍 Regional Festivals</label>
@@ -1051,7 +1009,7 @@ const GroundStaffDashboard: React.FC = () => {
                     ))}
                   </div>
                 </div>
-                
+
                 {/* Calculated Impact */}
                 <div className="mt-4 p-3 bg-white/70 rounded-lg border border-green-300">
                   <div className="text-sm font-semibold text-gray-700">🧠 Calculated Impact</div>
@@ -1063,17 +1021,19 @@ const GroundStaffDashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+            </div>
+
+            {/* WHAT-IF SCENARIOS - Column 2 */}
+            <div className="flex flex-col justify-between space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {whatIfScenarios.map(scenario => (
                   <div
                     key={scenario.id}
                     onClick={() => setWhatIfScenario(scenario.id)}
-                    className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
-                      whatIfScenario === scenario.id
+                    className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${whatIfScenario === scenario.id
                         ? 'border-green-500 bg-green-50 shadow-md'
                         : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
-                    }`}
+                      }`}
                   >
                     <div className="font-semibold text-gray-800 mb-1">{scenario.name}</div>
                     <div className="text-xs text-gray-600 mb-2">{scenario.description}</div>
@@ -1092,13 +1052,13 @@ const GroundStaffDashboard: React.FC = () => {
               </button>
             </div>
 
-            {/* Analysis Results */}
+            {/* FIELD INSIGHTS - Column 3 */}
             <div className="space-y-4">
               <h4 className="font-bold text-gray-800 text-lg flex items-center space-x-2">
                 <Zap className="w-5 h-5" />
                 <span>Field Insights</span>
               </h4>
-              
+
               {simulationResults ? (
                 <div className="space-y-3">
                   <div className="p-4 bg-gray-50 rounded-xl">
@@ -1108,17 +1068,17 @@ const GroundStaffDashboard: React.FC = () => {
                       <div className="text-xs text-gray-600 mt-1">Day: {simulationResults.dayType}</div>
                     )}
                   </div>
-                  
+
                   <div className="p-4 bg-teal-50 rounded-xl">
                     <div className="text-sm font-semibold text-gray-700">Total Multiplier</div>
                     <div className="text-lg font-bold text-teal-600">{simulationResults.calculatedMultiplier.toFixed(2)}x</div>
                   </div>
-                  
+
                   <div className="p-4 bg-blue-50 rounded-xl">
                     <div className="text-sm font-semibold text-gray-700">Workload</div>
                     <div className="text-lg font-bold text-blue-600">{simulationResults.projectedWorkload}</div>
                   </div>
-                  
+
                   <div className="p-4 bg-yellow-50 rounded-xl">
                     <div className="text-sm font-semibold text-gray-700">Response Time</div>
                     <div className="text-lg font-bold text-yellow-600">{simulationResults.projectedResponseTime.toFixed(1)} min</div>
@@ -1133,7 +1093,7 @@ const GroundStaffDashboard: React.FC = () => {
                     <div className="p-4 bg-amber-50 rounded-xl">
                       <div className="text-sm font-semibold text-gray-700 mb-2">Field Actions</div>
                       <ul className="text-xs text-amber-800 space-y-1">
-                        {simulationResults.fieldRecommendations.map((rec: string, index: number) => (
+                        {simulationResults.fieldRecommendations.map((rec, index) => (
                           <li key={index} className="flex items-start space-x-1">
                             <span>•</span>
                             <span>{rec}</span>
@@ -1151,6 +1111,8 @@ const GroundStaffDashboard: React.FC = () => {
               )}
             </div>
           </div>
+
+
         </div>
       </div>
 
@@ -1167,7 +1129,7 @@ const GroundStaffDashboard: React.FC = () => {
                 <X className="w-6 h-6" />
               </button>
             </div>
-            
+
             <div className="mb-6">
               <div className="flex items-center space-x-3 mb-4">
                 <div className={`p-2 rounded ${getTypeColor(selectedTrigger.type)}`}>
@@ -1178,14 +1140,14 @@ const GroundStaffDashboard: React.FC = () => {
                   <div className="text-sm text-gray-600">{selectedTrigger.location}</div>
                 </div>
               </div>
-              
+
               <div className="text-sm text-gray-700 mb-4">{selectedTrigger.message}</div>
-              
+
               <div className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getPriorityColor(selectedTrigger.priority)}`}>
                 {selectedTrigger.priority} priority
               </div>
             </div>
-            
+
             <div className="flex space-x-3">
               <button
                 onClick={() => handleTriggerAction(selectedTrigger.id, 'acknowledge')}
