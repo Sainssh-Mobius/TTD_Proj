@@ -1546,8 +1546,8 @@ const CLevelDashboard: React.FC = () => {
 
                   <button
                     onClick={() => {
-                      // setSimulationMode(!simulationMode)
-                      runStrategicAnalysis()
+                      setSimulationMode(!simulationMode)
+                      // runStrategicAnalysis()
                     }}
                     className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 bg-green-500 hover:bg-green-600 text-white shadow-lg'
                       }`}
