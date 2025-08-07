@@ -961,8 +961,6 @@ const OperationalDashboard: React.FC = () => {
               </div>
               
               </div>
-
-              
             </div>
 
         {/* Operational Simulation Control */}
