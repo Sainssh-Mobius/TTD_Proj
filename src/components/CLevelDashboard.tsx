@@ -1129,7 +1129,7 @@ const CLevelDashboard: React.FC = () => {
                   }`}
               >
                 <Activity className="w-5 h-5" />
-                <span>{simulationMode ? 'Stop Simulation' : 'Run Strategy Analysis'}</span>
+                <span>{simulationMode ? 'Stop Strategy Analysis' : 'Run Strategy Analysis'}</span>
               </button>
             </div>
 
