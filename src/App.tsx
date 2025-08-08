@@ -218,7 +218,7 @@ function App() {
       )}
 
       {/* Live Status Indicator */}
-      <div className="fixed bottom-6 left-6 bg-mobius-success text-white px-4 py-3 rounded-2xl shadow-lg flex items-center space-x-2 animate-fade-in">
+      <div className="fixed bottom-6 left-6 bg-mobius-success text-white px-4 py-3 rounded-2xl shadow-lg flex items-center space-x-2 animate-fade-in z-50">
         <Activity className="w-4 h-4 animate-pulse" />
         <span className="text-label-md">Live</span>
       </div>
