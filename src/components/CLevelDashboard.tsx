@@ -266,4 +266,8 @@ const CLevelDashboard: React.FC = () => {
 
     // Simulate API call delay
     setTimeout(() => {
+      setIsApplyingScenario(false);
+      setHasCheckboxChanges(false);
+    }, 2000);
+  };
       
