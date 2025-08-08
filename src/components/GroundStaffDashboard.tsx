@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, MapPin, AlertTriangle, Radio, Activity, Zap, Target, Bell, MessageSquare, Bus, Search, Car, Eye, CheckCircle, UserCheck, X } from 'lucide-react';
+import { Users, MapPin, AlertTriangle, Radio, Activity, Zap, Target, Bell, MessageSquare, Bus, Search, Car, Eye, CheckCircle, UserCheck, X, ChevronDown } from 'lucide-react';
 
 const GroundStaffDashboard: React.FC = () => {
   // Pilgrim Management KPIs (Ground Staff View)
@@ -64,8 +64,11 @@ const GroundStaffDashboard: React.FC = () => {
 
   const [simulationMode, setSimulationMode] = useState(false);
   const [simulationSpeed, setSimulationSpeed] = useState(1);
-  const [whatIfScenario, setWhatIfScenario] = useState('normal');
+  const [whatIfScenario, setWhatIfScenario] = useState('weather-impact');
   const [simulationResults, setSimulationResults] = useState<any>(null);
+
+  // Baseline values to show difference between current and simulation
+  const [baselinePilgrimKPIs, setBaselinePilgrimKPIs] = useState<any>(null);
 
   // Realistic Scenario State
   const [dayType, setDayType] = useState('normal-day');
@@ -154,6 +157,8 @@ const GroundStaffDashboard: React.FC = () => {
   const [showTriggerModal, setShowTriggerModal] = useState(false);
   const [selectedTrigger, setSelectedTrigger] = useState<typeof activeAlerts[0] | null>(null);
   const [selectedTriggerFilter, setSelectedTriggerFilter] = useState('all');
+  const [isAreaStatusExpanded, setIsAreaStatusExpanded] = useState(false);
+  const [isDensityAlertsExpanded, setIsDensityAlertsExpanded] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -247,12 +252,32 @@ const GroundStaffDashboard: React.FC = () => {
           }));
         }
       }
-    }, simulationMode ? 1000 / simulationSpeed : 4000);
+    }, simulationMode ? 1800000 : 4000); // 1800000ms = 30 minutes for simulation updates
 
     return () => clearInterval(interval);
   }, [simulationMode, simulationSpeed, whatIfScenario]);
 
   const runFieldAnalysis = () => {
+    // Capture baseline values when starting simulation
+    if (!simulationMode) {
+      setBaselinePilgrimKPIs({
+        assignedPilgrims: pilgrimKPIs.assignedPilgrims,
+        guidanceRequests: pilgrimKPIs.guidanceRequests,
+        assistanceProvided: pilgrimKPIs.assistanceProvided,
+        crowdAlerts: pilgrimKPIs.crowdAlerts,
+        queueManagement: pilgrimKPIs.queueManagement
+      });
+    }
+
+    // Auto-stop simulation after 30 minutes (1800000 milliseconds)
+    if (!simulationMode) {
+      setTimeout(() => {
+        setSimulationMode(false);
+        setBaselinePilgrimKPIs(null);
+        console.log('Ground Staff Simulation auto-stopped after 30 minutes');
+      }, 1800000); // 30 minutes = 30 * 60 * 1000 = 1800000 milliseconds
+    }
+
     const scenario = whatIfScenarios.find(s => s.id === whatIfScenario);
     const finalMultiplier = scenario!.multiplier * calculatedMultiplier;
     const projectedWorkload = Math.floor(pilgrimKPIs.assignedPilgrims * finalMultiplier);
@@ -684,115 +709,141 @@ const GroundStaffDashboard: React.FC = () => {
         {/* Area-wise Status & Crowd Density Alerts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Area-wise Status */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="bg-gradient-to-r from-indigo-500 to-blue-600 p-3 rounded-xl text-white">
-                <MapPin className="w-6 h-6" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-800">Area-wise Status</h3>
-            </div>
-
-            <div className="space-y-4">
-              {areaStatus.map(area => (
-                <div key={area.id} className="border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-3 h-3 rounded-full ${getStatusColor(area.status)}`}></div>
-                      <span className="font-semibold text-gray-800">{area.name}</span>
-                      {area.alert && (
-                        <div className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full font-medium">
-                          Alert
-                        </div>
-                      )}
-                    </div>
-                    <span className="text-sm font-bold text-gray-600">
-                      {area.density.toFixed(1)}%
-                    </span>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span>Occupancy</span>
-                      <span className="font-semibold">{area.crowdCount}/{area.capacity}</span>
-                    </div>
-
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className={`h-2 rounded-full transition-all duration-300 ${area.density >= 90 ? 'bg-red-500' :
-                          area.density >= 70 ? 'bg-yellow-500' :
-                            area.density >= 50 ? 'bg-orange-500' :
-                              'bg-green-500'
-                          }`}
-                        style={{ width: `${area.density}%` }}
-                      ></div>
-                    </div>
-
-                    <div className="flex justify-between text-xs text-gray-600">
-                      <span className="capitalize">{area.status.replace('-', ' ')}</span>
-                      <span>{(area.capacity - area.crowdCount)} available</span>
-                    </div>
-                  </div>
-
-                  {area.alert && (
-                    <button className="mt-3 w-full bg-red-500 hover:bg-red-600 text-white text-sm py-2 px-3 rounded transition-colors">
-                      Take Action
-                    </button>
-                  )}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            <div 
+              className="flex items-center justify-between cursor-pointer p-6 hover:bg-gray-50 transition-colors duration-200"
+              onClick={() => setIsAreaStatusExpanded(!isAreaStatusExpanded)}
+            >
+              <div className="flex items-center space-x-3">
+                <div className="bg-gradient-to-r from-indigo-500 to-blue-600 p-3 rounded-xl text-white">
+                  <MapPin className="w-6 h-6" />
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Crowd Density Alerts */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="bg-gradient-to-r from-red-500 to-pink-600 p-3 rounded-xl text-white">
-                <AlertTriangle className="w-6 h-6" />
+                <h3 className="text-xl font-bold text-gray-800">Area-wise Status</h3>
               </div>
-              <h3 className="text-xl font-bold text-gray-800">Density Alerts</h3>
+              <ChevronDown 
+                className={`w-6 h-6 text-gray-400 transition-transform duration-200 ${
+                  isAreaStatusExpanded ? 'rotate-180' : ''
+                }`} 
+              />
             </div>
 
-            <div className="space-y-3">
-              {densityAlerts.map(alert => (
-                <div key={alert.id} className={`border-l-4 p-4 rounded-lg ${getDensityLevelColor(alert.level)}`}>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-semibold">{alert.zone}</span>
-                    <span className="text-xs">{alert.time}</span>
-                  </div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm">Density: {alert.density}%</span>
-                    <span className={`text-xs px-2 py-1 rounded uppercase font-medium ${alert.level === 'critical' ? 'bg-red-100 text-red-800' :
-                      alert.level === 'high' ? 'bg-orange-100 text-orange-800' :
-                        alert.level === 'moderate' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-green-100 text-green-800'
-                      }`}>
-                      {alert.level}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-600 capitalize">Action: {alert.action}</span>
-                    {alert.level === 'critical' && (
-                      <button className="text-xs bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition-colors">
-                        Respond Now
+            {isAreaStatusExpanded && (
+              <div className="p-6 pt-0 space-y-4">
+                {areaStatus.map(area => (
+                  <div key={area.id} className="border border-gray-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-3 h-3 rounded-full ${getStatusColor(area.status)}`}></div>
+                        <span className="font-semibold text-gray-800">{area.name}</span>
+                        {area.alert && (
+                          <div className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full font-medium">
+                            Alert
+                          </div>
+                        )}
+                      </div>
+                      <span className="text-sm font-bold text-gray-600">
+                        {area.density.toFixed(1)}%
+                      </span>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Occupancy</span>
+                        <span className="font-semibold">{area.crowdCount}/{area.capacity}</span>
+                      </div>
+
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className={`h-2 rounded-full transition-all duration-300 ${area.density >= 90 ? 'bg-red-500' :
+                            area.density >= 70 ? 'bg-yellow-500' :
+                              area.density >= 50 ? 'bg-orange-500' :
+                                'bg-green-500'
+                            }`}
+                          style={{ width: `${area.density}%` }}
+                        ></div>
+                      </div>
+
+                      <div className="flex justify-between text-xs text-gray-600">
+                        <span className="capitalize">{area.status.replace('-', ' ')}</span>
+                        <span>{(area.capacity - area.crowdCount)} available</span>
+                      </div>
+                    </div>
+
+                    {area.alert && (
+                      <button className="mt-3 w-full bg-red-500 hover:bg-red-600 text-white text-sm py-2 px-3 rounded transition-colors">
+                        Take Action
                       </button>
                     )}
                   </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Crowd Density Alerts */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+            <div 
+              className="flex items-center justify-between cursor-pointer p-6 hover:bg-gray-50 transition-colors duration-200"
+              onClick={() => setIsDensityAlertsExpanded(!isDensityAlertsExpanded)}
+            >
+              <div className="flex items-center space-x-3">
+                <div className="bg-gradient-to-r from-red-500 to-pink-600 p-3 rounded-xl text-white">
+                  <AlertTriangle className="w-6 h-6" />
                 </div>
-              ))}
+                <h3 className="text-xl font-bold text-gray-800">Density Alerts</h3>
+              </div>
+              <ChevronDown 
+                className={`w-6 h-6 text-gray-400 transition-transform duration-200 ${
+                  isDensityAlertsExpanded ? 'rotate-180' : ''
+                }`} 
+              />
             </div>
 
-            <div className="mt-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
-              <div className="flex items-center space-x-2 text-amber-800">
-                <Eye className="w-4 h-4" />
-                <span className="font-semibold text-sm">Monitoring Guidelines:</span>
+            {isDensityAlertsExpanded && (
+              <div className="p-6 pt-0">
+                <div className="space-y-3">
+                  {densityAlerts.map(alert => (
+                    <div key={alert.id} className={`border-l-4 p-4 rounded-lg ${getDensityLevelColor(alert.level)}`}>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-semibold">{alert.zone}</span>
+                        <span className="text-xs">{alert.time}</span>
+                      </div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm">Density: {alert.density}%</span>
+                        <span className={`text-xs px-2 py-1 rounded uppercase font-medium ${alert.level === 'critical' ? 'bg-red-100 text-red-800' :
+                          alert.level === 'high' ? 'bg-orange-100 text-orange-800' :
+                            alert.level === 'moderate' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-green-100 text-green-800'
+                          }`}>
+                          {alert.level}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-600 capitalize">Action: {alert.action}</span>
+                        {alert.level === 'critical' && (
+                          <button className="text-xs bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded transition-colors">
+                            Respond Now
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                  <div className="flex items-center space-x-2 text-amber-800">
+                    <Eye className="w-4 h-4" />
+                    <span className="font-semibold text-sm">Monitoring Guidelines:</span>
+                  </div>
+                  <ul className="text-amber-700 text-xs mt-2 space-y-1">
+                    <li>• Critical (90%+): Immediate crowd control needed</li>
+                    <li>• High (80-89%): Enhanced monitoring required</li>
+                    <li>• Moderate (70-79%): Watch for escalation</li>
+                    <li>• Normal (&lt;70%): Standard operations</li>
+                  </ul>
+                </div>
               </div>
-              <ul className="text-amber-700 text-xs mt-2 space-y-1">
-                <li>• Critical (90%+): Immediate crowd control needed</li>
-                <li>• High (80-89%): Enhanced monitoring required</li>
-                <li>• Moderate (70-79%): Watch for escalation</li>
-                <li>• Normal (&lt;70%): Standard operations</li>
-              </ul>
-            </div>
+            )}
           </div>
         </div>
 
@@ -1020,8 +1071,33 @@ const GroundStaffDashboard: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              {/* <div className="flex items-center space-x-2">
+                <label className="text-sm font-medium text-gray-700">Speed:</label>
+                <select
+                  value={simulationSpeed}
+                  onChange={(e) => setSimulationSpeed(Number(e.target.value))}
+                  className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500"
+                  disabled={simulationMode}
+                >
+                  <option value={1}>1x</option>
+                  <option value={5}>5x</option>
+                  <option value={10}>10x</option>
+                  <option value={30}>30x</option>
+                  <option value={60}>60x</option>
+                </select>
+              </div> */}
               <button
-                onClick={() => setSimulationMode(!simulationMode)}
+                onClick={() => {
+                  if (simulationMode) {
+                    // Stop simulation and reset baseline
+                    setSimulationMode(false);
+                    setBaselinePilgrimKPIs(null);
+                  } else {
+                    // Start simulation
+                    setSimulationMode(true);
+                    runFieldAnalysis();
+                  }
+                }}
                 className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${simulationMode
                   ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg'
                   : 'bg-green-500 hover:bg-green-600 text-white shadow-lg'
@@ -1094,17 +1170,21 @@ const GroundStaffDashboard: React.FC = () => {
 
               <div className="mt-4 grid grid-cols-3 gap-4 text-center">
                 <div className="p-3 bg-blue-50 rounded-lg">
-                  <div className="text-lg font-bold text-blue-600">{pilgrimKPIs.assignedPilgrims}</div>
+                  <div className="text-lg font-bold text-blue-600">
+                    {simulationMode && baselinePilgrimKPIs ? baselinePilgrimKPIs.assignedPilgrims : pilgrimKPIs.assignedPilgrims}
+                  </div>
                   <div className="text-xs text-blue-800">Current Workload</div>
                 </div>
                 <div className="p-3 bg-purple-50 rounded-lg">
-                  <div className="text-lg font-bold text-purple-600">{Math.floor(pilgrimKPIs.assignedPilgrims * 1.3)}</div>
+                  <div className="text-lg font-bold text-purple-600">
+                    {Math.floor((simulationMode && baselinePilgrimKPIs ? baselinePilgrimKPIs.assignedPilgrims : pilgrimKPIs.assignedPilgrims) * 1.3)}
+                  </div>
                   <div className="text-xs text-purple-800">Predicted Peak</div>
                 </div>
                 {simulationMode && (
                   <div className="p-3 bg-green-50 rounded-lg">
                     <div className="text-lg font-bold text-green-600">
-                      {Math.floor(pilgrimKPIs.assignedPilgrims * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))}
+                      {pilgrimKPIs.assignedPilgrims}
                     </div>
                     <div className="text-xs text-green-800">Simulation Load</div>
                   </div>

@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { UserCheck, TrendingUp, Users, Activity, Settings, BarChart3 } from 'lucide-react';
+import { UserCheck, TrendingUp, Users, Activity, Settings, BarChart3, ChevronLeft, ChevronRight, Menu } from 'lucide-react';
 import CLevelDashboard from './components/CLevelDashboard';
 import OperationalDashboard from './components/OperationalDashboard';
 import GroundStaffDashboard from './components/GroundStaffDashboard';
 import FloatingAlerts from './components/FloatingAlerts';
 import ChatBot from './components/ChatBot';
+import NotificationCenter from './components/NotificationCenter';
 
 type Persona = 'c-level' | 'operational' | 'ground-staff';
 
 function App() {
   const [currentPersona, setCurrentPersona] = useState<Persona>('c-level');
   const [showChatBot, setShowChatBot] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [notifications, setNotifications] = useState<Array<{
     id: string;
     type: 'info' | 'warning' | 'emergency';
@@ -81,67 +83,133 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
-        <div className="max-w-full mx-auto px-6 py-3">
-          <div className="flex items-center justify-between">
-            {/* Left side - Logo and Title */}
-            <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-sm">
-                <UserCheck className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-gray-900">TTD AI Management System</h1>
+      {/* Side Panel */}
+      <div className={`fixed left-0 top-0 h-full ${sidebarCollapsed ? 'w-16' : 'w-80'} bg-white border-r border-gray-200 shadow-sm flex flex-col transition-all duration-300 ease-in-out z-50`}>
+        {/* Collapse Toggle Button */}
+        <button
+          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+          className="absolute -right-3 top-6 bg-white border border-gray-200 rounded-full p-1.5 shadow-sm hover:shadow-md transition-all duration-200 z-10"
+        >
+          {sidebarCollapsed ? (
+            <ChevronRight className="w-4 h-4 text-gray-600" />
+          ) : (
+            <ChevronLeft className="w-4 h-4 text-gray-600" />
+          )}
+        </button>
+
+        {/* Side Panel Header */}
+        <div className={`${sidebarCollapsed ? 'p-3' : 'p-6'} border-b border-gray-200 transition-all duration-300`}>
+          <div className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'space-x-3'}`}>
+            <div className={`${sidebarCollapsed ? 'w-8 h-8' : 'w-10 h-10'} bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center shadow-sm transition-all duration-300`}>
+              <UserCheck className="w-5 h-5 text-white" />
+            </div>
+            {!sidebarCollapsed && (
+              <div className="transition-opacity duration-300">
+                <h1 className="text-lg font-bold text-gray-900">TTD AI System</h1>
                 <p className="text-xs text-gray-600">Tirumala Tirupathi Devasthanam</p>
               </div>
-            </div>
+            )}
+          </div>
+        </div>
 
-            {/* Center - Persona Toggle */}
-            <div className="flex items-center">
-              {/* Persona Toggle */}
-              <div className="flex items-center bg-gray-50 rounded-xl border border-gray-200 p-1 shadow-sm">
-                {personas.map((persona) => {
-                  const IconComponent = persona.icon;
-                  return (
-                    <button
-                      key={persona.id}
-                      onClick={() => setCurrentPersona(persona.id)}
-                      className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 font-medium text-sm ${currentPersona === persona.id
-                          ? 'bg-white text-indigo-600 shadow-sm font-semibold'
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-white/60'
-                        }`}
-                    >
+        {/* Persona Selection */}
+        <div className={`flex-1 ${sidebarCollapsed ? 'p-2' : 'p-6'} transition-all duration-300`}>
+          <div className="mb-6">
+            {!sidebarCollapsed && (
+              <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4 transition-opacity duration-300">Select View</h2>
+            )}
+            <div className={`${sidebarCollapsed ? 'space-y-2' : 'space-y-3'}`}>
+              {personas.map((persona) => {
+                const IconComponent = persona.icon;
+                return (
+                  <button
+                    key={persona.id}
+                    onClick={() => setCurrentPersona(persona.id)}
+                    title={sidebarCollapsed ? persona.name : undefined}
+                    className={`w-full flex items-start ${sidebarCollapsed ? 'justify-center p-3' : 'space-x-4 p-4'} rounded-xl transition-all duration-200 text-left ${
+                      currentPersona === persona.id
+                        ? 'bg-indigo-50 border-2 border-indigo-200 shadow-sm'
+                        : 'bg-gray-50 border-2 border-transparent hover:bg-gray-100 hover:border-gray-200'
+                    }`}
+                  >
+                    <div className={`${sidebarCollapsed ? 'p-2' : 'p-2'} rounded-lg ${
+                      currentPersona === persona.id
+                        ? 'bg-indigo-100 text-indigo-600'
+                        : 'bg-white text-gray-600'
+                    }`}>
                       <IconComponent className="w-5 h-5" />
-                      <span>{persona.name}</span>
-                    </button>
-                  );
-                })}
+                    </div>
+                    {!sidebarCollapsed && (
+                      <div className="flex-1 min-w-0 transition-opacity duration-300">
+                        <div className={`font-semibold text-sm ${
+                          currentPersona === persona.id ? 'text-indigo-900' : 'text-gray-900'
+                        }`}>
+                          {persona.name}
+                        </div>
+                        <div className={`text-xs mt-1 leading-relaxed ${
+                          currentPersona === persona.id ? 'text-indigo-700' : 'text-gray-600'
+                        }`}>
+                          {persona.description}
+                        </div>
+                      </div>
+                    )}
+                    {currentPersona === persona.id && !sidebarCollapsed && (
+                      <div className="flex-shrink-0">
+                        <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Current Status */}
+          <div className={`bg-gradient-to-r from-green-50 to-blue-50 rounded-xl ${sidebarCollapsed ? 'p-2' : 'p-4'} border border-green-200 transition-all duration-300`}>
+            <div className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'space-x-2 mb-2'}`}>
+              <Activity className={`${sidebarCollapsed ? 'w-5 h-5' : 'w-4 h-4'} text-green-600 animate-pulse`} />
+              {!sidebarCollapsed && (
+                <span className="text-sm font-semibold text-green-800">System Status</span>
+              )}
+            </div>
+            {!sidebarCollapsed && (
+              <div className="text-xs text-green-700 transition-opacity duration-300">
+                All systems operational • Live data streaming
               </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className={`flex-1 flex flex-col transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-80'}`}>
+      {/* Header */}
+        <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
+          <div className="px-6 py-4">
+          <div className="flex items-center justify-between">
+            {/* Left side - Current View Title */}
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">{getCurrentPersona()?.name} Dashboard</h2>
+              <p className="text-sm text-gray-600">{getCurrentPersona()?.description}</p>
             </div>
 
-            {/* Right side - Current View */}
-            <div className="flex items-center">
-              {/* Current View Indicator */}
+            {/* Right side - Actions */}
+            <div className="flex items-center space-x-3">
+              <NotificationCenter notifications={notifications} />
               <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
-                <div className="text-xs font-medium text-blue-600 uppercase tracking-wide">Current View</div>
+                <div className="text-xs font-medium text-blue-600 uppercase tracking-wide">Active View</div>
                 <div className="text-sm font-bold text-blue-900">{getCurrentPersona()?.name}</div>
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Persona Description Bar */}
-        <div className="border-t border-gray-100 bg-gray-50/30">
-          <div className="max-w-full mx-auto px-6 py-2">
-            <p className="text-center text-xs text-gray-600 font-medium">{getCurrentPersona()?.description}</p>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main Content */}
-      <main className="max-w-full mx-auto px-4 py-4">
-        {renderPersonaDashboard()}
-      </main>
+        {/* Main Content */}
+        <main className="flex-1 overflow-auto px-6 py-6">
+          {renderPersonaDashboard()}
+        </main>
+      </div>
 
       {/* Floating Components */}
       <FloatingAlerts notifications={notifications} />
