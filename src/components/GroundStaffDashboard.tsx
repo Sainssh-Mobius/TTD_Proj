@@ -1029,4 +1029,197 @@ const GroundStaffDashboard: React.FC = () => {
               <ul className="text-sm text-gray-700 space-y-2">
                 <li>• {crowdKPIs.currentCrowdCount.toLocaleString()} people in monitored areas</li>
                 <li>• {fieldKPIs.areasCovered} zones actively monitored</li>
+                <li>• {fieldKPIs.emergencyAlerts} emergency alerts active</li>
+                <li>• {guidanceMetrics.activeGuidance} pilgrims receiving guidance</li>
+              </ul>
+            </div>
+
+            <div className="bg-white/70 backdrop-blur-sm rounded-xl p-6">
+              <h4 className="font-bold text-gray-800 mb-3">Performance Metrics</h4>
+              <ul className="text-sm text-gray-700 space-y-2">
+                <li>• Response time: {fieldKPIs.responseTime.toFixed(1)} minutes</li>
+                <li>• Communication score: {fieldKPIs.communicationScore.toFixed(1)}%</li>
+                <li>• Team coordination: {fieldKPIs.teamCoordination.toFixed(1)}%</li>
+                <li>• Tasks completed: {fieldKPIs.completedTasks}</li>
+              </ul>
+            </div>
+
+            <div className="bg-white/70 backdrop-blur-sm rounded-xl p-6">
+              <h4 className="font-bold text-gray-800 mb-3">Support Services</h4>
+              <ul className="text-sm text-gray-700 space-y-2">
+                <li>• Special assistance: {guidanceMetrics.specialAssistance} cases</li>
+                <li>• Language support: {guidanceMetrics.languageSupport.length} languages</li>
+                <li>• Elderly support: {guidanceMetrics.elderlySupport} cases</li>
+                <li>• Disability support: {guidanceMetrics.disabilitySupport} cases</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Trigger Management Modal */}
+      {showTriggerModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-xl font-bold text-gray-800">Active Triggers Management</h2>
+              <button
+                onClick={() => setShowTriggerModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+              {/* Category Filter */}
+              <div className="flex flex-wrap gap-2 mb-6">
+                <button
+                  onClick={() => setSelectedTriggerFilter('all')}
+                  className={`px-4 py-2 rounded-lg transition-colors ${selectedTriggerFilter === 'all'
+                    ? 'bg-gray-800 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                >
+                  All ({activeAlerts.filter(a => a.status === 'pending').length})
+                </button>
+                {[
+                  { id: 'darshan', name: 'Darshan Updates', color: 'yellow' },
+                  { id: 'crowd', name: 'Crowd Alerts', color: 'red' },
+                  { id: 'shuttle', name: 'Shuttle Events', color: 'orange' },
+                  { id: 'lost-found', name: 'Lost & Found', color: 'purple' },
+                  { id: 'parking', name: 'Parking Saturation', color: 'blue' }
+                ].map(category => {
+                  const count = activeAlerts.filter(a => a.type === category.id && a.status === 'pending').length;
+                  return (
+                    <button
+                      key={category.id}
+                      onClick={() => setSelectedTriggerFilter(category.id)}
+                      className={`px-4 py-2 rounded-lg transition-colors ${selectedTriggerFilter === category.id
+                        ? `bg-${category.color}-500 text-white`
+                        : `bg-${category.color}-100 text-${category.color}-700 hover:bg-${category.color}-200`
+                        }`}
+                    >
+                      {category.name} ({count})
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Trigger List */}
+              <div className="space-y-4">
+                {filteredAlerts.map(alert => (
+                  <div key={alert.id} className={`border rounded-lg p-4 ${getPriorityColor(alert.priority)}`}>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center space-x-3">
+                        <div className={`p-2 rounded ${getTypeColor(alert.type)}`}>
+                          {getTypeIcon(alert.type)}
+                        </div>
+                        <div>
+                          <h4 className="font-semibold capitalize">{alert.type.replace('-', ' ')}</h4>
+                          <p className="text-sm opacity-80">{alert.category}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs">{alert.time}</span>
+                        <div className={`text-xs px-2 py-1 rounded mt-1 ${alert.priority === 'high' ? 'bg-red-100 text-red-800' :
+                          alert.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-green-100 text-green-800'
+                          }`}>
+                          {alert.priority} priority
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mb-3">
+                      <p className="text-sm font-medium mb-1">Location: {alert.location}</p>
+                      <p className="text-sm">{alert.message}</p>
+                    </div>
+
+                    <div className="flex space-x-3">
+                      <button
+                        onClick={() => handleTriggerAction(alert.id, 'acknowledge')}
+                        className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition-colors"
+                      >
+                        <CheckCircle className="w-4 h-4 inline mr-2" />
+                        Acknowledge
+                      </button>
+                      <button
+                        onClick={() => handleTriggerAction(alert.id, 'delegate')}
+                        className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors"
+                      >
+                        <UserCheck className="w-4 h-4 inline mr-2" />
+                        Delegate
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                {filteredAlerts.length === 0 && (
+                  <div className="text-center py-12 text-gray-500">
+                    <Bell className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>No active triggers in this category</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Action Center Modal */}
+      {showActionCenter && (
+        <ActionCenter
+          onClose={() => setShowActionCenter(false)}
+          userRole="ground-staff"
+          simulationMode={simulationMode}
+          setSimulationMode={setSimulationMode}
+          simulationSpeed={simulationSpeed}
+          setSimulationSpeed={setSimulationSpeed}
+          whatIfScenario={whatIfScenario}
+          setWhatIfScenario={setWhatIfScenario}
+          whatIfScenarios={whatIfScenarios}
+          runAnalysis={runFieldAnalysis}
+          simulationResults={simulationResults}
+          dayType={dayType}
+          setDayType={setDayType}
+          dayTypes={dayTypes}
+          ttdSpecialDays={ttdSpecialDays}
+          handleTtdSpecialDayToggle={handleTtdSpecialDayToggle}
+          ttdSpecialDaysConfig={ttdSpecialDaysConfig}
+          regionalFestivals={regionalFestivals}
+          handleRegionalFestivalToggle={handleRegionalFestivalToggle}
+          regionalFestivalsConfig={regionalFestivalsConfig}
+          calculatedMultiplier={calculatedMultiplier}
+          chartTimePeriod={chartTimePeriod}
+          setChartTimePeriod={setChartTimePeriod}
+          dateFilterEnabled={dateFilterEnabled}
+          setDateFilterEnabled={setDateFilterEnabled}
+          startDate={startDate}
+          setStartDate={setStartDate}
+          endDate={endDate}
+          setEndDate={setEndDate}
+          festivalFilterEnabled={festivalFilterEnabled}
+          setFestivalFilterEnabled={setFestivalFilterEnabled}
+          selectedFestivals={selectedFestivals}
+          handleFestivalToggle={handleFestivalToggle}
+          ttdFestivals={ttdFestivals}
+          chartData={chartData}
+          baselineKPIs={baselinePilgrimKPIs}
+          currentKPIs={pilgrimKPIs}
+        />
+      )}
+
+      {/* Floating Action Button */}
+      <button
+        onClick={() => setShowActionCenter(true)}
+        className="fixed bottom-6 right-6 bg-gradient-to-r from-green-500 to-teal-600 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110 z-40"
+      >
+        <Brain className="w-6 h-6" />
+      </button>
+    </div>
+  );
+};
+
+export default GroundStaffDashboard;
                 
