@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Settings, Users, Car, AlertTriangle, Activity, Clock, MapPin, Shield, Zap, Target, BarChart3, TrendingUp, Brain } from 'lucide-react';
+import AnalyticsCalendar from './AnalyticsCalendar';
 import VIPMovementModal from './VIPMovementModal';
 
 const OperationalDashboard: React.FC = () => {
@@ -333,6 +334,11 @@ const OperationalDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Analytics Calendar */}
+      <div className="mb-8">
+        <AnalyticsCalendar persona="operational" />
       </div>
 
       <div className="space-y-8">
