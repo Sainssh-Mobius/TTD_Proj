@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TrendingUp, Users, DollarSign, AlertTriangle, Brain, Target, Zap, BarChart3, Globe, Shield, Clock, Activity, Car, MapPin } from 'lucide-react';
+import { TrendingUp, Users,  AlertTriangle, Brain, Target, Zap, BarChart3, Globe, Shield, Clock, Activity, Car, MapPin } from 'lucide-react';
 
 const CLevelDashboard: React.FC = () => {
   // Enhanced state management for better UX
@@ -37,20 +37,20 @@ const CLevelDashboard: React.FC = () => {
     sustainabilityScore: 85.7
   });
 
-  const [scenarioCheckboxes, setScenarioCheckboxes] = useState<{[key: string]: boolean}>({});
+  const [scenarioCheckboxes, setScenarioCheckboxes] = useState<{ [key: string]: boolean }>({});
   const [isApplyingScenario, setIsApplyingScenario] = useState(false);
   const [hasCheckboxChanges, setHasCheckboxChanges] = useState(false);
-  const [whatIfScenario, setWhatIfScenario] = useState('normal');
+  const [whatIfScenario, setWhatIfScenario] = useState('weather-impact');
   const [simulationResults, setSimulationResults] = useState<any>(null);
   const [simulationMode, setSimulationMode] = useState(false);
   const [simulationSpeed, setSimulationSpeed] = useState(1);
-  
+
   // 24-hour forecast data
   const [forecastData, setForecastData] = useState(() => {
-    const hours = Array.from({length: 24}, (_, i) => {
+    const hours = Array.from({ length: 24 }, (_, i) => {
       const hour = i;
       let baseFlow = 1000;
-      
+
       // Realistic pilgrim flow pattern
       if (hour >= 4 && hour <= 6) baseFlow = 3500; // Early morning peak
       else if (hour >= 7 && hour <= 9) baseFlow = 4200; // Morning peak
@@ -59,7 +59,7 @@ const CLevelDashboard: React.FC = () => {
       else if (hour >= 16 && hour <= 18) baseFlow = 3200; // Evening
       else if (hour >= 19 && hour <= 21) baseFlow = 2400; // Night
       else if (hour >= 22 || hour <= 3) baseFlow = 800; // Late night/early morning
-      
+
       return {
         hour: `${hour.toString().padStart(2, '0')}:00`,
         predicted: baseFlow + Math.floor(Math.random() * 400 - 200),
@@ -79,8 +79,8 @@ const CLevelDashboard: React.FC = () => {
   // Time-Specific Forecasting State
   const [selectedTimeSlot, setSelectedTimeSlot] = useState('06:30');
   const [timeSlotPredictions, setTimeSlotPredictions] = useState<any>(null);
-  const [currentWeather, setCurrentWeather] = useState('normal');
-  
+  const [currentWeather, setCurrentWeather] = useState('weather-crisis');
+
   // Enhanced C-Level KPIs
   const [executiveKPIs, setExecutiveKPIs] = useState({
     dailyFootfall: 45632,
@@ -90,17 +90,17 @@ const CLevelDashboard: React.FC = () => {
     crowdDensity: 78.5, // percentage
     revenuesCrores: 2.8 // Rs Crores
   });
-  
+
   // Prediction vs Actual tracking
   const [predictionAccuracy, setPredictionAccuracy] = useState({
     hourly: { predicted: 1850, actual: 1823, accuracy: 98.5 },
     daily: { predicted: 45000, actual: 45632, accuracy: 98.6 },
     weekly: { predicted: 315000, actual: 319424, accuracy: 98.6 }
   });
-  
+
   // Hourly predictions for next 24 hours
   const [hourlyPredictions, setHourlyPredictions] = useState(
-    Array.from({length: 24}, (_, i) => ({
+    Array.from({ length: 24 }, (_, i) => ({
       hour: i,
       predicted: Math.floor(1200 + Math.sin(i * 0.5) * 800 + Math.random() * 200),
       confidence: Math.floor(85 + Math.random() * 12)
@@ -139,7 +139,7 @@ const CLevelDashboard: React.FC = () => {
   // Auto-calculate multiplier based on selections
   useEffect(() => {
     let baseMultiplier = dayTypes.find(d => d.id === dayType)?.multiplier || 1.0;
-    
+
     // Add TTD special days multipliers
     ttdSpecialDays.forEach(dayId => {
       const specialDay = ttdSpecialDaysConfig.find(d => d.id === dayId);
@@ -147,7 +147,7 @@ const CLevelDashboard: React.FC = () => {
         baseMultiplier *= specialDay.multiplier;
       }
     });
-    
+
     // Add regional festival multipliers
     regionalFestivals.forEach(festivalId => {
       const festival = regionalFestivalsConfig.find(f => f.id === festivalId);
@@ -155,26 +155,26 @@ const CLevelDashboard: React.FC = () => {
         baseMultiplier *= festival.multiplier;
       }
     });
-    
+
     // Special combination logic
     if (ttdSpecialDays.includes('vaikunta-ekadashi') && regionalFestivals.includes('telangana')) {
       baseMultiplier *= 1.15; // Additional 15% for this combination
     }
-    
+
     setCalculatedMultiplier(Math.min(baseMultiplier, 5.0)); // Cap at 5x
   }, [dayType, ttdSpecialDays, regionalFestivals]);
 
   const handleTtdSpecialDayToggle = (dayId: string) => {
-    setTtdSpecialDays(prev => 
-      prev.includes(dayId) 
+    setTtdSpecialDays(prev =>
+      prev.includes(dayId)
         ? prev.filter(id => id !== dayId)
         : [...prev, dayId]
     );
   };
 
   const handleRegionalFestivalToggle = (festivalId: string) => {
-    setRegionalFestivals(prev => 
-      prev.includes(festivalId) 
+    setRegionalFestivals(prev =>
+      prev.includes(festivalId)
         ? prev.filter(id => id !== festivalId)
         : [...prev, festivalId]
     );
@@ -183,25 +183,28 @@ const CLevelDashboard: React.FC = () => {
   const handleCheckboxChange = (key: string, checked: boolean) => {
     setScenarioCheckboxes(prev => {
       const newState = { ...prev, [key]: checked };
-      
+
       // Save to localStorage with timestamp
       localStorage.setItem('ttd-scenario-checkboxes', JSON.stringify(newState));
       localStorage.setItem('ttd-scenario-timestamp', Date.now().toString());
-      
+
       return newState;
     });
-    
+
+    setWhatIfScenario(key)
+
+
     setHasCheckboxChanges(true);
   };
 
   const applyScenario = () => {
     setIsApplyingScenario(true);
-    
+
     // Simulate API call delay
     setTimeout(() => {
       setIsApplyingScenario(false);
       setHasCheckboxChanges(false);
-      
+
       // Clear saved state after applying
       localStorage.removeItem('ttd-scenario-checkboxes');
       localStorage.removeItem('ttd-scenario-timestamp');
@@ -210,28 +213,29 @@ const CLevelDashboard: React.FC = () => {
 
   const runStrategicAnalysis = () => {
     const scenario = whatIfScenarios.find(s => s.id === whatIfScenario);
+
     if (!scenario) return;
-    
+
     const finalMultiplier = scenario.multiplier * calculatedMultiplier;
-    
+
     // Calculate projections
     const projectedPilgrims = Math.floor(pilgrimKPIs.current * finalMultiplier);
     const projectedVehicles = Math.floor(trafficKPIs.current * finalMultiplier);
     const projectedRevenue = Math.floor(strategicKPIs.dailyRevenue * finalMultiplier);
-    
+
     // Calculate strain percentages
     const capacityStrain = (projectedPilgrims / pilgrimKPIs.dailyCapacity) * 100;
     const trafficStrain = (projectedVehicles / trafficKPIs.roadCapacity) * 100;
-    
+
     // Calculate ROI impact
     const roiImpact = ((finalMultiplier - 1) * 100);
-    
+
     // Special risk calculations
     let overbookingRisk = 0;
     if (ttdSpecialDays.includes('vaikunta-ekadashi') && regionalFestivals.length > 0) {
       overbookingRisk = 25; // 25% overbooking risk
     }
-    
+
     setSimulationResults({
       scenario: scenario!.name,
       dayType: dayTypes.find(d => d.id === dayType)?.name,
@@ -247,13 +251,40 @@ const CLevelDashboard: React.FC = () => {
       overbookingRisk,
       strategicRecommendations: getStrategicRecommendations(finalMultiplier, capacityStrain, trafficStrain, overbookingRisk)
     });
+
+    // Auto-stop simulation after 5 seconds and save status
+    if (simulationMode === false) {
+      setTimeout(() => {
+        // Save the current chart status to localStorage before stopping
+        const chartStatus = {
+          timestamp: new Date().toISOString(),
+          scenario: scenario!.name,
+          finalMultiplier,
+          projectedPilgrims,
+          projectedVehicles,
+          capacityStrain,
+          trafficStrain,
+          dayType: dayTypes.find(d => d.id === dayType)?.name,
+          specialDays: ttdSpecialDays,
+          regionalFestivals: regionalFestivals,
+          simulationCompleted: true
+        };
+        
+        localStorage.setItem('ttd-simulation-status', JSON.stringify(chartStatus));
+        console.log('Simulation status saved:', chartStatus);
+        
+        // Stop the simulation
+        setSimulationMode(false);
+        console.log('Simulation auto-stopped after 5 seconds - analysis complete');
+      }, 5000); // 5 seconds
+    }
   };
 
   useEffect(() => {
     // Load saved checkbox state from localStorage
     const savedState = localStorage.getItem('ttd-scenario-checkboxes');
     const savedTimestamp = localStorage.getItem('ttd-scenario-timestamp');
-    
+
     if (savedState && savedTimestamp) {
       const timestamp = parseInt(savedTimestamp);
       const now = Date.now();
@@ -273,7 +304,7 @@ const CLevelDashboard: React.FC = () => {
       if (simulationMode) {
         const scenarioMultiplier = whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1;
         const speedMultiplier = simulationSpeed;
-        
+
         // Update executive KPIs
         setExecutiveKPIs(prev => ({
           ...prev,
@@ -284,51 +315,38 @@ const CLevelDashboard: React.FC = () => {
           crowdDensity: Math.max(40, Math.min(100, prev.crowdDensity + (Math.random() * 6 - 3) * scenarioMultiplier)),
           revenuesCrores: Math.max(1.0, prev.revenuesCrores + (Math.random() * 0.2 - 0.1) * scenarioMultiplier)
         }));
-        
+
         // Update prediction accuracy
         setPredictionAccuracy(prev => ({
-          hourly: { 
-            ...prev.hourly, 
+          hourly: {
+            ...prev.hourly,
             actual: Math.max(0, prev.hourly.actual + Math.floor((Math.random() * 50 - 25) * scenarioMultiplier)),
             accuracy: Math.max(85, Math.min(100, prev.hourly.accuracy + (Math.random() * 2 - 1)))
           },
-          daily: { 
-            ...prev.daily, 
+          daily: {
+            ...prev.daily,
             actual: Math.max(0, prev.daily.actual + Math.floor((Math.random() * 500 - 250) * scenarioMultiplier)),
             accuracy: Math.max(85, Math.min(100, prev.daily.accuracy + (Math.random() * 2 - 1)))
           },
-          weekly: { 
-            ...prev.weekly, 
+          weekly: {
+            ...prev.weekly,
             actual: Math.max(0, prev.weekly.actual + Math.floor((Math.random() * 2000 - 1000) * scenarioMultiplier)),
             accuracy: Math.max(85, Math.min(100, prev.weekly.accuracy + (Math.random() * 2 - 1)))
           }
         }));
-        
-        setPilgrimKPIs(prev => ({
-          ...prev,
-          current: Math.max(0, Math.min(prev.dailyCapacity, 
-            prev.current + Math.floor((Math.random() * 200 - 100) * scenarioMultiplier * speedMultiplier))),
-          aiPredictedPeak: Math.max(prev.current, 
-            prev.aiPredictedPeak + Math.floor((Math.random() * 100 - 50) * scenarioMultiplier)),
-          satisfactionScore: Math.max(3.0, Math.min(5.0, 
-            prev.satisfactionScore + (Math.random() * 0.2 - 0.1) * scenarioMultiplier)),
-          avgDarshanTime: Math.max(8, Math.min(25, 
-            prev.avgDarshanTime + (Math.random() * 2 - 1) * scenarioMultiplier)),
-          queueEfficiency: Math.max(70, Math.min(100, 
-            prev.queueEfficiency + (Math.random() * 2 - 1) * scenarioMultiplier))
-        }));
+
 
         setTrafficKPIs(prev => ({
           ...prev,
-          current: Math.max(0, Math.min(prev.roadCapacity, 
+          current: Math.max(0, Math.min(prev.roadCapacity,
             prev.current + Math.floor((Math.random() * 50 - 25) * scenarioMultiplier * speedMultiplier))),
-          aiPredictedPeak: Math.max(prev.current, 
+          aiPredictedPeak: Math.max(prev.current,
             prev.aiPredictedPeak + Math.floor((Math.random() * 30 - 15) * scenarioMultiplier)),
-          avgTravelTime: Math.max(15, Math.min(60, 
+          avgTravelTime: Math.max(15, Math.min(60,
             prev.avgTravelTime + Math.floor((Math.random() * 4 - 2) * scenarioMultiplier))),
-          parkingUtilization: Math.max(40, Math.min(100, 
+          parkingUtilization: Math.max(40, Math.min(100,
             prev.parkingUtilization + (Math.random() * 4 - 2) * scenarioMultiplier)),
-          trafficFlow: Math.max(60, Math.min(100, 
+          trafficFlow: Math.max(60, Math.min(100,
             prev.trafficFlow + (Math.random() * 2 - 1) * scenarioMultiplier))
         }));
 
@@ -339,39 +357,104 @@ const CLevelDashboard: React.FC = () => {
           profitMargin: Math.max(10, Math.min(50, prev.profitMargin + (Math.random() * 2 - 1) * scenarioMultiplier))
         }));
       }
-      
+
       // Update forecast data during simulation
       if (simulationMode) {
-        const scenarioMultiplier = whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1;
-        setForecastData(prev => prev.map(item => ({
-          ...item,
-          predicted: Math.max(500, item.predicted + Math.floor((Math.random() * 200 - 100) * scenarioMultiplier)),
-          confidence: Math.max(70, Math.min(99, item.confidence + Math.floor(Math.random() * 6 - 3)))
-        })));
+        // const scenarioMultiplier = whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1;
+        // setForecastData(prev => prev.map(item => ({
+        //   ...item,
+        //   predicted: Math.max(500, item.predicted + Math.floor((Math.random() * 200 - 100) * scenarioMultiplier)),
+        //   confidence: Math.max(70, Math.min(99, item.confidence + Math.floor(Math.random() * 6 - 3)))
+        // })));
       }
-    }, 5000);
+    }, simulationMode ? 1800000 : 5000); // 1800000ms = 30 minutes for simulation updates
 
     return () => clearInterval(interval);
   }, [simulationMode, whatIfScenario, simulationSpeed]);
 
-  const getStrategicRecommendations = (multiplier: number, pilgrimStrain: number, trafficStrain: number, overbookingRisk: number) => {
-    const recommendations = [];
-    if (multiplier > 2) recommendations.push('Activate emergency capacity protocols');
-    if (pilgrimStrain > 90) recommendations.push('Implement pilgrim flow restrictions');
-    if (trafficStrain > 85) recommendations.push('Deploy additional traffic management');
-    if (multiplier > 1.5) recommendations.push('Scale up operational resources');
-    if (multiplier < 0.5) recommendations.push('Optimize cost structure during low demand');
-    if (overbookingRisk > 20) recommendations.push('Implement slot overbooking prevention measures');
-    if (ttdSpecialDays.includes('brahmotsavam')) recommendations.push('Activate Brahmotsavam special protocols');
-    if (dayType === 'rainy-day') recommendations.push('Deploy weather contingency measures');
+  const getStrategicRecommendations = (
+    multiplier: number,
+    pilgrimStrain: number,
+    trafficStrain: number,
+    overbookingRisk: number
+  ) => {
+    const recommendations: string[] = [];
+
+    // ➤ Load Multiplier Rules
+    if (multiplier > 3.0) {
+      recommendations.push('Declare Level-3 surge alert; activate statewide emergency coordination');
+      recommendations.push('Suspend routine maintenance and reallocate all available staff to operations');
+    } else if (multiplier > 2.0) {
+      recommendations.push('Activate emergency capacity protocols');
+      recommendations.push('Notify upstream travel hubs to initiate controlled entry throttling');
+    } else if (multiplier > 1.5) {
+      recommendations.push('Scale up operational resources and reserve capacity buffers');
+    } else if (multiplier < 0.5) {
+      recommendations.push('Enter low-load mode; optimize cost structure, reschedule non-critical services');
+    }
+
+    // ➤ Pilgrim Strain Rules
+    if (pilgrimStrain > 95) {
+      recommendations.push('Restrict new pilgrim entries and initiate priority access only');
+      recommendations.push('Setup real-time crowd density alerts at choke points');
+    } else if (pilgrimStrain > 90) {
+      recommendations.push('Implement pilgrim flow restrictions at temple queues and lodging areas');
+    } else if (pilgrimStrain > 80) {
+      recommendations.push('Deploy additional crowd management volunteers in peak zones');
+    } else if (pilgrimStrain < 40 && multiplier < 1) {
+      recommendations.push('Encourage flexible slot bookings and promote travel during off-peak hours');
+    }
+
+    // ➤ Traffic Strain Rules
+    if (trafficStrain > 95) {
+      recommendations.push('Impose vehicle access control to core areas and activate bypass routes');
+      recommendations.push('Divert heavy vehicles to night-time slots');
+    } else if (trafficStrain > 85) {
+      recommendations.push('Deploy additional traffic personnel and mobile command posts');
+    } else if (trafficStrain > 75) {
+      recommendations.push('Coordinate shuttle frequencies and dynamic route assignments');
+    } else if (trafficStrain < 50 && multiplier > 2.5) {
+      recommendations.push('Issue travel advisories for underutilized entry corridors');
+    }
+
+    // ➤ Overbooking Risk Rules
+    if (overbookingRisk > 60) {
+      recommendations.push('Freeze new slot issuance and implement fallback queuing strategy');
+      recommendations.push('Send bulk alerts to high-risk slot holders for possible deferral');
+    } else if (overbookingRisk > 40) {
+      recommendations.push('Introduce adaptive slot allocation using real-time attendance data');
+    } else if (overbookingRisk > 20) {
+      recommendations.push('Implement slot overbooking prevention measures');
+    } else if (overbookingRisk < 10 && multiplier < 0.8) {
+      recommendations.push('Allow dynamic upscaling of slot issuance for low-risk time blocks');
+    }
+
+    // ➤ Cross-Parameter Logic
+    if (multiplier > 2 && trafficStrain > 90 && pilgrimStrain > 90) {
+      recommendations.push('Trigger multi-agency crisis coordination with traffic-police-temple joint control');
+    }
+
+    if (overbookingRisk > 50 && pilgrimStrain > 85) {
+      recommendations.push('Activate real-time rebooking mechanism and walk-in rescheduling counters');
+    }
+
+    if (multiplier < 1 && trafficStrain < 60 && overbookingRisk < 20) {
+      recommendations.push('Design pilot incentives for weekday visits and off-peak demand stimulation');
+    }
+
+    if (multiplier > 1.5 && pilgrimStrain > 85 && trafficStrain > 85) {
+      recommendations.push('Trigger Tier-2 surge planning for food, sanitation, and health kiosks');
+    }
+
     return recommendations;
   };
+
 
   // Generate contextual AI Executive Summary
   const generateAIExecutiveSummary = () => {
     const currentCapacityStrain = ((pilgrimKPIs.current / pilgrimKPIs.dailyCapacity) * 100);
     const trafficStrain = ((trafficKPIs.current / trafficKPIs.roadCapacity) * 100);
-    
+
     // Determine primary scenario context
     const hasVaikuntaEkadashi = ttdSpecialDays.includes('vaikunta-ekadashi');
     const hasBrahmotsavam = ttdSpecialDays.includes('brahmotsavam');
@@ -379,21 +462,21 @@ const CLevelDashboard: React.FC = () => {
     const isRainyDay = dayType === 'rainy-day';
     const isSummerVacation = dayType === 'summer-vacation';
     const isStateHoliday = dayType === 'state-holiday';
-    
+
     // Regional context
     const hasAPFestival = regionalFestivals.includes('andhra-pradesh');
     const hasTSFestival = regionalFestivals.includes('telangana');
     const hasTNFestival = regionalFestivals.includes('tamil-nadu');
-    
+
     // Weather context
-    const weatherContext = currentWeather === 'rain' ? 'rainy conditions' : 
-                          currentWeather === 'heatwave' ? 'extreme heat conditions' : 'favorable weather';
-    
+    const weatherContext = currentWeather === 'rain' ? 'rainy conditions' :
+      currentWeather === 'heatwave' ? 'extreme heat conditions' : 'favorable weather';
+
     // Generate primary insight
     let primaryInsight = "";
     let resourceRecommendation = "";
     let riskAssessment = "";
-    
+
     if (hasVaikuntaEkadashi) {
       const regionalBonus = (hasAPFestival || hasTSFestival || hasTNFestival) ? " and regional festival convergence" : "";
       primaryInsight = `Exceptional influx expected due to Vaikunta Ekadashi${regionalBonus}. AI predicts ${Math.floor(pilgrimKPIs.current * calculatedMultiplier).toLocaleString()} pilgrims with ${weatherContext}.`;
@@ -422,7 +505,7 @@ const CLevelDashboard: React.FC = () => {
       resourceRecommendation = `Standard resource allocation sufficient. AI optimization maintaining queue efficiency at ${pilgrimKPIs.queueEfficiency.toFixed(1)}%.`;
       riskAssessment = `System performance nominal. Traffic flow: ${trafficKPIs.trafficFlow.toFixed(1)}%. Emergency response ready.`;
     }
-    
+
     return (
       <>
         <div className="bg-white/70 backdrop-blur-sm rounded-xl p-6">
@@ -438,7 +521,7 @@ const CLevelDashboard: React.FC = () => {
             <div>• Scenario Multiplier: {calculatedMultiplier.toFixed(2)}x</div>
             <div>• Weather Impact: {weatherContext}</div>
             {(hasAPFestival || hasTSFestival || hasTNFestival) && (
-              <div>• Regional Festivals: {regionalFestivals.map(id => 
+              <div>• Regional Festivals: {regionalFestivals.map(id =>
                 regionalFestivalsConfig.find(f => f.id === id)?.name
               ).filter(Boolean).join(', ')}</div>
             )}
@@ -515,19 +598,19 @@ const CLevelDashboard: React.FC = () => {
 
     const basePeriodMultiplier = periodMultipliers[slot.period as keyof typeof periodMultipliers];
     const totalMultiplier = basePeriodMultiplier * calculatedMultiplier;
-    
+
     const expectedFootfall = Math.floor(pilgrimKPIs.current * totalMultiplier);
     const predictedWaitTime = Math.max(15, Math.min(180, 30 + (totalMultiplier - 1) * 45));
     const shuttleDemand = Math.floor(trafficKPIs.current * totalMultiplier * 0.6);
     const parkingDemand = Math.floor(trafficKPIs.current * totalMultiplier * 0.8);
-    
+
     // High-risk zone calculation
     const riskZones = [];
     if (totalMultiplier > 2.0) riskZones.push({ zone: 'Main Temple', risk: 'high' });
     if (totalMultiplier > 1.8) riskZones.push({ zone: 'Queue Area A', risk: 'high' });
     if (totalMultiplier > 1.5) riskZones.push({ zone: 'Parking Zones', risk: 'medium' });
     if (totalMultiplier > 1.3) riskZones.push({ zone: 'Alipiri Base', risk: 'medium' });
-    
+
     return {
       timeSlot: slot.label,
       period: slot.period,
@@ -589,7 +672,7 @@ const CLevelDashboard: React.FC = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Tab Navigation */}
         <div className="flex space-x-1 mt-6 bg-white/10 p-1 rounded-xl">
           {[
@@ -602,11 +685,10 @@ const CLevelDashboard: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as 'overview' | 'forecasting' | 'simulation')}
-                className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
-                  activeTab === tab.id
-                    ? 'bg-white text-indigo-600 shadow-lg'
-                    : 'text-white/80 hover:text-white hover:bg-white/10'
-                }`}
+                className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${activeTab === tab.id
+                  ? 'bg-white text-indigo-600 shadow-lg'
+                  : 'text-white/80 hover:text-white hover:bg-white/10'
+                  }`}
               >
                 <IconComponent className="w-5 h-5" />
                 <span>{tab.name}</span>
@@ -642,7 +724,7 @@ const CLevelDashboard: React.FC = () => {
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-blue-600">Capacity Utilization</span>
                   <span className={`font-bold ${getUtilizationColor(pilgrimKPIs.current, pilgrimKPIs.dailyCapacity)}`}>
-                    {((pilgrimKPIs.current / pilgrimKPIs.dailyCapacity) * 100).toFixed(1)}%
+                    {((pilgrimKPIs.current / pilgrimKPIs.dailyCapacity) * 100).toFixed(1)}% 
                   </span>
                 </div>
               </div>
@@ -682,9 +764,9 @@ const CLevelDashboard: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
               <div className="text-center p-3 bg-gray-50 rounded-lg">
-                <div className="text-xl font-bold text-indigo-600">{pilgrimKPIs.avgDarshanTime} min</div>
+                <div className="text-xl font-bold text-indigo-600">{pilgrimKPIs.avgDarshanTime} hour</div>
                 <div className="text-xs text-gray-700 font-medium">Avg Darshan Time</div>
-                <div className="text-xs text-gray-500 mt-1">Target: &lt;15 min</div>
+                <div className="text-xs text-gray-500 mt-1">Target: &lt;15 hour</div>
               </div>
               <div className="text-center p-3 bg-gray-50 rounded-lg">
                 <div className="text-xl font-bold text-teal-600">{pilgrimKPIs.queueEfficiency.toFixed(1)}%</div>
@@ -778,6 +860,7 @@ const CLevelDashboard: React.FC = () => {
               </div>
             </div>
           </div>
+          
 
           {/* Executive Summary */}
           <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl shadow-lg p-8 border border-amber-200">
@@ -792,6 +875,111 @@ const CLevelDashboard: React.FC = () => {
               {generateAIExecutiveSummary()}
             </div>
           </div>
+
+             {/* Time Series Visualization */}
+            <div className="bg-gray-50 rounded-xl p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-gray-800">24-Hour Pilgrim Flow Forecast</h3>
+                <div className="flex space-x-2">
+                  <button className="bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-2 rounded-lg text-sm transition-colors">
+                    Hourly
+                  </button>
+                  <button className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-2 rounded-lg text-sm transition-colors">
+                    Daily
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {/* Chart Legend */}
+                <div className="flex items-center justify-center space-x-6 text-sm">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded"></div>
+                    <span className="text-gray-600">Predicted</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded"></div>
+                    <span className="text-gray-600">Actual</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-gray-300 rounded"></div>
+                    <span className="text-gray-600">Future</span>
+                  </div>
+                </div>
+
+                {/* Chart */}
+                <div className="grid grid-cols-12 gap-2 h-48">
+                  {forecastData.filter((_, i) => i % 2 === 0).map((item, i) => {
+
+
+
+                    const maxValue = Math.max(...forecastData.map(d => d.predicted));
+                    const predictedHeight = (item.predicted / maxValue) * 100;
+                    const actualHeight = item.actual ? (item.actual / maxValue) * 100 : 0;
+                    const currentHour = new Date().getHours();
+                    const itemHour = parseInt(item.hour.split(':')[0]);
+                    const isPast = itemHour <= currentHour;
+
+                    return (
+                      <div key={i} className="flex flex-col justify-end group cursor-pointer">
+                        <div className="relative h-full flex items-end justify-center space-x-1">
+                          {/* Predicted bar */}
+                          <div
+                            className={`w-3 rounded-t transition-all duration-300 ${isPast ? 'bg-gradient-to-t from-blue-400 to-purple-400' : 'bg-gradient-to-t from-blue-500 to-purple-500'
+                              } group-hover:shadow-lg`}
+                            style={{ height: `${predictedHeight}%` }}
+                          ></div>
+
+                          {/* Actual bar (only for past hours) */}
+                          {item.actual && (
+                            <div
+                              className="w-3 bg-gradient-to-t from-green-500 to-emerald-500 rounded-t transition-all duration-300 group-hover:shadow-lg"
+                              style={{ height: `${actualHeight}%` }}
+                            ></div>
+                          )}
+                        </div>
+
+                        {/* Hour label */}
+                        <div className="text-xs text-gray-600 text-center mt-2 transform -rotate-45 origin-center">
+                          {item.hour}
+                        </div>
+
+                        {/* Tooltip on hover */}
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                          <div className="bg-gray-900 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap shadow-lg">
+                            <div>Predicted: {item.predicted.toLocaleString()}</div>
+                            {item.actual && <div>Actual: {item.actual.toLocaleString()}</div>}
+                            <div>Confidence: {item.confidence}%</div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Summary Stats */}
+                <div className="grid grid-cols-3 gap-4 mt-6">
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-blue-600">
+                      {forecastData.reduce((sum, item) => sum + item.predicted, 0).toLocaleString()}
+                    </div>
+                    <div className="text-xs text-gray-600">Total Predicted</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-green-600">
+                      {Math.round(forecastData.reduce((sum, item) => sum + item.confidence, 0) / forecastData.length)}%
+                    </div>
+                    <div className="text-xs text-gray-600">Avg Confidence</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-purple-600">
+                      {Math.max(...forecastData.map(item => item.predicted)).toLocaleString()}
+                    </div>
+                    <div className="text-xs text-gray-600">Peak Hour</div>
+                  </div>
+                </div>
+              </div>
+            </div>
         </div>
       )}
 
@@ -809,7 +997,7 @@ const CLevelDashboard: React.FC = () => {
                   <p className="text-gray-600 mt-1">Predictive analytics for strategic resource planning</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-4">
                 <label className="text-sm font-semibold text-gray-700">Select Time Slot:</label>
                 <select
@@ -897,10 +1085,9 @@ const CLevelDashboard: React.FC = () => {
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {timeSlotPredictions.riskZones.map((zone: any, index: number) => (
-                    <div key={index} className={`p-3 rounded-lg border ${
-                      zone.risk === 'high' ? 'bg-red-100 border-red-300 text-red-800' :
+                    <div key={index} className={`p-3 rounded-lg border ${zone.risk === 'high' ? 'bg-red-100 border-red-300 text-red-800' :
                       'bg-yellow-100 border-yellow-300 text-yellow-800'
-                    }`}>
+                      }`}>
                       <div className="font-semibold">{zone.zone}</div>
                       <div className="text-sm opacity-80">Risk Level: {zone.risk}</div>
                     </div>
@@ -927,108 +1114,7 @@ const CLevelDashboard: React.FC = () => {
               </div>
             )}
 
-            {/* Time Series Visualization */}
-            <div className="bg-gray-50 rounded-xl p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-gray-800">24-Hour Pilgrim Flow Forecast</h3>
-                <div className="flex space-x-2">
-                  <button className="bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-2 rounded-lg text-sm transition-colors">
-                    Hourly
-                  </button>
-                  <button className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-2 rounded-lg text-sm transition-colors">
-                    Daily
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                {/* Chart Legend */}
-                <div className="flex items-center justify-center space-x-6 text-sm">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded"></div>
-                    <span className="text-gray-600">Predicted</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded"></div>
-                    <span className="text-gray-600">Actual</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-gray-300 rounded"></div>
-                    <span className="text-gray-600">Future</span>
-                  </div>
-                </div>
-                
-                {/* Chart */}
-                <div className="grid grid-cols-12 gap-2 h-48">
-                  {forecastData.filter((_, i) => i % 2 === 0).map((item, i) => {
-                    const maxValue = Math.max(...forecastData.map(d => d.predicted));
-                    const predictedHeight = (item.predicted / maxValue) * 100;
-                    const actualHeight = item.actual ? (item.actual / maxValue) * 100 : 0;
-                    const currentHour = new Date().getHours();
-                    const itemHour = parseInt(item.hour.split(':')[0]);
-                    const isPast = itemHour <= currentHour;
-                    
-                    return (
-                      <div key={i} className="flex flex-col justify-end group cursor-pointer">
-                        <div className="relative h-full flex items-end justify-center space-x-1">
-                          {/* Predicted bar */}
-                          <div 
-                            className={`w-3 rounded-t transition-all duration-300 ${
-                              isPast ? 'bg-gradient-to-t from-blue-400 to-purple-400' : 'bg-gradient-to-t from-blue-500 to-purple-500'
-                            } group-hover:shadow-lg`}
-                            style={{height: `${predictedHeight}%`}}
-                          ></div>
-                          
-                          {/* Actual bar (only for past hours) */}
-                          {item.actual && (
-                            <div 
-                              className="w-3 bg-gradient-to-t from-green-500 to-emerald-500 rounded-t transition-all duration-300 group-hover:shadow-lg"
-                              style={{height: `${actualHeight}%`}}
-                            ></div>
-                          )}
-                        </div>
-                        
-                        {/* Hour label */}
-                        <div className="text-xs text-gray-600 text-center mt-2 transform -rotate-45 origin-center">
-                          {item.hour}
-                        </div>
-                        
-                        {/* Tooltip on hover */}
-                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-                          <div className="bg-gray-900 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap shadow-lg">
-                            <div>Predicted: {item.predicted.toLocaleString()}</div>
-                            {item.actual && <div>Actual: {item.actual.toLocaleString()}</div>}
-                            <div>Confidence: {item.confidence}%</div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-                
-                {/* Summary Stats */}
-                <div className="grid grid-cols-3 gap-4 mt-6">
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-blue-600">
-                      {forecastData.reduce((sum, item) => sum + item.predicted, 0).toLocaleString()}
-                    </div>
-                    <div className="text-xs text-gray-600">Total Predicted</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-green-600">
-                      {Math.round(forecastData.reduce((sum, item) => sum + item.confidence, 0) / forecastData.length)}%
-                    </div>
-                    <div className="text-xs text-gray-600">Avg Confidence</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-purple-600">
-                      {Math.max(...forecastData.map(item => item.predicted)).toLocaleString()}
-                    </div>
-                    <div className="text-xs text-gray-600">Peak Hour</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+         
           </div>
         </div>
       )}
@@ -1047,24 +1133,24 @@ const CLevelDashboard: React.FC = () => {
                   <p className="text-gray-600 mt-1">Advanced what-if analysis for executive decision making</p>
                 </div>
               </div>
-              
-              <button
-                onClick={() => setSimulationMode(!simulationMode)}
-                className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${
-                  simulationMode
-                    ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg' 
-                    : 'bg-green-500 hover:bg-green-600 text-white shadow-lg'
-                }`}
+
+              {/* <button
+                onClick={runStrategicAnalysis}
+
+
+                // onClick={runStrategicAnalysis}
+
+                className="w-fit flex space-x-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg"
               >
                 <Activity className="w-5 h-5" />
-                <span>{simulationMode ? 'Stop Simulation' : 'Start Simulation'}</span>
-              </button>
+                <span>{simulationMode ? 'Stop Strategy Analysis' : 'Run Strategy Analysis'}</span>
+              </button> */}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 gap-8">
               {/* Simulation Controls */}
               <div className="space-y-6">
-                <div className="bg-gray-50 rounded-xl p-6">
+                {/* <div className="bg-gray-50 rounded-xl p-6">
                   <h4 className="font-bold text-gray-800 mb-4">Simulation Controls</h4>
                   <div className="space-y-4">
                     <div>
@@ -1094,229 +1180,78 @@ const CLevelDashboard: React.FC = () => {
                       </select>
                     </div>
                   </div>
-                </div>
-                
-                {/* Scenario Checkboxes */}
-                <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
-                  <h4 className="font-bold text-blue-800 mb-4">Scenario Factors</h4>
-                  <div className="space-y-3">
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['rainy-day'] || false}
-                        onChange={(e) => handleCheckboxChange('rainy-day', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Rainy Day</span>
-                    </label>
-                    
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['clear-weather'] || false}
-                        onChange={(e) => handleCheckboxChange('clear-weather', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Clear Weather</span>
-                    </label>
-                    
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['vaikunta-ekadashi'] || false}
-                        onChange={(e) => handleCheckboxChange('vaikunta-ekadashi', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Vaikunta Ekadashi</span>
-                    </label>
-                    
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['brahmotsavam'] || false}
-                        onChange={(e) => handleCheckboxChange('brahmotsavam', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Brahmotsavam</span>
-                    </label>
-                    
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['annual-festival'] || false}
-                        onChange={(e) => handleCheckboxChange('annual-festival', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Annual Festival</span>
-                    </label>
-                    
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['andhra-pradesh'] || false}
-                        onChange={(e) => handleCheckboxChange('andhra-pradesh', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Andhra Pradesh Holiday</span>
-                    </label>
-                    
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['tamil-nadu'] || false}
-                        onChange={(e) => handleCheckboxChange('tamil-nadu', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Tamil Nadu Holiday</span>
-                    </label>
-                    
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['karnataka'] || false}
-                        onChange={(e) => handleCheckboxChange('karnataka', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Karnataka Holiday</span>
-                    </label>
-                    
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['political-vip'] || false}
-                        onChange={(e) => handleCheckboxChange('political-vip', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Political VIP Visit</span>
-                    </label>
-                    
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['celebrity-visit'] || false}
-                        onChange={(e) => handleCheckboxChange('celebrity-visit', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Celebrity Visit</span>
-                    </label>
-                    
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['media-coverage'] || false}
-                        onChange={(e) => handleCheckboxChange('media-coverage', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Media Coverage</span>
-                    </label>
-                    
-                    <label className="flex items-center space-x-3 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        checked={scenarioCheckboxes['cultural-event'] || false}
-                        onChange={(e) => handleCheckboxChange('cultural-event', e.target.checked)}
-                      />
-                      <span className="text-sm text-blue-700">Cultural Event</span>
-                    </label>
-                  </div>
-                  
-                  {/* Apply Scenario Button */}
-                  <div className="mt-6 flex justify-center">
-                    <button
-                      onClick={applyScenario}
-                      disabled={!hasCheckboxChanges || isApplyingScenario}
-                      className={`px-8 py-3 rounded-lg font-semibold transition-all duration-200 ${
-                        hasCheckboxChanges && !isApplyingScenario
-                          ? 'bg-blue-500 hover:bg-blue-600 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
-                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      }`}
-                    >
-                      {isApplyingScenario ? (
-                        <div className="flex items-center space-x-2">
-                          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                          <span>Applying Scenario...</span>
-                        </div>
-                      ) : (
-                        'Apply Scenario'
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </div>
+                </div> */}
 
-              {/* Strategic Scenarios */}
-              <div className="lg:col-span-2 space-y-6">
-                <h4 className="font-bold text-gray-800 text-lg flex items-center space-x-2">
-                  <BarChart3 className="w-5 h-5" />
-                  <span>Strategic Scenarios</span>
-                </h4>
-                
-                {/* Realistic Scenario Configuration */}
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
+                {/* Realistic Scenario Builder */}
+                <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200 flex flex-row justify-between">
                   <h5 className="font-bold text-gray-800 mb-4 flex items-center space-x-2">
                     <Target className="w-4 h-4" />
                     <span>Realistic Scenario Builder</span>
                   </h5>
-                  
-                  {/* Day Type Selection */}
-                  <div className="mb-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">🗓️ Day Type</label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {dayTypes.map(day => (
-                        <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="dayType"
-                            value={day.id}
-                            checked={dayType === day.id}
-                            onChange={(e) => setDayType(e.target.value)}
-                            className="text-blue-600"
-                          />
-                          <span className="text-sm text-gray-700">{day.name}</span>
-                        </label>
-                      ))}
+                  <div className='flex flex-row justify-evenly w-2/3'>
+                    {/* Day Type Selection */}
+                    <div className="mb-4">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">🗓️ Day Type</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {dayTypes.map(day => (
+                          <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="dayType"
+                              value={day.id}
+                              checked={dayType === day.id}
+                              onChange={(e) => setDayType(e.target.value)}
+                              className="text-blue-600"
+                            />
+                            <span className="text-sm text-gray-700">{day.name}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* TTD Special Days */}
+                    <div className="mb-4">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">🛕 TTD Special Days</label>
+                      <div className="space-y-1">
+                        {ttdSpecialDaysConfig.map(day => (
+                          <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={ttdSpecialDays.includes(day.id)}
+                              onChange={() => handleTtdSpecialDayToggle(day.id)}
+                              className="text-purple-600"
+                            />
+                            <span className="text-sm text-gray-700">{day.name}</span>
+                          </label>
+                        ))}
+                      </div>
+
+                    </div>
+
+                    {/* Regional Festivals */}
+                    <div className="mb-4">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">🌍 Regional Festivals</label>
+                      <div className="space-y-1">
+                        {regionalFestivalsConfig.map(festival => (
+                          <label key={festival.id} className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={regionalFestivals.includes(festival.id)}
+                              onChange={() => handleRegionalFestivalToggle(festival.id)}
+                              className="text-green-600"
+                            />
+                            <span className="text-sm text-gray-700">{festival.name}</span>
+                          </label>
+                        ))}
+                      </div>
+
                     </div>
                   </div>
-                  
-                  {/* TTD Special Days */}
-                  <div className="mb-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">🛕 TTD Special Days</label>
-                    <div className="space-y-1">
-                      {ttdSpecialDaysConfig.map(day => (
-                        <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={ttdSpecialDays.includes(day.id)}
-                            onChange={() => handleTtdSpecialDayToggle(day.id)}
-                            className="text-purple-600"
-                          />
-                          <span className="text-sm text-gray-700">{day.name}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Regional Festivals */}
-                  <div className="mb-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">🌍 Regional Festivals</label>
-                    <div className="space-y-1">
-                      {regionalFestivalsConfig.map(festival => (
-                        <label key={festival.id} className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={regionalFestivals.includes(festival.id)}
-                            onChange={() => handleRegionalFestivalToggle(festival.id)}
-                            className="text-green-600"
-                          />
-                          <span className="text-sm text-gray-700">{festival.name}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                  
+
+
+
                   {/* Calculated Impact */}
-                  <div className="mt-4 p-3 bg-white/70 rounded-lg border border-blue-300">
+                  {/* <div className="mt-4 p-3 bg-white/70 rounded-lg border border-blue-300">
                     <div className="text-sm font-semibold text-gray-700">🧠 Calculated Impact</div>
                     <div className="text-lg font-bold text-blue-600">
                       {calculatedMultiplier > 1 ? '+' : ''}{((calculatedMultiplier - 1) * 100).toFixed(0)}% Load Increase
@@ -1324,44 +1259,64 @@ const CLevelDashboard: React.FC = () => {
                     <div className="text-xs text-gray-600 mt-1">
                       Multiplier: {calculatedMultiplier.toFixed(2)}x
                     </div>
-                  </div>
+                  </div> */}
                 </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {whatIfScenarios.map(scenario => (
-                    <div
-                      key={scenario.id}
-                      onClick={() => setWhatIfScenario(scenario.id)}
-                      className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
-                        whatIfScenario === scenario.id
-                          ? 'border-purple-500 bg-purple-50 shadow-md'
-                          : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
-                      }`}
-                    >
-                      <div className="font-semibold text-gray-800 mb-1">{scenario.name}</div>
-                      <div className="text-xs text-gray-600 mb-2">{scenario.description}</div>
-                      <div className="text-xs text-purple-600 font-semibold">
-                        Base Impact: {scenario.multiplier > 1 ? '+' : ''}{((scenario.multiplier - 1) * 100).toFixed(0)}%
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
+              </div>
+              <div className='w-full flex justify-end'>
                 <button
-                  onClick={runStrategicAnalysis}
-                  className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg"
+                  onClick={() => {
+                    setSimulationMode(!simulationMode)
+                    // runStrategicAnalysis()
+
+                    const scenarioMultiplier = whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1;
+                    const speedMultiplier = simulationSpeed;
+
+                    setPilgrimKPIs(prev => ({
+                      ...prev,
+                      current: Math.max(0, Math.min(prev.dailyCapacity,
+                        prev.current + Math.floor((Math.random() * 200 - 100) * scenarioMultiplier * speedMultiplier))),
+                      aiPredictedPeak: Math.max(prev.current,
+                        prev.aiPredictedPeak + Math.floor((Math.random() * 100 - 50) * scenarioMultiplier)),
+                      satisfactionScore: Math.max(3.0, Math.min(5.0,
+                        prev.satisfactionScore + (Math.random() * 0.2 - 0.1) * scenarioMultiplier)),
+                      avgDarshanTime: Math.max(8, Math.min(25,
+                        prev.avgDarshanTime + (Math.random() * 2 - 1) * scenarioMultiplier)),
+                      queueEfficiency: Math.max(70, Math.min(100,
+                        prev.queueEfficiency + (Math.random() * 2 - 1) * scenarioMultiplier))
+                    }));
+
+                    setForecastData(prev => prev.map(item => ({
+                      ...item,
+                      predicted: Math.max(500, item.predicted + Math.floor((Math.random() * 200 - 100) * scenarioMultiplier)),
+                      confidence: Math.max(70, Math.min(99, item.confidence + Math.floor(Math.random() * 6 - 3)))
+                    })));
+
+                    setTimeout(()=>{
+                      setSimulationMode(!simulationMode)
+                    },1000*Math.random()+1000)
+
+                  }}
+                  className={`flex w-1/6 items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${simulationMode
+                    ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg'
+                    : 'bg-green-500 hover:bg-green-600 text-white shadow-lg'
+                    }`}
                 >
-                  Run Strategic Analysis
+                  <Activity className="w-5 h-5" />
+                  <span>{simulationMode ? 'Stop Simulation' : 'Run Strategy Analysis'}</span>
                 </button>
+
               </div>
 
+              {/* Strategic Scenarios */}
+
+
               {/* Analysis Results */}
-              <div className="space-y-4">
+              {/* <div className="space-y-4">
                 <h4 className="font-bold text-gray-800 text-lg flex items-center space-x-2">
                   <Zap className="w-5 h-5" />
                   <span>Strategic Insights</span>
                 </h4>
-                
+
                 {simulationResults ? (
                   <div className="space-y-3">
                     <div className="p-4 bg-gray-50 rounded-xl">
@@ -1377,17 +1332,17 @@ const CLevelDashboard: React.FC = () => {
                         <div className="text-xs text-green-600 mt-1">Regional: {simulationResults.regionalFestivals.join(', ')}</div>
                       )}
                     </div>
-                    
+
                     <div className="p-4 bg-blue-50 rounded-xl">
                       <div className="text-sm font-semibold text-gray-700">Total Multiplier</div>
                       <div className="text-lg font-bold text-blue-600">{simulationResults.calculatedMultiplier.toFixed(2)}x</div>
                     </div>
-                    
+
                     <div className="p-4 bg-green-50 rounded-xl">
                       <div className="text-sm font-semibold text-gray-700">Revenue Impact</div>
                       <div className="text-lg font-bold text-green-600">₹{(simulationResults.projectedRevenue / 1000000).toFixed(1)}M</div>
                     </div>
-                    
+
                     <div className="p-4 bg-blue-50 rounded-xl">
                       <div className="text-sm font-semibold text-gray-700">ROI Change</div>
                       <div className="text-lg font-bold text-blue-600">{simulationResults.roiImpact.toFixed(1)}%</div>
@@ -1425,16 +1380,16 @@ const CLevelDashboard: React.FC = () => {
                     <p className="text-sm">Run analysis to see strategic insights</p>
                   </div>
                 )}
-              </div>
+              </div> */}
             </div>
 
             {/* Prediction vs Actual Analysis */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 mt-8">
+            {/* <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 mt-8">
               <h4 className="font-bold text-gray-800 mb-4 flex items-center space-x-2">
                 <BarChart3 className="w-5 h-5" />
                 <span>Prediction vs Actual</span>
               </h4>
-              
+
               <div className="space-y-4">
                 <div className="p-4 bg-blue-50 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
@@ -1442,85 +1397,210 @@ const CLevelDashboard: React.FC = () => {
                     <span className="text-lg font-bold text-blue-600">{predictionAccuracy.hourly.accuracy.toFixed(1)}%</span>
                   </div>
                   <div className="text-xs text-blue-700">
-                    Predicted: {predictionAccuracy.hourly.predicted.toLocaleString()} | 
+                    Predicted: {predictionAccuracy.hourly.predicted.toLocaleString()} |
                     Actual: {predictionAccuracy.hourly.actual.toLocaleString()}
                   </div>
                 </div>
-                
+
                 <div className="p-4 bg-green-50 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-semibold text-green-800">Daily Accuracy</span>
                     <span className="text-lg font-bold text-green-600">{predictionAccuracy.daily.accuracy.toFixed(1)}%</span>
                   </div>
                   <div className="text-xs text-green-700">
-                    Predicted: {predictionAccuracy.daily.predicted.toLocaleString()} | 
+                    Predicted: {predictionAccuracy.daily.predicted.toLocaleString()} |
                     Actual: {predictionAccuracy.daily.actual.toLocaleString()}
                   </div>
                 </div>
-                
+
                 <div className="p-4 bg-purple-50 rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-semibold text-purple-800">Weekly Accuracy</span>
                     <span className="text-lg font-bold text-purple-600">{predictionAccuracy.weekly.accuracy.toFixed(1)}%</span>
                   </div>
                   <div className="text-xs text-purple-700">
-                    Predicted: {predictionAccuracy.weekly.predicted.toLocaleString()} | 
+                    Predicted: {predictionAccuracy.weekly.predicted.toLocaleString()} |
                     Actual: {predictionAccuracy.weekly.actual.toLocaleString()}
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
-            {/* Hourly Predictions Chart */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 mt-8">
-              <h4 className="font-bold text-gray-800 mb-4 flex items-center space-x-2">
-                <Clock className="w-5 h-5" />
-                <span>24-Hour Predictions</span>
-              </h4>
-              
-              <div className="h-48 relative mb-4">
+            {/* 24-Hour Operations Chart */}
+            <div className="bg-gray-50 rounded-xl p-6 mt-8">
+              <div className="flex items-center justify-between mb-6">
+                <h4 className="font-bold text-gray-800 text-lg">24-Hour Operations Trends</h4>
+                <div className="flex items-center space-x-6">
+                  <div className="flex space-x-4 text-sm">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <span>Current</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                      <span>AI Predicted</span>
+                    </div>
+                    {/* {simulationMode && (
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span>Simulation</span>
+                      </div>
+                    )} */}
+                  </div>
+
+
+                </div>
+              </div>
+
+              <div className="h-64 relative">
                 <div className="absolute inset-0 flex items-end justify-between px-2">
-                  {hourlyPredictions.slice(0, 12).map((prediction, i) => {
-                    const height = Math.max(20, Math.min(90, (prediction.predicted / 2000) * 100));
+                  {Array.from({ length: 24 }, (_, i) => {
+                    const hour = i;
+                    const currentHeight = Math.max(20, Math.min(90, 35 + Math.sin(i * 0.5) * 25 + Math.random() * 10));
+                    const predictedHeight = Math.max(20, Math.min(90, currentHeight + 12 + Math.sin(i * 0.3) * 18));
+                    const simulationHeight = simulationMode ?
+                      Math.max(20, Math.min(90, currentHeight * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))) :
+                      currentHeight;
                     return (
                       <div key={i} className="flex flex-col items-center space-y-1 flex-1">
-                        <div className="flex items-end space-x-1 h-32">
-                          <div 
-                            className="w-3 bg-gradient-to-t from-blue-500 to-purple-500 rounded-t transition-all duration-500"
-                            style={{height: `${height}%`}}
-                            title={`${prediction.predicted} pilgrims (${prediction.confidence}% confidence)`}
+                        <div className="flex items-end space-x-1 h-48">
+                          <div
+                            className="w-2 bg-blue-500 rounded-t transition-all duration-500"
+                            style={{ height: `${currentHeight}%` }}
+                            title={`Current: ${Math.floor(1200 + Math.sin(i * 0.5) * 400)} pilgrims`}
                           ></div>
+                          <div
+                            className="w-2 bg-purple-500 rounded-t opacity-70 transition-all duration-500"
+                            style={{ height: `${predictedHeight}%` }}
+                            title={`Predicted: ${Math.floor(1400 + Math.sin(i * 0.3) * 500)} pilgrims`}
+                          ></div>
+                          {simulationMode && (
+                            <div
+                              className="w-2 bg-green-500 rounded-t animate-pulse transition-all duration-500"
+                              style={{ height: `${simulationHeight}%` }}
+                              title={`Simulation: ${Math.floor((1200 + Math.sin(i * 0.5) * 400) * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))} pilgrims`}
+                            ></div>
+                          )}
                         </div>
                         <div className="text-xs text-gray-600 transform -rotate-45 origin-center">
-                          {prediction.hour.toString().padStart(2, '0')}:00
+                          {hour.toString().padStart(2, '0')}:00
                         </div>
                       </div>
                     );
                   })}
                 </div>
               </div>
-              
-              <div className="grid grid-cols-3 gap-4 text-center">
+
+              <div className="mt-4 grid grid-cols-3 gap-4 text-center">
                 <div className="p-3 bg-blue-50 rounded-lg">
-                  <div className="text-lg font-bold text-blue-600">
-                    {Math.max(...hourlyPredictions.map(p => p.predicted)).toLocaleString()}
-                  </div>
-                  <div className="text-xs text-blue-800">Peak Hour</div>
-                </div>
-                <div className="p-3 bg-green-50 rounded-lg">
-                  <div className="text-lg font-bold text-green-600">
-                    {Math.round(hourlyPredictions.reduce((sum, p) => sum + p.confidence, 0) / hourlyPredictions.length)}%
-                  </div>
-                  <div className="text-xs text-green-800">Avg Confidence</div>
+                  <div className="text-lg font-bold text-blue-600">{pilgrimKPIs.current.toLocaleString()}</div>
+                  <div className="text-xs text-blue-800">Current Load</div>
                 </div>
                 <div className="p-3 bg-purple-50 rounded-lg">
-                  <div className="text-lg font-bold text-purple-600">
-                    {hourlyPredictions.reduce((sum, p) => sum + p.predicted, 0).toLocaleString()}
-                  </div>
-                  <div className="text-xs text-purple-800">24hr Total</div>
+                  <div className="text-lg font-bold text-purple-600">{pilgrimKPIs.aiPredictedPeak.toLocaleString()}</div>
+                  <div className="text-xs text-purple-800">AI Predicted</div>
                 </div>
+                {simulationMode && (
+                  <div className="p-3 bg-green-50 rounded-lg">
+                    <div className="text-lg font-bold text-green-600">
+                      {Math.floor(pilgrimKPIs.current * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1)).toLocaleString()}
+                    </div>
+                    <div className="text-xs text-green-800">Simulation Load</div>
+                  </div>
+                )}
               </div>
             </div>
+
+            {/* Resource Allocation Simulation Chart */}
+            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 mt-8 border border-indigo-200">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-3">
+                  <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-2 rounded-lg text-white">
+                    <Activity className="w-5 h-5" />
+                  </div>
+                  <h4 className="font-bold text-gray-800 text-lg">Resource Allocation Simulation</h4>
+                </div>
+                <div className="flex items-center space-x-6">
+                  <div className="flex space-x-4 text-sm">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-indigo-500 rounded-full"></div>
+                      <span>Staff Level</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-teal-500 rounded-full"></div>
+                      <span>Transport</span>
+                    </div>
+                    {simulationMode && (
+                      <div className="flex items-center space-x-2">
+                        <div className="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>
+                        <span>Emergency</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="h-64 relative">
+                <div className="absolute inset-0 flex items-end justify-between px-2">
+                  {Array.from({ length: 24 }, (_, i) => {
+                    const hour = i;
+                    const staffLevel = Math.max(25, Math.min(85, 40 + Math.sin(i * 0.3) * 20 + Math.random() * 12));
+                    const transportLevel = Math.max(25, Math.min(85, staffLevel - 15 + Math.sin(i * 0.4) * 15));
+                    const emergencyLevel = simulationMode ? 
+                      Math.max(30, Math.min(95, staffLevel * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1) * 0.8)) : 
+                      staffLevel;
+                    
+                    return (
+                      <div key={i} className="flex flex-col items-center space-y-1 flex-1">
+                        <div className="flex items-end space-x-1 h-48">
+                          <div 
+                            className="w-2 bg-gradient-to-t from-indigo-600 to-indigo-400 rounded-t transition-all duration-500 shadow-sm"
+                            style={{height: `${staffLevel}%`}}
+                            title={`Staff: ${Math.floor(120 + Math.sin(i * 0.3) * 40)} members`}
+                          ></div>
+                          <div 
+                            className="w-2 bg-gradient-to-t from-teal-600 to-teal-400 rounded-t opacity-80 transition-all duration-500 shadow-sm"
+                            style={{height: `${transportLevel}%`}}
+                            title={`Transport: ${Math.floor(45 + Math.sin(i * 0.4) * 15)} vehicles`}
+                          ></div>
+                          {simulationMode && (
+                            <div 
+                              className="w-2 bg-gradient-to-t from-orange-600 to-orange-400 rounded-t animate-pulse transition-all duration-500 shadow-md"
+                              style={{height: `${emergencyLevel}%`}}
+                              title={`Emergency: ${Math.floor((120 + Math.sin(i * 0.3) * 40) * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1) * 0.8)} units`}
+                            ></div>
+                          )}
+                        </div>
+                        <div className="text-xs text-gray-600 transform -rotate-45 origin-center font-medium">
+                          {hour.toString().padStart(2, '0')}:00
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="mt-4 grid grid-cols-3 gap-4 text-center">
+                <div className="p-3 bg-indigo-50 rounded-lg border border-indigo-200">
+                  <div className="text-lg font-bold text-indigo-700">{Math.floor(120 + Math.random() * 80)}</div>
+                  <div className="text-xs text-indigo-800 font-semibold">Staff Deployed</div>
+                </div>
+                <div className="p-3 bg-teal-50 rounded-lg border border-teal-200">
+                  <div className="text-lg font-bold text-teal-700">{Math.floor(45 + Math.random() * 25)}</div>
+                  <div className="text-xs text-teal-800 font-semibold">Transport Units</div>
+                </div>
+                {simulationMode && (
+                  <div className="p-3 bg-orange-50 rounded-lg border border-orange-200 animate-pulse">
+                    <div className="text-lg font-bold text-orange-700">
+                      {Math.floor((120 + Math.random() * 80) * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1) * 0.9)}
+                    </div>
+                    <div className="text-xs text-orange-800 font-semibold">Emergency Response</div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+
           </div>
         </div>
       )}

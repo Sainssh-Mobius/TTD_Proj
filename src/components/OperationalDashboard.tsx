@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Settings, Users, Car, AlertTriangle, Activity, Clock, MapPin, Shield, Zap, Target, BarChart3, TrendingUp, Brain } from 'lucide-react';
+import VIPMovementModal from './VIPMovementModal';
 
 const OperationalDashboard: React.FC = () => {
+  const [showVIPModal, setShowVIPModal] = useState(false);
+  
   // Pilgrim Management KPIs
   const [pilgrimKPIs, setPilgrimKPIs] = useState({
     currentPilgrims: 45632,
@@ -88,7 +91,7 @@ const OperationalDashboard: React.FC = () => {
 
   const [simulationMode, setSimulationMode] = useState(false);
   const [simulationSpeed, setSimulationSpeed] = useState(1);
-  const [whatIfScenario, setWhatIfScenario] = useState('normal');
+  const [whatIfScenario, setWhatIfScenario] = useState('weather-impact');
   const [simulationResults, setSimulationResults] = useState<any>(null);
 
   // Realistic Scenario State
@@ -235,7 +238,7 @@ const OperationalDashboard: React.FC = () => {
             gate.waitTime + Math.floor((Math.random() * 4 - 2) * scenarioMultiplier)))
         })));
       }
-    }, simulationMode ? 1000 / simulationSpeed : 3000);
+    }, simulationMode ? 1800000 : 3000); // 1800000ms = 30 minutes for simulation updates
 
     return () => clearInterval(interval);
   }, [simulationMode, simulationSpeed, whatIfScenario]);
@@ -632,6 +635,8 @@ const OperationalDashboard: React.FC = () => {
           </div>
         </div>
 
+        
+
         {/* VIP Movement & Gate Status */}
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
           {/* VIP Movement Tracking */}
@@ -673,6 +678,16 @@ const OperationalDashboard: React.FC = () => {
               <div className="text-xs text-red-700">
                 {vipMovement.protocolActive ? 'VIP protocols active • Enhanced security measures' : 'Standard operations'}
               </div>
+            </div>
+            
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={() => setShowVIPModal(true)}
+                className="bg-gradient-to-r from-amber-500 to-red-600 hover:shadow-lg text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 flex items-center space-x-2"
+              >
+                <Shield className="w-5 h-5" />
+                <span>Manage VIP Movement</span>
+              </button>
             </div>
           </div>
 
@@ -851,6 +866,118 @@ const OperationalDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+        {/* Operational Scenarios */}
+         <div className="space-y-6">
+              <h4 className="font-bold text-gray-800 text-lg flex items-center space-x-2">
+                <BarChart3 className="w-5 h-5" />
+                <span>Operational Scenarios</span>
+              </h4>
+              
+              {/* Realistic Scenario Configuration */}
+              <div className='flex flex-col md:flex-row gap-6'>
+              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200 flex w-full justify-between">
+                <h5 className="font-bold text-gray-800 mb-4 flex items-center space-x-2">
+                  <Target className="w-4 h-4" />
+                  <span>Realistic Scenario Builder</span>
+                </h5>
+                <div className='flex w-2/3 flex-row justify-evenly'>
+                {/* Day Type Selection */}
+                <div className="mb-4">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">🗓️ Day Type</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {dayTypes.map(day => (
+                      <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="dayType"
+                          value={day.id}
+                          checked={dayType === day.id}
+                          onChange={(e) => setDayType(e.target.value)}
+                          className="text-blue-600"
+                        />
+                        <span className="text-sm text-gray-700">{day.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* TTD Special Days */}
+                <div className="mb-4">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">🛕 TTD Special Days</label>
+                  <div className="space-y-1">
+                    {ttdSpecialDaysConfig.map(day => (
+                      <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={ttdSpecialDays.includes(day.id)}
+                          onChange={() => handleTtdSpecialDayToggle(day.id)}
+                          className="text-purple-600"
+                        />
+                        <span className="text-sm text-gray-700">{day.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Regional Festivals */}
+                <div className="mb-4">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">🌍 Regional Festivals</label>
+                  <div className="space-y-1">
+                    {regionalFestivalsConfig.map(festival => (
+                      <label key={festival.id} className="flex items-center space-x-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={regionalFestivals.includes(festival.id)}
+                          onChange={() => handleRegionalFestivalToggle(festival.id)}
+                          className="text-green-600"
+                        />
+                        <span className="text-sm text-gray-700">{festival.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                </div>
+                
+                {/* Calculated Impact */}
+                {/* <div className="mt-4 p-3 bg-white/70 rounded-lg border border-blue-300">
+                  <div className="text-sm font-semibold text-gray-700">🧠 Calculated Impact</div>
+                  <div className="text-lg font-bold text-blue-600">
+                    {calculatedMultiplier > 1 ? '+' : ''}{((calculatedMultiplier - 1) * 100).toFixed(0)}% Load Increase
+                  </div>
+                  <div className="text-xs text-gray-600 mt-1">
+                    Multiplier: {calculatedMultiplier.toFixed(2)}x
+                  </div>
+                </div> */}
+              </div>
+              
+              {/* <div className="grid w-[49%] grid-cols-1 md:grid-cols-2 gap-3">
+                {whatIfScenarios.map(scenario => (
+                  <div
+                    key={scenario.id}
+                    onClick={() => setWhatIfScenario(scenario.id)}
+                    className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
+                      whatIfScenario === scenario.id
+                        ? 'border-blue-500 bg-blue-50 shadow-md'
+                        : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                    }`}
+                  >
+                    <div className="font-semibold text-gray-800 mb-1">{scenario.name}</div>
+                    <div className="text-xs text-gray-600 mb-2">{scenario.description}</div>
+                    <div className="text-xs text-blue-600 font-semibold">
+                      Base Load: {scenario.multiplier > 1 ? '+' : ''}{((scenario.multiplier - 1) * 100).toFixed(0)}%
+                    </div>
+                  </div>
+                ))}
+              <button
+                onClick={runOperationalAnalysis}
+                className=" col-span-2 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg w-full"
+              >
+                Run Operational Analysis
+              </button>
+              </div> */}
+              
+              </div>
+            </div>
 
         {/* Operational Simulation Control */}
         <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
@@ -880,7 +1007,7 @@ const OperationalDashboard: React.FC = () => {
           </div>
 
           {/* Time Series Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <div className="grid grid-cols-1 gap-8 m-10">
             {/* Pilgrim Operations Time Series */}
             <div className="bg-gray-50 rounded-xl p-6">
               <div className="flex items-center justify-between mb-6">
@@ -1038,215 +1165,14 @@ const OperationalDashboard: React.FC = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Simulation Controls */}
-            <div className="space-y-6">
-              <h4 className="font-bold text-gray-800 text-lg flex items-center space-x-2">
-                <Target className="w-5 h-5" />
-                <span>Control Panel</span>
-              </h4>
-              
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">Simulation Speed</label>
-                <input
-                  type="range"
-                  min="0.5"
-                  max="5"
-                  step="0.5"
-                  value={simulationSpeed}
-                  onChange={(e) => setSimulationSpeed(parseFloat(e.target.value))}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                />
-                <div className="text-sm text-gray-600 mt-2 font-medium">{simulationSpeed}x speed</div>
-              </div>
-
-              <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
-                <div className="text-sm font-semibold text-blue-800 mb-2">System Status</div>
-                <div className="text-xs text-blue-700">
-                  {simulationMode ? 'Simulation Active' : 'Live Operations'}
-                </div>
-                <div className="text-xs text-blue-600 mt-1">
-                  Travel Time: {trafficKPIs.avgTravelTime} min (Min: 60 min)
-                </div>
-              </div>
-            </div>
-
-            {/* Operational Scenarios */}
-            <div className="lg:col-span-2 space-y-6">
-              <h4 className="font-bold text-gray-800 text-lg flex items-center space-x-2">
-                <BarChart3 className="w-5 h-5" />
-                <span>Operational Scenarios</span>
-              </h4>
-              
-              {/* Realistic Scenario Configuration */}
-              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200">
-                <h5 className="font-bold text-gray-800 mb-4 flex items-center space-x-2">
-                  <Target className="w-4 h-4" />
-                  <span>Realistic Scenario Builder</span>
-                </h5>
-                
-                {/* Day Type Selection */}
-                <div className="mb-4">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">🗓️ Day Type</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {dayTypes.map(day => (
-                      <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="dayType"
-                          value={day.id}
-                          checked={dayType === day.id}
-                          onChange={(e) => setDayType(e.target.value)}
-                          className="text-blue-600"
-                        />
-                        <span className="text-sm text-gray-700">{day.name}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-                
-                {/* TTD Special Days */}
-                <div className="mb-4">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">🛕 TTD Special Days</label>
-                  <div className="space-y-1">
-                    {ttdSpecialDaysConfig.map(day => (
-                      <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={ttdSpecialDays.includes(day.id)}
-                          onChange={() => handleTtdSpecialDayToggle(day.id)}
-                          className="text-purple-600"
-                        />
-                        <span className="text-sm text-gray-700">{day.name}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-                
-                {/* Regional Festivals */}
-                <div className="mb-4">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">🌍 Regional Festivals</label>
-                  <div className="space-y-1">
-                    {regionalFestivalsConfig.map(festival => (
-                      <label key={festival.id} className="flex items-center space-x-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={regionalFestivals.includes(festival.id)}
-                          onChange={() => handleRegionalFestivalToggle(festival.id)}
-                          className="text-green-600"
-                        />
-                        <span className="text-sm text-gray-700">{festival.name}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-                
-                {/* Calculated Impact */}
-                <div className="mt-4 p-3 bg-white/70 rounded-lg border border-blue-300">
-                  <div className="text-sm font-semibold text-gray-700">🧠 Calculated Impact</div>
-                  <div className="text-lg font-bold text-blue-600">
-                    {calculatedMultiplier > 1 ? '+' : ''}{((calculatedMultiplier - 1) * 100).toFixed(0)}% Load Increase
-                  </div>
-                  <div className="text-xs text-gray-600 mt-1">
-                    Multiplier: {calculatedMultiplier.toFixed(2)}x
-                  </div>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {whatIfScenarios.map(scenario => (
-                  <div
-                    key={scenario.id}
-                    onClick={() => setWhatIfScenario(scenario.id)}
-                    className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
-                      whatIfScenario === scenario.id
-                        ? 'border-blue-500 bg-blue-50 shadow-md'
-                        : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
-                    }`}
-                  >
-                    <div className="font-semibold text-gray-800 mb-1">{scenario.name}</div>
-                    <div className="text-xs text-gray-600 mb-2">{scenario.description}</div>
-                    <div className="text-xs text-blue-600 font-semibold">
-                      Base Load: {scenario.multiplier > 1 ? '+' : ''}{((scenario.multiplier - 1) * 100).toFixed(0)}%
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                onClick={runOperationalAnalysis}
-                className="w-full bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg"
-              >
-                Run Operational Analysis
-              </button>
-            </div>
-
-            {/* Analysis Results */}
-            <div className="space-y-4">
-              <h4 className="font-bold text-gray-800 text-lg flex items-center space-x-2">
-                <Zap className="w-5 h-5" />
-                <span>Analysis Results</span>
-              </h4>
-              
-              {simulationResults ? (
-                <div className="space-y-3">
-                  <div className="p-4 bg-gray-50 rounded-xl">
-                    <div className="text-sm font-semibold text-gray-700">Active Scenario</div>
-                    <div className="text-lg font-bold text-blue-600">{simulationResults.scenario}</div>
-                    {simulationResults.dayType && (
-                      <div className="text-xs text-gray-600 mt-1">Day: {simulationResults.dayType}</div>
-                    )}
-                  </div>
-                  
-                  <div className="p-4 bg-cyan-50 rounded-xl">
-                    <div className="text-sm font-semibold text-gray-700">Total Multiplier</div>
-                    <div className="text-lg font-bold text-cyan-600">{simulationResults.calculatedMultiplier.toFixed(2)}x</div>
-                  </div>
-                  
-                  <div className="p-4 bg-green-50 rounded-xl">
-                    <div className="text-sm font-semibold text-gray-700">Projected Load</div>
-                    <div className="text-lg font-bold text-green-600">{simulationResults.projectedPilgrims.toLocaleString()}</div>
-                  </div>
-                  
-                  <div className="p-4 bg-yellow-50 rounded-xl">
-                    <div className="text-sm font-semibold text-gray-700">Wait Time</div>
-                    <div className="text-lg font-bold text-yellow-600">{simulationResults.projectedWaitTime} min</div>
-                  </div>
-
-                  <div className="p-4 bg-red-50 rounded-xl">
-                    <div className="text-sm font-semibold text-gray-700">Resource Strain</div>
-                    <div className="text-lg font-bold text-red-600">{simulationResults.resourceStrain.toFixed(1)}%</div>
-                  </div>
-
-                  {simulationResults.overbookingRisk > 0 && (
-                    <div className="p-4 bg-orange-50 rounded-xl">
-                      <div className="text-sm font-semibold text-gray-700">Overbooking Risk</div>
-                      <div className="text-lg font-bold text-orange-600">{simulationResults.overbookingRisk}%</div>
-                    </div>
-                  )}
-
-                  {simulationResults.operationalRecommendations.length > 0 && (
-                    <div className="p-4 bg-amber-50 rounded-xl">
-                      <div className="text-sm font-semibold text-gray-700 mb-2">Actions Required</div>
-                      <ul className="text-xs text-amber-800 space-y-1">
-                        {simulationResults.operationalRecommendations.map((rec: string, index: number) => (
-                          <li key={index} className="flex items-start space-x-1">
-                            <span>•</span>
-                            <span>{rec}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="p-8 text-center text-gray-500">
-                  <Settings className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p className="text-sm">Run analysis to see operational insights</p>
-                </div>
-              )}
-            </div>
           </div>
         </div>
       </div>
+
+      <VIPMovementModal 
+        isOpen={showVIPModal}
+        onClose={() => setShowVIPModal(false)}
+      />
     </div>
   );
 };
