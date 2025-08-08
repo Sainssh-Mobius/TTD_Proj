@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Users, MapPin, AlertTriangle, Radio, Activity, Zap, Target, Bell, MessageSquare, Bus, Search, Car, Eye, CheckCircle, UserCheck, X, ChevronDown } from 'lucide-react';
+import { Users, MapPin, AlertTriangle, Radio, Activity, Zap, Target, Bell, MessageSquare, Bus, Search, Car, Eye, CheckCircle, UserCheck, X, ChevronDown, Brain } from 'lucide-react';
+import ActionCenter from './ActionCenter';
 
 const GroundStaffDashboard: React.FC = () => {
   // Pilgrim Management KPIs (Ground Staff View)
@@ -324,6 +325,7 @@ const GroundStaffDashboard: React.FC = () => {
   const [selectedTriggerFilter, setSelectedTriggerFilter] = useState('all');
   const [isAreaStatusExpanded, setIsAreaStatusExpanded] = useState(false);
   const [isDensityAlertsExpanded, setIsDensityAlertsExpanded] = useState(false);
+  const [showActionCenter, setShowActionCenter] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -1027,583 +1029,197 @@ const GroundStaffDashboard: React.FC = () => {
               <ul className="text-sm text-gray-700 space-y-2">
                 <li>• {crowdKPIs.currentCrowdCount.toLocaleString()} people in monitored areas</li>
                 <li>• {fieldKPIs.areasCovered} zones actively monitored</li>
-                <li>• {fieldKPIs.completedTasks} tasks completed today</li>
-                <li>• {fieldKPIs.responseTime.toFixed(1)} min average response</li>
-              </ul>
-            </div>
-
-            <div className="bg-white/70 backdrop-blur-sm rounded-xl p-6">
-              <h4 className="font-bold text-gray-800 mb-3">Active Support</h4>
-              <ul className="text-sm text-gray-700 space-y-2">
+                <li>• {fieldKPIs.emergencyAlerts} emergency alerts active</li>
                 <li>• {guidanceMetrics.activeGuidance} pilgrims receiving guidance</li>
-                <li>• {guidanceMetrics.languageSupport.length} languages supported</li>
-                <li>• {guidanceMetrics.specialAssistance} special assistance cases</li>
-                <li>• {crowdKPIs.densityAlerts} active density alerts</li>
               </ul>
             </div>
 
             <div className="bg-white/70 backdrop-blur-sm rounded-xl p-6">
-              <h4 className="font-bold text-gray-800 mb-3">Next Priorities</h4>
+              <h4 className="font-bold text-gray-800 mb-3">Performance Metrics</h4>
               <ul className="text-sm text-gray-700 space-y-2">
-                <li>• {assignedTasks.filter(t => t.status === 'pending').length} pending tasks to complete</li>
-                <li>• {areaStatus.filter(a => a.alert).length} areas requiring attention</li>
-                <li>• {densityAlerts.filter(a => a.level === 'critical').length} critical density alerts</li>
-                <li>• Shift handover at 6:00 PM</li>
+                <li>• Response time: {fieldKPIs.responseTime.toFixed(1)} minutes</li>
+                <li>• Communication score: {fieldKPIs.communicationScore.toFixed(1)}%</li>
+                <li>• Team coordination: {fieldKPIs.teamCoordination.toFixed(1)}%</li>
+                <li>• Tasks completed: {fieldKPIs.completedTasks}</li>
+              </ul>
+            </div>
+
+            <div className="bg-white/70 backdrop-blur-sm rounded-xl p-6">
+              <h4 className="font-bold text-gray-800 mb-3">Support Services</h4>
+              <ul className="text-sm text-gray-700 space-y-2">
+                <li>• Special assistance: {guidanceMetrics.specialAssistance} cases</li>
+                <li>• Language support: {guidanceMetrics.languageSupport.length} languages</li>
+                <li>• Elderly support: {guidanceMetrics.elderlySupport} cases</li>
+                <li>• Disability support: {guidanceMetrics.disabilitySupport} cases</li>
               </ul>
             </div>
           </div>
-        </div>
-        <div className="grid grid-cols-1 gap-8">
-          {/* Simulation Controls */}
-          <div className="space-y-6">
-
-            {/* Realistic Scenario Builder */}
-            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200">
-              {/* Header */}
-              <div className="flex items-center justify-between mb-6">
-                <h5 className="font-bold text-gray-800 flex items-center space-x-2">
-                  <Target className="w-5 h-5" />
-                  <span>Realistic Scenario Builder</span>
-                </h5>
-                
-                {calculatedMultiplier !== 1.0 && (
-                  <div className="flex items-center space-x-2 bg-green-100 px-3 py-1 rounded-full border border-green-300">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-green-600 font-medium text-sm">Live Updates Active</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Filter Controls Section */}
-              <div className="bg-white/80 rounded-lg p-4 mb-6 border border-gray-200">
-                <h6 className="font-semibold text-gray-700 mb-3 flex items-center space-x-2">
-                  <span>🔧</span>
-                  <span>Chart & Filter Controls</span>
-                </h6>
-                
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                  {/* Time Period Filter */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-600 block">📊 Chart Time Period</label>
-                    <select
-                      value={chartTimePeriod || 'hourly'}
-                      onChange={(e) => setChartTimePeriod(e.target.value)}
-                      className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm font-medium transition-all duration-200"
-                    >
-                      <option value="hourly">📈 Hourly View</option>
-                      <option value="daily">📅 Daily View</option>
-                      <option value="weekly">📊 Weekly View</option>
-                      <option value="monthly">📋 Monthly View</option>
-                      <option value="yearly">📆 Yearly View</option>
-                    </select>
-                  </div>
-                  
-                  {/* Date Range Filter */}
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <input
-                        type="checkbox"
-                        id="dateFilter"
-                        checked={dateFilterEnabled}
-                        onChange={(e) => setDateFilterEnabled(e.target.checked)}
-                        className="text-blue-600 rounded focus:ring-blue-500"
-                      />
-                      <label htmlFor="dateFilter" className="text-sm font-medium text-gray-600 cursor-pointer">
-                        📅 Custom Date Range
-                      </label>
-                    </div>
-                    
-                    {dateFilterEnabled && (
-                      <div className="space-y-2">
-                        <input
-                          type="date"
-                          value={startDate}
-                          onChange={(e) => setStartDate(e.target.value)}
-                          className="w-full px-2 py-2 border border-blue-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          placeholder="Start Date"
-                        />
-                        <input
-                          type="date"
-                          value={endDate}
-                          onChange={(e) => setEndDate(e.target.value)}
-                          className="w-full px-2 py-2 border border-blue-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                          placeholder="End Date"
-                        />
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Festival Filter */}
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <input
-                        type="checkbox"
-                        id="festivalFilter"
-                        checked={festivalFilterEnabled}
-                        onChange={(e) => setFestivalFilterEnabled(e.target.checked)}
-                        className="text-purple-600 rounded focus:ring-purple-500"
-                      />
-                      <label htmlFor="festivalFilter" className="text-sm font-medium text-gray-600 cursor-pointer">
-                        🎉 Festival Impact Analysis
-                      </label>
-                    </div>
-                    
-                    {festivalFilterEnabled && (
-                      <div className="bg-purple-50 rounded-lg p-3 border border-purple-200">
-                        <p className="text-xs text-purple-700 mb-2">
-                          Select festivals from the calendar below to see their impact on predictions
-                        </p>
-                        <div className="text-xs text-purple-600">
-                          {selectedFestivals.length > 0 
-                            ? `${selectedFestivals.length} festivals selected` 
-                            : 'No festivals selected'
-                          }
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              
-              {/* Scenario Parameters Section */}
-              <div className="bg-white/90 rounded-lg p-4 mb-6 border border-gray-200">
-                <h6 className="font-semibold text-gray-700 mb-4 flex items-center space-x-2">
-                  <span>⚙️</span>
-                  <span>Scenario Parameters</span>
-                </h6>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {/* Day Type Selection */}
-                  <div className="space-y-3">
-                    <label className="block text-sm font-semibold text-gray-700">🗓️ Day Type</label>
-                    <div className="space-y-2">
-                      {dayTypes.map(day => (
-                        <label key={day.id} className="flex items-center space-x-3 cursor-pointer p-2 hover:bg-blue-50 rounded-lg transition-colors">
-                          <input
-                            type="radio"
-                            name="dayType"
-                            value={day.id}
-                            checked={dayType === day.id}
-                            onChange={(e) => setDayType(e.target.value)}
-                            className="text-blue-600 focus:ring-blue-500"
-                          />
-                          <span className="text-sm text-gray-700 font-medium">{day.name}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* TTD Special Days */}
-                  <div className="space-y-3">
-                    <label className="block text-sm font-semibold text-gray-700">🛕 TTD Special Days</label>
-                    <div className="space-y-2 max-h-40 overflow-y-auto">
-                      {ttdSpecialDaysConfig.map(day => (
-                        <label key={day.id} className="flex items-center space-x-3 cursor-pointer p-2 hover:bg-purple-50 rounded-lg transition-colors">
-                          <input
-                            type="checkbox"
-                            checked={ttdSpecialDays.includes(day.id)}
-                            onChange={() => handleTtdSpecialDayToggle(day.id)}
-                            className="text-purple-600 rounded focus:ring-purple-500"
-                          />
-                          <span className="text-sm text-gray-700">{day.name}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Regional Festivals */}
-                  <div className="space-y-3">
-                    <label className="block text-sm font-semibold text-gray-700">🌍 Regional Festivals</label>
-                    <div className="space-y-2 max-h-40 overflow-y-auto">
-                      {regionalFestivalsConfig.map(festival => (
-                        <label key={festival.id} className="flex items-center space-x-3 cursor-pointer p-2 hover:bg-green-50 rounded-lg transition-colors">
-                          <input
-                            type="checkbox"
-                            checked={regionalFestivals.includes(festival.id)}
-                            onChange={() => handleRegionalFestivalToggle(festival.id)}
-                            className="text-green-600 rounded focus:ring-green-500"
-                          />
-                          <span className="text-sm text-gray-700">{festival.name}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* TTD Festival Calendar */}
-              {festivalFilterEnabled && (
-                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border-2 border-purple-200 shadow-sm">
-                  <div className="flex items-center justify-between mb-6">
-                    <h5 className="font-bold text-purple-900 text-lg flex items-center space-x-3">
-                      <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-2 rounded-lg text-white">
-                        <span className="text-lg">🎉</span>
-                      </div>
-                      <div>
-                        <div>TTD Festival Calendar 2025</div>
-                        <div className="text-sm font-normal text-purple-600 mt-1">
-                          Select festivals to see their impact on field operations
-                        </div>
-                      </div>
-                    </h5>
-                    
-                    {selectedFestivals.length > 0 && (
-                      <div className="bg-purple-100 px-4 py-2 rounded-full border border-purple-300">
-                        <span className="text-purple-800 font-semibold text-sm">
-                          {selectedFestivals.length} Festival{selectedFestivals.length !== 1 ? 's' : ''} Selected
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 max-h-80 overflow-y-auto">
-                    {ttdFestivals.map(festival => {
-                      const isSelected = selectedFestivals.includes(festival.id);
-                      const festivalDate = new Date(festival.date);
-                      const isPast = festivalDate < new Date();
-                      const isUpcoming = !isPast && festivalDate <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-                      
-                      return (
-                        <label
-                          key={festival.id}
-                          className={`group relative flex items-start space-x-3 p-4 rounded-xl cursor-pointer transition-all duration-300 border-2 ${
-                            isSelected
-                              ? 'bg-white border-purple-400 shadow-lg ring-2 ring-purple-200'
-                              : isPast
-                                ? 'bg-gray-50 border-gray-200 hover:bg-gray-100'
-                                : isUpcoming
-                                  ? 'bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-300 hover:border-amber-400 hover:shadow-md'
-                                  : 'bg-white border-gray-200 hover:bg-purple-50 hover:border-purple-300 hover:shadow-md'
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => handleFestivalToggle(festival.id)}
-                            className="text-purple-600 mt-1 flex-shrink-0 w-4 h-4 rounded focus:ring-purple-500"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className={`text-sm font-semibold mb-2 leading-tight ${
-                              isSelected ? 'text-purple-900' : isPast ? 'text-gray-500' : 'text-gray-800'
-                            }`}>
-                              {festival.name}
-                            </div>
-                            
-                            <div className="flex items-center space-x-2 mb-2">
-                              <div className={`text-xs px-2 py-1 rounded-md font-medium flex items-center space-x-1 ${
-                                isPast ? 'bg-gray-200 text-gray-600' :
-                                isUpcoming ? 'bg-amber-200 text-amber-800' : 'bg-blue-100 text-blue-800'
-                              }`}>
-                                <span>📅</span>
-                                <span>{festivalDate.toLocaleDateString('en-US', { 
-                                  month: 'short', 
-                                  day: 'numeric',
-                                  year: 'numeric'
-                                })}</span>
-                              </div>
-                              
-                              {isUpcoming && (
-                                <div className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded-full font-bold animate-pulse">
-                                  SOON
-                                </div>
-                              )}
-                            </div>
-                            
-                            <div className="flex items-center justify-between">
-                              <span className={`text-xs px-3 py-1 rounded-full font-medium ${
-                                festival.category === 'Major' ? 'bg-red-100 text-red-700 border border-red-200' :
-                                festival.category === 'Special' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
-                                festival.category === 'Religious' ? 'bg-purple-100 text-purple-700 border border-purple-200' :
-                                'bg-green-100 text-green-700 border border-green-200'
-                              }`}>
-                                {festival.category}
-                              </span>
-                              <div className="flex items-center space-x-1">
-                                <span className="text-orange-600 font-bold text-sm">
-                                  {festival.impact}x
-                                </span>
-                                <span className="text-xs text-orange-500">impact</span>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          {/* Selection indicator */}
-                          {isSelected && (
-                            <div className="absolute -top-2 -right-2 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center shadow-lg">
-                              <span className="text-white text-xs">✓</span>
-                            </div>
-                          )}
-                        </label>
-                      );
-                    })}
-                  </div>
-                  
-                  {selectedFestivals.length > 0 && (
-                    <div className="mt-6 bg-white/90 rounded-lg p-4 border border-purple-200">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="text-sm font-semibold text-purple-900 flex items-center space-x-2">
-                          <span>🎯</span>
-                          <span>Active Festival Impact Analysis</span>
-                        </div>
-                        <button
-                          onClick={() => setSelectedFestivals([])}
-                          className="text-purple-600 hover:text-purple-800 text-sm font-medium px-3 py-1 rounded-lg hover:bg-purple-100 transition-colors"
-                        >
-                          Clear All
-                        </button>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedFestivals.map(festivalId => {
-                          const festival = ttdFestivals.find(f => f.id === festivalId);
-                          if (!festival) return null;
-                          return (
-                            <div
-                              key={festivalId}
-                              className="group flex items-center space-x-2 bg-gradient-to-r from-purple-100 to-pink-100 px-3 py-2 rounded-full border border-purple-200 shadow-sm"
-                            >
-                              <span className="text-purple-800 font-medium text-sm">{festival.name}</span>
-                              <div className="flex items-center space-x-1">
-                                <span className="text-orange-600 font-bold text-sm">{festival.impact}x</span>
-                                <button
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    handleFestivalToggle(festivalId);
-                                  }}
-                                  className="text-purple-600 hover:text-purple-800 ml-1 w-4 h-4 rounded-full hover:bg-purple-200 flex items-center justify-center transition-colors"
-                                >
-                                  ×
-                                </button>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        
-          
-
-        {/* Field Operations Simulation */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center space-x-4">
-              <div className="bg-gradient-to-r from-green-500 to-teal-600 p-4 rounded-xl text-white">
-                <Users className="w-8 h-8" />
-              </div>
-              <div>
-                <h3 className="text-2xl font-bold text-gray-800">Field Operations Time Series & Task Simulation</h3>
-                <p className="text-gray-600 mt-1">Real-time field trends, workload predictions, and task management</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              
-              <button
-                onClick={() => {
-                  if (simulationMode) {
-                    // Stop simulation and reset baseline
-                    setSimulationMode(false);
-                    setBaselinePilgrimKPIs(null);
-                  } else {
-                    // Start simulation
-                    setSimulationMode(true);
-                    runFieldAnalysis();
-                  }
-                }}
-                className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${simulationMode
-                  ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg'
-                  : 'bg-green-500 hover:bg-green-600 text-white shadow-lg'
-                  }`}
-              >
-                <Activity className="w-5 h-5" />
-                <span>{simulationMode ? 'Stop Simulation' : 'Start Simulation'}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Time Series Charts */}
-          <div className="grid grid-cols-1 gap-8 mb-8">
-            {/* Field Workload Time Series */}
-            <div className="bg-gray-50 rounded-xl p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h4 className="font-bold text-gray-800 text-lg">Field Workload Trends</h4>
-                  <div className="text-sm text-gray-600 mt-1">
-                    {chartTimePeriod ? `${chartTimePeriod.charAt(0).toUpperCase() + chartTimePeriod.slice(1)} View` : 'Hourly View'}
-                    {dateFilterEnabled && startDate && endDate && 
-                      ` | ${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}`
-                    }
-                    {festivalFilterEnabled && selectedFestivals.length > 0 && 
-                      ` | ${selectedFestivals.length} Festival${selectedFestivals.length !== 1 ? 's' : ''} Impact`
-                    }
-                  </div>
-                </div>
-                <div className="flex space-x-4 text-sm">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <span>Current</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                    <span>Predicted</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span>Simulation</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="h-64 relative">
-                <div className="absolute inset-0 flex items-end justify-between px-2">
-                  {chartData.labels.map((label, i) => {
-                    const currentHeight = chartData.currentData[i];
-                    const predictedHeight = chartData.predictedData[i];
-                    const simulationHeight = simulationMode ? chartData.simulationData[i] : currentHeight;
-
-                    return (
-                      <div key={i} className="flex flex-col items-center space-y-1 flex-1">
-                        <div className="flex items-end space-x-1 h-48">
-                          <div
-                            className="w-2 bg-blue-500 rounded-t transition-all duration-500"
-                            style={{ height: `${currentHeight}%` }}
-                          ></div>
-                          <div
-                            className="w-2 bg-purple-500 rounded-t opacity-70 transition-all duration-500"
-                            style={{ height: `${predictedHeight}%` }}
-                          ></div>
-                          {simulationMode && (
-                            <div
-                              className="w-2 bg-green-500 rounded-t animate-pulse transition-all duration-500"
-                              style={{ height: `${simulationHeight}%` }}
-                            ></div>
-                          )}
-                        </div>
-                        <div className="text-xs text-gray-600 transform -rotate-45 origin-center whitespace-nowrap">
-                          {label}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="mt-4 grid grid-cols-3 gap-4 text-center">
-                <div className="p-3 bg-blue-50 rounded-lg">
-                  <div className="text-lg font-bold text-blue-600">
-                    {simulationMode && baselinePilgrimKPIs ? baselinePilgrimKPIs.assignedPilgrims : pilgrimKPIs.assignedPilgrims}
-                  </div>
-                  <div className="text-xs text-blue-800">Current Workload</div>
-                </div>
-                <div className="p-3 bg-purple-50 rounded-lg">
-                  <div className="text-lg font-bold text-purple-600">
-                    {Math.floor((simulationMode && baselinePilgrimKPIs ? baselinePilgrimKPIs.assignedPilgrims : pilgrimKPIs.assignedPilgrims) * 1.3)}
-                  </div>
-                  <div className="text-xs text-purple-800">Predicted Peak</div>
-                </div>
-                {simulationMode && (
-                  <div className="p-3 bg-green-50 rounded-lg">
-                    <div className="text-lg font-bold text-green-600">
-                      {pilgrimKPIs.assignedPilgrims}
-                    </div>
-                    <div className="text-xs text-green-800">Simulation Load</div>
-                  </div>
-                )}
-              </div>
-              
-              {/* Filter Impact Summary */}
-              {(dateFilterEnabled || (festivalFilterEnabled && selectedFestivals.length > 0) || calculatedMultiplier !== 1.0) && (
-                <div className="mt-4 bg-white/80 rounded-lg p-4 border border-gray-200">
-                  <h6 className="font-semibold text-gray-700 mb-2 flex items-center space-x-2">
-                    <span>📈</span>
-                    <span>Active Filter Impact</span>
-                  </h6>
-                  <div className="flex flex-wrap gap-2 text-sm">
-                    {dateFilterEnabled && startDate && endDate && (
-                      <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full border border-blue-200">
-                        Custom Date Range Active
-                      </div>
-                    )}
-                    {festivalFilterEnabled && selectedFestivals.length > 0 && (
-                      <div className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full border border-purple-200">
-                        {selectedFestivals.length} Festival Impact{selectedFestivals.length !== 1 ? 's' : ''}
-                      </div>
-                    )}
-                    {calculatedMultiplier !== 1.0 && (
-                      <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full border border-green-200">
-                        Scenario Multiplier: {calculatedMultiplier.toFixed(2)}x
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-
-
         </div>
       </div>
 
-      {/* Trigger Action Modal */}
-      {showTriggerModal && selectedTrigger && (
+      {/* Trigger Management Modal */}
+      {showTriggerModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-gray-800">Manage Trigger</h3>
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-xl font-bold text-gray-800">Active Triggers Management</h2>
               <button
                 onClick={() => setShowTriggerModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
 
-            <div className="mb-6">
-              <div className="flex items-center space-x-3 mb-4">
-                <div className={`p-2 rounded ${getTypeColor(selectedTrigger.type)}`}>
-                  {getTypeIcon(selectedTrigger.type)}
-                </div>
-                <div>
-                  <div className="font-semibold capitalize">{selectedTrigger.type.replace('-', ' ')}</div>
-                  <div className="text-sm text-gray-600">{selectedTrigger.location}</div>
-                </div>
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+              {/* Category Filter */}
+              <div className="flex flex-wrap gap-2 mb-6">
+                <button
+                  onClick={() => setSelectedTriggerFilter('all')}
+                  className={`px-4 py-2 rounded-lg transition-colors ${selectedTriggerFilter === 'all'
+                    ? 'bg-gray-800 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                >
+                  All ({activeAlerts.filter(a => a.status === 'pending').length})
+                </button>
+                {[
+                  { id: 'darshan', name: 'Darshan Updates', color: 'yellow' },
+                  { id: 'crowd', name: 'Crowd Alerts', color: 'red' },
+                  { id: 'shuttle', name: 'Shuttle Events', color: 'orange' },
+                  { id: 'lost-found', name: 'Lost & Found', color: 'purple' },
+                  { id: 'parking', name: 'Parking Saturation', color: 'blue' }
+                ].map(category => {
+                  const count = activeAlerts.filter(a => a.type === category.id && a.status === 'pending').length;
+                  return (
+                    <button
+                      key={category.id}
+                      onClick={() => setSelectedTriggerFilter(category.id)}
+                      className={`px-4 py-2 rounded-lg transition-colors ${selectedTriggerFilter === category.id
+                        ? `bg-${category.color}-500 text-white`
+                        : `bg-${category.color}-100 text-${category.color}-700 hover:bg-${category.color}-200`
+                        }`}
+                    >
+                      {category.name} ({count})
+                    </button>
+                  );
+                })}
               </div>
 
-              <div className="text-sm text-gray-700 mb-4">{selectedTrigger.message}</div>
+              {/* Trigger List */}
+              <div className="space-y-4">
+                {filteredAlerts.map(alert => (
+                  <div key={alert.id} className={`border rounded-lg p-4 ${getPriorityColor(alert.priority)}`}>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center space-x-3">
+                        <div className={`p-2 rounded ${getTypeColor(alert.type)}`}>
+                          {getTypeIcon(alert.type)}
+                        </div>
+                        <div>
+                          <h4 className="font-semibold capitalize">{alert.type.replace('-', ' ')}</h4>
+                          <p className="text-sm opacity-80">{alert.category}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs">{alert.time}</span>
+                        <div className={`text-xs px-2 py-1 rounded mt-1 ${alert.priority === 'high' ? 'bg-red-100 text-red-800' :
+                          alert.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-green-100 text-green-800'
+                          }`}>
+                          {alert.priority} priority
+                        </div>
+                      </div>
+                    </div>
 
-              <div className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getPriorityColor(selectedTrigger.priority)}`}>
-                {selectedTrigger.priority} priority
+                    <div className="mb-3">
+                      <p className="text-sm font-medium mb-1">Location: {alert.location}</p>
+                      <p className="text-sm">{alert.message}</p>
+                    </div>
+
+                    <div className="flex space-x-3">
+                      <button
+                        onClick={() => handleTriggerAction(alert.id, 'acknowledge')}
+                        className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition-colors"
+                      >
+                        <CheckCircle className="w-4 h-4 inline mr-2" />
+                        Acknowledge
+                      </button>
+                      <button
+                        onClick={() => handleTriggerAction(alert.id, 'delegate')}
+                        className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded transition-colors"
+                      >
+                        <UserCheck className="w-4 h-4 inline mr-2" />
+                        Delegate
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                {filteredAlerts.length === 0 && (
+                  <div className="text-center py-12 text-gray-500">
+                    <Bell className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>No active triggers in this category</p>
+                  </div>
+                )}
               </div>
-            </div>
-
-            <div className="flex space-x-3">
-              <button
-                onClick={() => handleTriggerAction(selectedTrigger.id, 'acknowledge')}
-                className="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-xl transition-colors flex items-center justify-center space-x-2"
-              >
-                <CheckCircle className="w-4 h-4" />
-                <span>Acknowledge</span>
-              </button>
-              <button
-                onClick={() => handleTriggerAction(selectedTrigger.id, 'delegate')}
-                className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-xl transition-colors flex items-center justify-center space-x-2"
-              >
-                <UserCheck className="w-4 h-4" />
-                <span>Delegate</span>
-              </button>
             </div>
           </div>
         </div>
       )}
+
+      {/* Action Center Modal */}
+      {showActionCenter && (
+        <ActionCenter
+          onClose={() => setShowActionCenter(false)}
+          userRole="ground-staff"
+          simulationMode={simulationMode}
+          setSimulationMode={setSimulationMode}
+          simulationSpeed={simulationSpeed}
+          setSimulationSpeed={setSimulationSpeed}
+          whatIfScenario={whatIfScenario}
+          setWhatIfScenario={setWhatIfScenario}
+          whatIfScenarios={whatIfScenarios}
+          runAnalysis={runFieldAnalysis}
+          simulationResults={simulationResults}
+          dayType={dayType}
+          setDayType={setDayType}
+          dayTypes={dayTypes}
+          ttdSpecialDays={ttdSpecialDays}
+          handleTtdSpecialDayToggle={handleTtdSpecialDayToggle}
+          ttdSpecialDaysConfig={ttdSpecialDaysConfig}
+          regionalFestivals={regionalFestivals}
+          handleRegionalFestivalToggle={handleRegionalFestivalToggle}
+          regionalFestivalsConfig={regionalFestivalsConfig}
+          calculatedMultiplier={calculatedMultiplier}
+          chartTimePeriod={chartTimePeriod}
+          setChartTimePeriod={setChartTimePeriod}
+          dateFilterEnabled={dateFilterEnabled}
+          setDateFilterEnabled={setDateFilterEnabled}
+          startDate={startDate}
+          setStartDate={setStartDate}
+          endDate={endDate}
+          setEndDate={setEndDate}
+          festivalFilterEnabled={festivalFilterEnabled}
+          setFestivalFilterEnabled={setFestivalFilterEnabled}
+          selectedFestivals={selectedFestivals}
+          handleFestivalToggle={handleFestivalToggle}
+          ttdFestivals={ttdFestivals}
+          chartData={chartData}
+          baselineKPIs={baselinePilgrimKPIs}
+          currentKPIs={pilgrimKPIs}
+        />
+      )}
+
+      {/* Floating Action Button */}
+      <button
+        onClick={() => setShowActionCenter(true)}
+        className="fixed bottom-6 right-6 bg-gradient-to-r from-green-500 to-teal-600 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110 z-40"
+      >
+        <Brain className="w-6 h-6" />
+      </button>
     </div>
   );
 };
 
-
-export default GroundStaffDashboard
+export default GroundStaffDashboard;
+                
