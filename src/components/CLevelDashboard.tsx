@@ -80,6 +80,7 @@ const CLevelDashboard: React.FC = () => {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState('06:30');
   const [timeSlotPredictions, setTimeSlotPredictions] = useState<any>(null);
   const [currentWeather, setCurrentWeather] = useState('normal');
+  const [barGraphData, setBarGraphData] = useState({})
 
   // Enhanced C-Level KPIs
   const [executiveKPIs, setExecutiveKPIs] = useState({
@@ -308,19 +309,6 @@ const CLevelDashboard: React.FC = () => {
           }
         }));
 
-        setPilgrimKPIs(prev => ({
-          ...prev,
-          current: Math.max(0, Math.min(prev.dailyCapacity,
-            prev.current + Math.floor((Math.random() * 200 - 100) * scenarioMultiplier * speedMultiplier))),
-          aiPredictedPeak: Math.max(prev.current,
-            prev.aiPredictedPeak + Math.floor((Math.random() * 100 - 50) * scenarioMultiplier)),
-          satisfactionScore: Math.max(3.0, Math.min(5.0,
-            prev.satisfactionScore + (Math.random() * 0.2 - 0.1) * scenarioMultiplier)),
-          avgDarshanTime: Math.max(8, Math.min(25,
-            prev.avgDarshanTime + (Math.random() * 2 - 1) * scenarioMultiplier)),
-          queueEfficiency: Math.max(70, Math.min(100,
-            prev.queueEfficiency + (Math.random() * 2 - 1) * scenarioMultiplier))
-        }));
 
         setTrafficKPIs(prev => ({
           ...prev,
@@ -346,14 +334,14 @@ const CLevelDashboard: React.FC = () => {
 
       // Update forecast data during simulation
       if (simulationMode) {
-        const scenarioMultiplier = whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1;
-        setForecastData(prev => prev.map(item => ({
-          ...item,
-          predicted: Math.max(500, item.predicted + Math.floor((Math.random() * 200 - 100) * scenarioMultiplier)),
-          confidence: Math.max(70, Math.min(99, item.confidence + Math.floor(Math.random() * 6 - 3)))
-        })));
+        // const scenarioMultiplier = whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1;
+        // setForecastData(prev => prev.map(item => ({
+        //   ...item,
+        //   predicted: Math.max(500, item.predicted + Math.floor((Math.random() * 200 - 100) * scenarioMultiplier)),
+        //   confidence: Math.max(70, Math.min(99, item.confidence + Math.floor(Math.random() * 6 - 3)))
+        // })));
       }
-    }, 5000);
+    }, 1000 * 60 * 60);
 
     return () => clearInterval(interval);
   }, [simulationMode, whatIfScenario, simulationSpeed]);
@@ -1028,6 +1016,9 @@ const CLevelDashboard: React.FC = () => {
                 {/* Chart */}
                 <div className="grid grid-cols-12 gap-2 h-48">
                   {forecastData.filter((_, i) => i % 2 === 0).map((item, i) => {
+
+
+
                     const maxValue = Math.max(...forecastData.map(d => d.predicted));
                     const predictedHeight = (item.predicted / maxValue) * 100;
                     const actualHeight = item.actual ? (item.actual / maxValue) * 100 : 0;
@@ -1169,67 +1160,67 @@ const CLevelDashboard: React.FC = () => {
                     <span>Realistic Scenario Builder</span>
                   </h5>
                   <div className='flex flex-row justify-evenly w-2/3'>
-                  {/* Day Type Selection */}
-                  <div className="mb-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">🗓️ Day Type</label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {dayTypes.map(day => (
-                        <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="dayType"
-                            value={day.id}
-                            checked={dayType === day.id}
-                            onChange={(e) => setDayType(e.target.value)}
-                            className="text-blue-600"
-                          />
-                          <span className="text-sm text-gray-700">{day.name}</span>
-                        </label>
-                      ))}
+                    {/* Day Type Selection */}
+                    <div className="mb-4">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">🗓️ Day Type</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {dayTypes.map(day => (
+                          <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="dayType"
+                              value={day.id}
+                              checked={dayType === day.id}
+                              onChange={(e) => setDayType(e.target.value)}
+                              className="text-blue-600"
+                            />
+                            <span className="text-sm text-gray-700">{day.name}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* TTD Special Days */}
+                    <div className="mb-4">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">🛕 TTD Special Days</label>
+                      <div className="space-y-1">
+                        {ttdSpecialDaysConfig.map(day => (
+                          <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={ttdSpecialDays.includes(day.id)}
+                              onChange={() => handleTtdSpecialDayToggle(day.id)}
+                              className="text-purple-600"
+                            />
+                            <span className="text-sm text-gray-700">{day.name}</span>
+                          </label>
+                        ))}
+                      </div>
+
+                    </div>
+
+                    {/* Regional Festivals */}
+                    <div className="mb-4">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">🌍 Regional Festivals</label>
+                      <div className="space-y-1">
+                        {regionalFestivalsConfig.map(festival => (
+                          <label key={festival.id} className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={regionalFestivals.includes(festival.id)}
+                              onChange={() => handleRegionalFestivalToggle(festival.id)}
+                              className="text-green-600"
+                            />
+                            <span className="text-sm text-gray-700">{festival.name}</span>
+                          </label>
+                        ))}
+                      </div>
+
                     </div>
                   </div>
 
-                  {/* TTD Special Days */}
-                  <div className="mb-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">🛕 TTD Special Days</label>
-                    <div className="space-y-1">
-                      {ttdSpecialDaysConfig.map(day => (
-                        <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={ttdSpecialDays.includes(day.id)}
-                            onChange={() => handleTtdSpecialDayToggle(day.id)}
-                            className="text-purple-600"
-                          />
-                          <span className="text-sm text-gray-700">{day.name}</span>
-                        </label>
-                      ))}
-                    </div>
-                    
-                  </div>
 
-                  {/* Regional Festivals */}
-                  <div className="mb-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">🌍 Regional Festivals</label>
-                    <div className="space-y-1">
-                      {regionalFestivalsConfig.map(festival => (
-                        <label key={festival.id} className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={regionalFestivals.includes(festival.id)}
-                            onChange={() => handleRegionalFestivalToggle(festival.id)}
-                            className="text-green-600"
-                          />
-                          <span className="text-sm text-gray-700">{festival.name}</span>
-                        </label>
-                      ))}
-                    </div>
-                    
-                  </div>
-                  </div>
 
-                  
-                  
                   {/* Calculated Impact */}
                   {/* <div className="mt-4 p-3 bg-white/70 rounded-lg border border-blue-300">
                     <div className="text-sm font-semibold text-gray-700">🧠 Calculated Impact</div>
@@ -1242,25 +1233,53 @@ const CLevelDashboard: React.FC = () => {
                   </div> */}
                 </div>
               </div>
-                  <div className='w-full flex justify-end'>
-                  <button
-                    onClick={() =>{
-                      setSimulationMode(!simulationMode)
-                      runStrategicAnalysis()
-                    }}
-                    className={`flex w-1/6 items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${simulationMode
-                      ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg'
-                      : 'bg-green-500 hover:bg-green-600 text-white shadow-lg'
-                      }`}
-                  >
-                    <Activity className="w-5 h-5" />
-                    <span>{simulationMode ? 'Stop Simulation' : 'Run Strategy Analysis'}</span>
-                  </button>
+              <div className='w-full flex justify-end'>
+                <button
+                  onClick={() => {
+                    setSimulationMode(!simulationMode)
+                    // runStrategicAnalysis()
 
-                  </div> 
+                    const scenarioMultiplier = whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1;
+                    const speedMultiplier = simulationSpeed;
+
+                    setPilgrimKPIs(prev => ({
+                      ...prev,
+                      current: Math.max(0, Math.min(prev.dailyCapacity,
+                        prev.current + Math.floor((Math.random() * 200 - 100) * scenarioMultiplier * speedMultiplier))),
+                      aiPredictedPeak: Math.max(prev.current,
+                        prev.aiPredictedPeak + Math.floor((Math.random() * 100 - 50) * scenarioMultiplier)),
+                      satisfactionScore: Math.max(3.0, Math.min(5.0,
+                        prev.satisfactionScore + (Math.random() * 0.2 - 0.1) * scenarioMultiplier)),
+                      avgDarshanTime: Math.max(8, Math.min(25,
+                        prev.avgDarshanTime + (Math.random() * 2 - 1) * scenarioMultiplier)),
+                      queueEfficiency: Math.max(70, Math.min(100,
+                        prev.queueEfficiency + (Math.random() * 2 - 1) * scenarioMultiplier))
+                    }));
+
+                    setForecastData(prev => prev.map(item => ({
+                      ...item,
+                      predicted: Math.max(500, item.predicted + Math.floor((Math.random() * 200 - 100) * scenarioMultiplier)),
+                      confidence: Math.max(70, Math.min(99, item.confidence + Math.floor(Math.random() * 6 - 3)))
+                    })));
+
+                    setTimeout(()=>{
+                      setSimulationMode(!simulationMode)
+                    },1000*Math.random()+1000)
+
+                  }}
+                  className={`flex w-1/6 items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${simulationMode
+                    ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg'
+                    : 'bg-green-500 hover:bg-green-600 text-white shadow-lg'
+                    }`}
+                >
+                  <Activity className="w-5 h-5" />
+                  <span>{simulationMode ? 'Stop Simulation' : 'Run Strategy Analysis'}</span>
+                </button>
+
+              </div>
 
               {/* Strategic Scenarios */}
-              
+
 
               {/* Analysis Results */}
               {/* <div className="space-y-4">
@@ -1399,8 +1418,8 @@ const CLevelDashboard: React.FC = () => {
                       </div>
                     )} */}
                   </div>
-                  
-                 
+
+
                 </div>
               </div>
 
@@ -1413,7 +1432,6 @@ const CLevelDashboard: React.FC = () => {
                     const simulationHeight = simulationMode ?
                       Math.max(20, Math.min(90, currentHeight * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))) :
                       currentHeight;
-
                     return (
                       <div key={i} className="flex flex-col items-center space-y-1 flex-1">
                         <div className="flex items-end space-x-1 h-48">
@@ -1484,38 +1502,38 @@ const CLevelDashboard: React.FC = () => {
                       </div>
                     )}
                   </div>
-                  
-                 
+
+
                 </div>
               </div>
-              
+
               <div className="h-64 relative">
                 <div className="absolute inset-0 flex items-end justify-between px-2">
-                  {Array.from({length: 24}, (_, i) => {
+                  {Array.from({ length: 24 }, (_, i) => {
                     const hour = i;
                     const currentHeight = Math.max(20, Math.min(90, 35 + Math.sin(i * 0.5) * 25 + Math.random() * 10));
                     const predictedHeight = Math.max(20, Math.min(90, currentHeight + 12 + Math.sin(i * 0.3) * 18));
-                    const simulationHeight = simulationMode ? 
-                      Math.max(20, Math.min(90, currentHeight * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))) : 
+                    const simulationHeight = simulationMode ?
+                      Math.max(20, Math.min(90, currentHeight * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))) :
                       currentHeight;
-                    
+
                     return (
                       <div key={i} className="flex flex-col items-center space-y-1 flex-1">
                         <div className="flex items-end space-x-1 h-48">
-                          <div 
+                          <div
                             className="w-2 bg-blue-500 rounded-t transition-all duration-500"
-                            style={{height: `${currentHeight}%`}}
+                            style={{ height: `${currentHeight}%` }}
                             title={`Current: ${Math.floor(1200 + Math.sin(i * 0.5) * 400)} pilgrims`}
                           ></div>
-                          <div 
+                          <div
                             className="w-2 bg-purple-500 rounded-t opacity-70 transition-all duration-500"
-                            style={{height: `${predictedHeight}%`}}
+                            style={{ height: `${predictedHeight}%` }}
                             title={`Predicted: ${Math.floor(1400 + Math.sin(i * 0.3) * 500)} pilgrims`}
                           ></div>
                           {simulationMode && (
-                            <div 
+                            <div
                               className="w-2 bg-green-500 rounded-t animate-pulse transition-all duration-500"
-                              style={{height: `${simulationHeight}%`}}
+                              style={{ height: `${simulationHeight}%` }}
                               title={`Simulation: ${Math.floor((1200 + Math.sin(i * 0.5) * 400) * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))} pilgrims`}
                             ></div>
                           )}
@@ -1528,7 +1546,7 @@ const CLevelDashboard: React.FC = () => {
                   })}
                 </div>
               </div>
-              
+
               <div className="mt-4 grid grid-cols-3 gap-4 text-center">
                 <div className="p-3 bg-blue-50 rounded-lg">
                   <div className="text-lg font-bold text-blue-600">{pilgrimKPIs.current.toLocaleString()}</div>
@@ -1548,8 +1566,8 @@ const CLevelDashboard: React.FC = () => {
                 )}
               </div>
             </div>
-            
-            
+
+
           </div>
         </div>
       )}

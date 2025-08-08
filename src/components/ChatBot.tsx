@@ -131,7 +131,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ onClose }) => {
         <div className="flex items-center space-x-3">
           <div className="bg-white/20 p-2.5 rounded-xl backdrop-blur-sm">
             <MessageCircle className="w-5 h-5" />
-          </div>
+          </div> 
           <div>
             <h3 className="text-label-lg font-semibold">TTD AI Assistant</h3>
             <p className="text-label-sm opacity-80">Multi-language support</p>
