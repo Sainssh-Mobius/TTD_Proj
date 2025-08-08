@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Settings, Users, Car, AlertTriangle, Activity, Clock, MapPin, Shield, Zap, Target, BarChart3, TrendingUp, Brain } from 'lucide-react';
 import VIPMovementModal from './VIPMovementModal';
+import ActionCenter from './ActionCenter';
 
 const OperationalDashboard: React.FC = () => {
   const [showVIPModal, setShowVIPModal] = useState(false);
+  const [showActionCenter, setShowActionCenter] = useState(false);
   
   // Pilgrim Management KPIs
   const [pilgrimKPIs, setPilgrimKPIs] = useState({
@@ -978,6 +980,38 @@ const OperationalDashboard: React.FC = () => {
             </button>
           </div>
         </div>
+
+        {/* Action Center Integration */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="bg-gradient-to-r from-red-500 to-orange-600 p-3 rounded-xl text-white">
+                <Brain className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-800">Operational Action Center</h3>
+                <p className="text-gray-600">AI-powered situation management and response coordination</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowActionCenter(!showActionCenter)}
+              className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+                showActionCenter
+                  ? 'bg-red-500 hover:bg-red-600 text-white'
+                  : 'bg-blue-500 hover:bg-blue-600 text-white'
+              }`}
+            >
+              {showActionCenter ? 'Hide Action Center' : 'Open Action Center'}
+            </button>
+          </div>
+        </div>
+
+        {/* Action Center */}
+        {showActionCenter && (
+          <div className="mt-6">
+            <ActionCenter />
+          </div>
+        )}
 
         {/* Operational Summary */}
         <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl shadow-lg p-8 border border-blue-200">

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { TrendingUp, Users,  AlertTriangle, Brain, Target, Zap, BarChart3, Globe, Shield, Clock, Activity, Car, MapPin } from 'lucide-react';
+import { TrendingUp, Users, DollarSign, BarChart3, Calendar, MapPin, Clock, AlertTriangle, CheckCircle, Star, Award, Target, Zap, Activity, Globe, Smartphone, Car, Shield, Brain, Lightbulb, TrendingDown, ArrowUp, ArrowDown, Eye, UserCheck, Building, Briefcase } from 'lucide-react';
+import ActionCenter from './ActionCenter';
 
 const CLevelDashboard: React.FC = () => {
   // Enhanced state management for better UX
   const [activeTab, setActiveTab] = useState<'overview' | 'forecasting' | 'simulation'>('overview');
+  const [showActionCenter, setShowActionCenter] = useState(false);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [dashboardView, setDashboardView] = useState<'compact' | 'detailed'>('compact');
 
@@ -970,6 +972,38 @@ const CLevelDashboard: React.FC = () => {
           })}
         </div>
       </div>
+
+      {/* Executive Action Center */}
+      <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="bg-gradient-to-r from-red-500 to-orange-600 p-3 rounded-xl text-white">
+              <Brain className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-800">Executive Action Center</h3>
+              <p className="text-gray-600">Strategic oversight of critical situations and AI-powered response coordination</p>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowActionCenter(!showActionCenter)}
+            className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+              showActionCenter
+                ? 'bg-red-500 hover:bg-red-600 text-white'
+                : 'bg-blue-500 hover:bg-blue-600 text-white'
+            }`}
+          >
+            {showActionCenter ? 'Hide Action Center' : 'Open Action Center'}
+          </button>
+        </div>
+      </div>
+
+      {/* Action Center */}
+      {showActionCenter && (
+        <div className="mt-6">
+          <ActionCenter />
+        </div>
+      )}
 
       {/* Tab Content */}
       {activeTab === 'overview' && (
