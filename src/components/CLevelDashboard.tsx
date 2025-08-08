@@ -860,6 +860,7 @@ const CLevelDashboard: React.FC = () => {
               </div>
             </div>
           </div>
+          
 
           {/* Executive Summary */}
           <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl shadow-lg p-8 border border-amber-200">
@@ -874,6 +875,111 @@ const CLevelDashboard: React.FC = () => {
               {generateAIExecutiveSummary()}
             </div>
           </div>
+
+             {/* Time Series Visualization */}
+            <div className="bg-gray-50 rounded-xl p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-gray-800">24-Hour Pilgrim Flow Forecast</h3>
+                <div className="flex space-x-2">
+                  <button className="bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-2 rounded-lg text-sm transition-colors">
+                    Hourly
+                  </button>
+                  <button className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-2 rounded-lg text-sm transition-colors">
+                    Daily
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {/* Chart Legend */}
+                <div className="flex items-center justify-center space-x-6 text-sm">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded"></div>
+                    <span className="text-gray-600">Predicted</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded"></div>
+                    <span className="text-gray-600">Actual</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-gray-300 rounded"></div>
+                    <span className="text-gray-600">Future</span>
+                  </div>
+                </div>
+
+                {/* Chart */}
+                <div className="grid grid-cols-12 gap-2 h-48">
+                  {forecastData.filter((_, i) => i % 2 === 0).map((item, i) => {
+
+
+
+                    const maxValue = Math.max(...forecastData.map(d => d.predicted));
+                    const predictedHeight = (item.predicted / maxValue) * 100;
+                    const actualHeight = item.actual ? (item.actual / maxValue) * 100 : 0;
+                    const currentHour = new Date().getHours();
+                    const itemHour = parseInt(item.hour.split(':')[0]);
+                    const isPast = itemHour <= currentHour;
+
+                    return (
+                      <div key={i} className="flex flex-col justify-end group cursor-pointer">
+                        <div className="relative h-full flex items-end justify-center space-x-1">
+                          {/* Predicted bar */}
+                          <div
+                            className={`w-3 rounded-t transition-all duration-300 ${isPast ? 'bg-gradient-to-t from-blue-400 to-purple-400' : 'bg-gradient-to-t from-blue-500 to-purple-500'
+                              } group-hover:shadow-lg`}
+                            style={{ height: `${predictedHeight}%` }}
+                          ></div>
+
+                          {/* Actual bar (only for past hours) */}
+                          {item.actual && (
+                            <div
+                              className="w-3 bg-gradient-to-t from-green-500 to-emerald-500 rounded-t transition-all duration-300 group-hover:shadow-lg"
+                              style={{ height: `${actualHeight}%` }}
+                            ></div>
+                          )}
+                        </div>
+
+                        {/* Hour label */}
+                        <div className="text-xs text-gray-600 text-center mt-2 transform -rotate-45 origin-center">
+                          {item.hour}
+                        </div>
+
+                        {/* Tooltip on hover */}
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                          <div className="bg-gray-900 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap shadow-lg">
+                            <div>Predicted: {item.predicted.toLocaleString()}</div>
+                            {item.actual && <div>Actual: {item.actual.toLocaleString()}</div>}
+                            <div>Confidence: {item.confidence}%</div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Summary Stats */}
+                <div className="grid grid-cols-3 gap-4 mt-6">
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-blue-600">
+                      {forecastData.reduce((sum, item) => sum + item.predicted, 0).toLocaleString()}
+                    </div>
+                    <div className="text-xs text-gray-600">Total Predicted</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-green-600">
+                      {Math.round(forecastData.reduce((sum, item) => sum + item.confidence, 0) / forecastData.length)}%
+                    </div>
+                    <div className="text-xs text-gray-600">Avg Confidence</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-purple-600">
+                      {Math.max(...forecastData.map(item => item.predicted)).toLocaleString()}
+                    </div>
+                    <div className="text-xs text-gray-600">Peak Hour</div>
+                  </div>
+                </div>
+              </div>
+            </div>
         </div>
       )}
 
@@ -1008,110 +1114,7 @@ const CLevelDashboard: React.FC = () => {
               </div>
             )}
 
-            {/* Time Series Visualization */}
-            <div className="bg-gray-50 rounded-xl p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-gray-800">24-Hour Pilgrim Flow Forecast</h3>
-                <div className="flex space-x-2">
-                  <button className="bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-2 rounded-lg text-sm transition-colors">
-                    Hourly
-                  </button>
-                  <button className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-2 rounded-lg text-sm transition-colors">
-                    Daily
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                {/* Chart Legend */}
-                <div className="flex items-center justify-center space-x-6 text-sm">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded"></div>
-                    <span className="text-gray-600">Predicted</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded"></div>
-                    <span className="text-gray-600">Actual</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-gray-300 rounded"></div>
-                    <span className="text-gray-600">Future</span>
-                  </div>
-                </div>
-
-                {/* Chart */}
-                <div className="grid grid-cols-12 gap-2 h-48">
-                  {forecastData.filter((_, i) => i % 2 === 0).map((item, i) => {
-
-
-
-                    const maxValue = Math.max(...forecastData.map(d => d.predicted));
-                    const predictedHeight = (item.predicted / maxValue) * 100;
-                    const actualHeight = item.actual ? (item.actual / maxValue) * 100 : 0;
-                    const currentHour = new Date().getHours();
-                    const itemHour = parseInt(item.hour.split(':')[0]);
-                    const isPast = itemHour <= currentHour;
-
-                    return (
-                      <div key={i} className="flex flex-col justify-end group cursor-pointer">
-                        <div className="relative h-full flex items-end justify-center space-x-1">
-                          {/* Predicted bar */}
-                          <div
-                            className={`w-3 rounded-t transition-all duration-300 ${isPast ? 'bg-gradient-to-t from-blue-400 to-purple-400' : 'bg-gradient-to-t from-blue-500 to-purple-500'
-                              } group-hover:shadow-lg`}
-                            style={{ height: `${predictedHeight}%` }}
-                          ></div>
-
-                          {/* Actual bar (only for past hours) */}
-                          {item.actual && (
-                            <div
-                              className="w-3 bg-gradient-to-t from-green-500 to-emerald-500 rounded-t transition-all duration-300 group-hover:shadow-lg"
-                              style={{ height: `${actualHeight}%` }}
-                            ></div>
-                          )}
-                        </div>
-
-                        {/* Hour label */}
-                        <div className="text-xs text-gray-600 text-center mt-2 transform -rotate-45 origin-center">
-                          {item.hour}
-                        </div>
-
-                        {/* Tooltip on hover */}
-                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
-                          <div className="bg-gray-900 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap shadow-lg">
-                            <div>Predicted: {item.predicted.toLocaleString()}</div>
-                            {item.actual && <div>Actual: {item.actual.toLocaleString()}</div>}
-                            <div>Confidence: {item.confidence}%</div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Summary Stats */}
-                <div className="grid grid-cols-3 gap-4 mt-6">
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-blue-600">
-                      {forecastData.reduce((sum, item) => sum + item.predicted, 0).toLocaleString()}
-                    </div>
-                    <div className="text-xs text-gray-600">Total Predicted</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-green-600">
-                      {Math.round(forecastData.reduce((sum, item) => sum + item.confidence, 0) / forecastData.length)}%
-                    </div>
-                    <div className="text-xs text-gray-600">Avg Confidence</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-lg font-bold text-purple-600">
-                      {Math.max(...forecastData.map(item => item.predicted)).toLocaleString()}
-                    </div>
-                    <div className="text-xs text-gray-600">Peak Hour</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+         
           </div>
         </div>
       )}
