@@ -397,19 +397,6 @@ const CLevelDashboard: React.FC = () => {
           }
         }));
 
-        setPilgrimKPIs(prev => ({
-          ...prev,
-          current: Math.max(0, Math.min(prev.dailyCapacity,
-            prev.current + Math.floor((Math.random() * 200 - 100) * scenarioMultiplier * speedMultiplier))),
-          aiPredictedPeak: Math.max(prev.current,
-            prev.aiPredictedPeak + Math.floor((Math.random() * 100 - 50) * scenarioMultiplier)),
-          satisfactionScore: Math.max(3.0, Math.min(5.0,
-            prev.satisfactionScore + (Math.random() * 0.2 - 0.1) * scenarioMultiplier)),
-          avgDarshanTime: Math.max(8, Math.min(25,
-            prev.avgDarshanTime + (Math.random() * 2 - 1) * scenarioMultiplier)),
-          queueEfficiency: Math.max(70, Math.min(100,
-            prev.queueEfficiency + (Math.random() * 2 - 1) * scenarioMultiplier))
-        }));
 
         setTrafficKPIs(prev => ({
           ...prev,
@@ -435,12 +422,12 @@ const CLevelDashboard: React.FC = () => {
 
       // Update forecast data during simulation
       if (simulationMode) {
-        const scenarioMultiplier = whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1;
-        setForecastData(prev => prev.map(item => ({
-          ...item,
-          predicted: Math.max(500, item.predicted + Math.floor((Math.random() * 200 - 100) * scenarioMultiplier)),
-          confidence: Math.max(70, Math.min(99, item.confidence + Math.floor(Math.random() * 6 - 3)))
-        })));
+        // const scenarioMultiplier = whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1;
+        // setForecastData(prev => prev.map(item => ({
+        //   ...item,
+        //   predicted: Math.max(500, item.predicted + Math.floor((Math.random() * 200 - 100) * scenarioMultiplier)),
+        //   confidence: Math.max(70, Math.min(99, item.confidence + Math.floor(Math.random() * 6 - 3)))
+        // })));
       }
     }, simulationMode ? 1800000 : 5000); // 1800000ms = 30 minutes for simulation updates
 
@@ -991,7 +978,7 @@ const CLevelDashboard: React.FC = () => {
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-blue-600">Capacity Utilization</span>
                   <span className={`font-bold ${getUtilizationColor(pilgrimKPIs.current, pilgrimKPIs.dailyCapacity)}`}>
-                    {((pilgrimKPIs.current / pilgrimKPIs.dailyCapacity) * 100).toFixed(1)}%
+                    {((pilgrimKPIs.current / pilgrimKPIs.dailyCapacity) * 100).toFixed(1)}% 
                   </span>
                 </div>
               </div>
@@ -1031,9 +1018,9 @@ const CLevelDashboard: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
               <div className="text-center p-3 bg-gray-50 rounded-lg">
-                <div className="text-xl font-bold text-indigo-600">{pilgrimKPIs.avgDarshanTime} min</div>
+                <div className="text-xl font-bold text-indigo-600">{pilgrimKPIs.avgDarshanTime} hour</div>
                 <div className="text-xs text-gray-700 font-medium">Avg Darshan Time</div>
-                <div className="text-xs text-gray-500 mt-1">Target: &lt;15 min</div>
+                <div className="text-xs text-gray-500 mt-1">Target: &lt;15 hour</div>
               </div>
               <div className="text-center p-3 bg-gray-50 rounded-lg">
                 <div className="text-xl font-bold text-teal-600">{pilgrimKPIs.queueEfficiency.toFixed(1)}%</div>
@@ -1127,6 +1114,7 @@ const CLevelDashboard: React.FC = () => {
               </div>
             </div>
           </div>
+          
 
           {/* Executive Summary */}
           <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl shadow-lg p-8 border border-amber-200">
@@ -1141,6 +1129,111 @@ const CLevelDashboard: React.FC = () => {
               {generateAIExecutiveSummary()}
             </div>
           </div>
+
+             {/* Time Series Visualization */}
+            <div className="bg-gray-50 rounded-xl p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold text-gray-800">24-Hour Pilgrim Flow Forecast</h3>
+                <div className="flex space-x-2">
+                  <button className="bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-2 rounded-lg text-sm transition-colors">
+                    Hourly
+                  </button>
+                  <button className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-2 rounded-lg text-sm transition-colors">
+                    Daily
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {/* Chart Legend */}
+                <div className="flex items-center justify-center space-x-6 text-sm">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded"></div>
+                    <span className="text-gray-600">Predicted</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded"></div>
+                    <span className="text-gray-600">Actual</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 bg-gray-300 rounded"></div>
+                    <span className="text-gray-600">Future</span>
+                  </div>
+                </div>
+
+                {/* Chart */}
+                <div className="grid grid-cols-12 gap-2 h-48">
+                  {forecastData.filter((_, i) => i % 2 === 0).map((item, i) => {
+
+
+
+                    const maxValue = Math.max(...forecastData.map(d => d.predicted));
+                    const predictedHeight = (item.predicted / maxValue) * 100;
+                    const actualHeight = item.actual ? (item.actual / maxValue) * 100 : 0;
+                    const currentHour = new Date().getHours();
+                    const itemHour = parseInt(item.hour.split(':')[0]);
+                    const isPast = itemHour <= currentHour;
+
+                    return (
+                      <div key={i} className="flex flex-col justify-end group cursor-pointer">
+                        <div className="relative h-full flex items-end justify-center space-x-1">
+                          {/* Predicted bar */}
+                          <div
+                            className={`w-3 rounded-t transition-all duration-300 ${isPast ? 'bg-gradient-to-t from-blue-400 to-purple-400' : 'bg-gradient-to-t from-blue-500 to-purple-500'
+                              } group-hover:shadow-lg`}
+                            style={{ height: `${predictedHeight}%` }}
+                          ></div>
+
+                          {/* Actual bar (only for past hours) */}
+                          {item.actual && (
+                            <div
+                              className="w-3 bg-gradient-to-t from-green-500 to-emerald-500 rounded-t transition-all duration-300 group-hover:shadow-lg"
+                              style={{ height: `${actualHeight}%` }}
+                            ></div>
+                          )}
+                        </div>
+
+                        {/* Hour label */}
+                        <div className="text-xs text-gray-600 text-center mt-2 transform -rotate-45 origin-center">
+                          {item.hour}
+                        </div>
+
+                        {/* Tooltip on hover */}
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                          <div className="bg-gray-900 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap shadow-lg">
+                            <div>Predicted: {item.predicted.toLocaleString()}</div>
+                            {item.actual && <div>Actual: {item.actual.toLocaleString()}</div>}
+                            <div>Confidence: {item.confidence}%</div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Summary Stats */}
+                <div className="grid grid-cols-3 gap-4 mt-6">
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-blue-600">
+                      {forecastData.reduce((sum, item) => sum + item.predicted, 0).toLocaleString()}
+                    </div>
+                    <div className="text-xs text-gray-600">Total Predicted</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-green-600">
+                      {Math.round(forecastData.reduce((sum, item) => sum + item.confidence, 0) / forecastData.length)}%
+                    </div>
+                    <div className="text-xs text-gray-600">Avg Confidence</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-lg font-bold text-purple-600">
+                      {Math.max(...forecastData.map(item => item.predicted)).toLocaleString()}
+                    </div>
+                    <div className="text-xs text-gray-600">Peak Hour</div>
+                  </div>
+                </div>
+              </div>
+            </div>
         </div>
       )}
 
@@ -1644,43 +1737,43 @@ const CLevelDashboard: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* TTD Special Days */}
-                  <div className="mb-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">🛕 TTD Special Days</label>
-                    <div className="space-y-1">
-                      {ttdSpecialDaysConfig.map(day => (
-                        <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={ttdSpecialDays.includes(day.id)}
-                            onChange={() => handleTtdSpecialDayToggle(day.id)}
-                            className="text-purple-600"
-                          />
-                          <span className="text-sm text-gray-700">{day.name}</span>
-                        </label>
-                      ))}
-                    </div>
-                    
-                  </div>
+                    {/* TTD Special Days */}
+                    <div className="mb-4">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">🛕 TTD Special Days</label>
+                      <div className="space-y-1">
+                        {ttdSpecialDaysConfig.map(day => (
+                          <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={ttdSpecialDays.includes(day.id)}
+                              onChange={() => handleTtdSpecialDayToggle(day.id)}
+                              className="text-purple-600"
+                            />
+                            <span className="text-sm text-gray-700">{day.name}</span>
+                          </label>
+                        ))}
+                      </div>
 
-                  {/* Regional Festivals */}
-                  <div className="mb-4">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">🌍 Regional Festivals</label>
-                    <div className="space-y-1">
-                      {regionalFestivalsConfig.map(festival => (
-                        <label key={festival.id} className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={regionalFestivals.includes(festival.id)}
-                            onChange={() => handleRegionalFestivalToggle(festival.id)}
-                            className="text-green-600"
-                          />
-                          <span className="text-sm text-gray-700">{festival.name}</span>
-                        </label>
-                      ))}
                     </div>
-                    
-                  </div>
+
+                    {/* Regional Festivals */}
+                    <div className="mb-4">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">🌍 Regional Festivals</label>
+                      <div className="space-y-1">
+                        {regionalFestivalsConfig.map(festival => (
+                          <label key={festival.id} className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={regionalFestivals.includes(festival.id)}
+                              onChange={() => handleRegionalFestivalToggle(festival.id)}
+                              className="text-green-600"
+                            />
+                            <span className="text-sm text-gray-700">{festival.name}</span>
+                          </label>
+                        ))}
+                      </div>
+
+                    </div>
                   </div>
 
                   {/* TTD Festival Calendar */}
@@ -1787,25 +1880,53 @@ const CLevelDashboard: React.FC = () => {
                   </div> */}
                 </div>
               </div>
-                  <div className='w-full flex justify-end'>
-                  <button
-                    onClick={() =>{
-                      setSimulationMode(!simulationMode)
-                      runStrategicAnalysis()
-                    }}
-                    className={`flex w-1/6 items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${simulationMode
-                      ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg'
-                      : 'bg-green-500 hover:bg-green-600 text-white shadow-lg'
-                      }`}
-                  >
-                    <Activity className="w-5 h-5" />
-                    <span>{simulationMode ? 'Stop Simulation' : 'Run Strategy Analysis'}</span>
-                  </button>
+              <div className='w-full flex justify-end'>
+                <button
+                  onClick={() => {
+                    setSimulationMode(!simulationMode)
+                    // runStrategicAnalysis()
 
-                  </div> 
+                    const scenarioMultiplier = whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1;
+                    const speedMultiplier = simulationSpeed;
+
+                    setPilgrimKPIs(prev => ({
+                      ...prev,
+                      current: Math.max(0, Math.min(prev.dailyCapacity,
+                        prev.current + Math.floor((Math.random() * 200 - 100) * scenarioMultiplier * speedMultiplier))),
+                      aiPredictedPeak: Math.max(prev.current,
+                        prev.aiPredictedPeak + Math.floor((Math.random() * 100 - 50) * scenarioMultiplier)),
+                      satisfactionScore: Math.max(3.0, Math.min(5.0,
+                        prev.satisfactionScore + (Math.random() * 0.2 - 0.1) * scenarioMultiplier)),
+                      avgDarshanTime: Math.max(8, Math.min(25,
+                        prev.avgDarshanTime + (Math.random() * 2 - 1) * scenarioMultiplier)),
+                      queueEfficiency: Math.max(70, Math.min(100,
+                        prev.queueEfficiency + (Math.random() * 2 - 1) * scenarioMultiplier))
+                    }));
+
+                    setForecastData(prev => prev.map(item => ({
+                      ...item,
+                      predicted: Math.max(500, item.predicted + Math.floor((Math.random() * 200 - 100) * scenarioMultiplier)),
+                      confidence: Math.max(70, Math.min(99, item.confidence + Math.floor(Math.random() * 6 - 3)))
+                    })));
+
+                    setTimeout(()=>{
+                      setSimulationMode(!simulationMode)
+                    },1000*Math.random()+1000)
+
+                  }}
+                  className={`flex w-1/6 items-center space-x-2 px-6 py-3 rounded-xl font-semibold transition-all duration-200 ${simulationMode
+                    ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg'
+                    : 'bg-green-500 hover:bg-green-600 text-white shadow-lg'
+                    }`}
+                >
+                  <Activity className="w-5 h-5" />
+                  <span>{simulationMode ? 'Stop Simulation' : 'Run Strategy Analysis'}</span>
+                </button>
+
+              </div>
 
               {/* Strategic Scenarios */}
-              
+
 
               {/* Analysis Results */}
               {/* <div className="space-y-4">
@@ -1944,8 +2065,8 @@ const CLevelDashboard: React.FC = () => {
                       </div>
                     )} */}
                   </div>
-                  
-                 
+
+
                 </div>
               </div>
 
@@ -1958,7 +2079,6 @@ const CLevelDashboard: React.FC = () => {
                     const simulationHeight = simulationMode ?
                       Math.max(20, Math.min(90, currentHeight * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))) :
                       currentHeight;
-
                     return (
                       <div key={i} className="flex flex-col items-center space-y-1 flex-1">
                         <div className="flex items-end space-x-1 h-48">
@@ -2037,10 +2157,10 @@ const CLevelDashboard: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="h-64 relative">
                 <div className="absolute inset-0 flex items-end justify-between px-2">
-                  {Array.from({length: 24}, (_, i) => {
+                  {Array.from({ length: 24 }, (_, i) => {
                     const hour = i;
                     const staffLevel = Math.max(25, Math.min(85, 40 + Math.sin(i * 0.3) * 20 + Math.random() * 12));
                     const transportLevel = Math.max(25, Math.min(85, staffLevel - 15 + Math.sin(i * 0.4) * 15));
@@ -2077,7 +2197,7 @@ const CLevelDashboard: React.FC = () => {
                   })}
                 </div>
               </div>
-              
+
               <div className="mt-4 grid grid-cols-3 gap-4 text-center">
                 <div className="p-3 bg-indigo-50 rounded-lg border border-indigo-200">
                   <div className="text-lg font-bold text-indigo-700">{Math.floor(120 + Math.random() * 80)}</div>
@@ -2097,8 +2217,8 @@ const CLevelDashboard: React.FC = () => {
                 )}
               </div>
             </div>
-            
-            
+
+
           </div>
         </div>
       )}
