@@ -244,9 +244,7 @@ const CLevelDashboard: React.FC = () => {
       const festivalDate = new Date(festival.date);
       return festivalDate >= startDate && festivalDate <= endDate;
     });
-  };
-
-  const handleCheckboxChange = (key: string, checked: boolean) => {
+  };  const handleCheckboxChange = (key: string, checked: boolean) => {
     setScenarioCheckboxes(prev => {
       const newState = { ...prev, [key]: checked };
 
@@ -257,7 +255,8 @@ const CLevelDashboard: React.FC = () => {
       return newState;
     });
 
-    setWhatIfScenario(key);
+    setWhatIfScenario(key)
+
 
     setHasCheckboxChanges(true);
   };
@@ -271,7 +270,7 @@ const CLevelDashboard: React.FC = () => {
       setHasCheckboxChanges(false);
     }, 2000);
   };
-
+}
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
@@ -464,6 +463,3 @@ const CLevelDashboard: React.FC = () => {
       )}
     </div>
   );
-};
-
-export default CLevelDashboard;
