@@ -270,3 +270,4 @@ const CLevelDashboard: React.FC = () => {
       setHasCheckboxChanges(false);
     }, 2000);
   };
+}
