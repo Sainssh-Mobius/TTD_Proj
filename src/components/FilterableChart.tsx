@@ -35,37 +35,6 @@ const FilterableChart: React.FC<FilterableChartProps> = ({
     customRange: false
   });
 
-  const formatGroupLabel = (key: string, period: string): string => {
-    const parts = key.split('-').map(Number);
-    const date = new Date(parts[0], parts[1], parts[2] || 1, parts[3] || 0);
-
-    switch (period) {
-      case 'hour':
-        return date.toLocaleString('en-US', { 
-          month: 'short', 
-          day: 'numeric', 
-          hour: 'numeric',
-          hour12: true 
-        });
-      case 'day':
-        return date.toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric' 
-        });
-      case 'week':
-        const weekEnd = new Date(date);
-        weekEnd.setDate(date.getDate() + 6);
-        return `${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
-      case 'month':
-        return date.toLocaleDateString('en-US', { 
-          year: 'numeric', 
-          month: 'long' 
-        });
-      default:
-        return key;
-    }
-  };
-
   // Filter data based on current filters
   const filteredData = useMemo(() => {
     let filtered = [...data];
@@ -128,6 +97,37 @@ const FilterableChart: React.FC<FilterableChartProps> = ({
 
     return filtered.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
   }, [data, filters]);
+
+  const formatGroupLabel = (key: string, period: string): string => {
+    const parts = key.split('-').map(Number);
+    const date = new Date(parts[0], parts[1], parts[2] || 1, parts[3] || 0);
+
+    switch (period) {
+      case 'hour':
+        return date.toLocaleString('en-US', { 
+          month: 'short', 
+          day: 'numeric', 
+          hour: 'numeric',
+          hour12: true 
+        });
+      case 'day':
+        return date.toLocaleDateString('en-US', { 
+          month: 'short', 
+          day: 'numeric' 
+        });
+      case 'week':
+        const weekEnd = new Date(date);
+        weekEnd.setDate(date.getDate() + 6);
+        return `${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+      case 'month':
+        return date.toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'long' 
+        });
+      default:
+        return key;
+    }
+  };
 
   const getChartIcon = () => {
     if (icon) return icon;
