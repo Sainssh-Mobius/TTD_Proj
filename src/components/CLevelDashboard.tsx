@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { TrendingUp, Users,  AlertTriangle, Brain, Target, Zap, BarChart3, Globe, Shield, Clock, Activity, Car, MapPin } from 'lucide-react';
+import { TrendingUp, Users, DollarSign, AlertTriangle, BarChart3, PieChart, Activity, MapPin, Clock, Shield, Zap, Target, Award, Globe, Calendar } from 'lucide-react';
+import CalendarAnalytics from './CalendarAnalytics';
 
 const CLevelDashboard: React.FC = () => {
   // Enhanced state management for better UX
   const [activeTab, setActiveTab] = useState<'overview' | 'forecasting' | 'simulation'>('overview');
+  const [showCalendar, setShowCalendar] = useState(false);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [dashboardView, setDashboardView] = useState<'compact' | 'detailed'>('compact');
 
@@ -663,6 +665,13 @@ const CLevelDashboard: React.FC = () => {
             <p className="text-indigo-200">Real-time Operations Monitoring</p>
           </div>
           <div className="flex items-center space-x-4">
+            <button
+              onClick={() => setShowCalendar(true)}
+              className="btn-mobius-secondary flex items-center space-x-2"
+            >
+              <Calendar className="w-4 h-4" />
+              <span>Analytics Calendar</span>
+            </button>
             <div className="text-right">
               <div className="text-sm text-indigo-200">System Status</div>
               <div className="text-lg font-bold">All Systems Operational</div>
@@ -699,6 +708,11 @@ const CLevelDashboard: React.FC = () => {
       </div>
 
       {/* Tab Content */}
+      <CalendarAnalytics 
+        persona="c-level" 
+        isOpen={showCalendar} 
+        onClose={() => setShowCalendar(false)} 
+      />
       {activeTab === 'overview' && (
         <div className="space-y-6">
           {/* Pilgrim Management KPIs */}

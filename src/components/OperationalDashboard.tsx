@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Users, Car, AlertTriangle, Activity, Clock, MapPin, Shield, Zap, Target, BarChart3, TrendingUp, Brain } from 'lucide-react';
+import { Activity, Users, Car, AlertTriangle, MapPin, Clock, Radio, Camera, Zap, Bus, Navigation, Settings, Monitor, Wifi, Database, Calendar } from 'lucide-react';
+import CalendarAnalytics from './CalendarAnalytics';
 import VIPMovementModal from './VIPMovementModal';
 
 const OperationalDashboard: React.FC = () => {
   const [showVIPModal, setShowVIPModal] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
   
   // Pilgrim Management KPIs
   const [pilgrimKPIs, setPilgrimKPIs] = useState({
@@ -321,6 +323,13 @@ const OperationalDashboard: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold mb-2">Operational Command Center</h1>
+            <button
+              onClick={() => setShowCalendar(true)}
+              className="btn-mobius-secondary flex items-center space-x-2"
+            >
+              <Calendar className="w-4 h-4" />
+              <span>Analytics Calendar</span>
+            </button>
             <p className="text-blue-100">Real-time operations management and resource coordination</p>
           </div>
           <div className="flex items-center space-x-6">
@@ -1172,6 +1181,12 @@ const OperationalDashboard: React.FC = () => {
       <VIPMovementModal 
         isOpen={showVIPModal}
         onClose={() => setShowVIPModal(false)}
+      />
+      
+      <CalendarAnalytics 
+        persona="operational" 
+        isOpen={showCalendar} 
+        onClose={() => setShowCalendar(false)} 
       />
     </div>
   );

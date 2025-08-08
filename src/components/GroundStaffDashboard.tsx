@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Users, MapPin, AlertTriangle, Radio, Activity, Zap, Target, Bell, MessageSquare, Bus, Search, Car, Eye, CheckCircle, UserCheck, X, ChevronDown } from 'lucide-react';
+import { Users, MapPin, Clock, AlertTriangle, Radio, CheckCircle, Navigation, Megaphone, Shield, Activity, UserCheck, Bell, Zap, Car, Bus, Calendar } from 'lucide-react';
+import CalendarAnalytics from './CalendarAnalytics';
 
 const GroundStaffDashboard: React.FC = () => {
   // Pilgrim Management KPIs (Ground Staff View)
+  const [showCalendar, setShowCalendar] = useState(false);
   const [pilgrimKPIs, setPilgrimKPIs] = useState({
     assignedPilgrims: 156,
     guidanceRequests: 45,
@@ -395,6 +397,13 @@ const GroundStaffDashboard: React.FC = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold mb-2">Ground Staff Command Center</h1>
+            <button
+              onClick={() => setShowCalendar(true)}
+              className="btn-mobius-secondary flex items-center space-x-2"
+            >
+              <Calendar className="w-4 h-4" />
+              <span>Analytics Calendar</span>
+            </button>
             <p className="text-green-100">Real-time field operations and direct pilgrim assistance</p>
           </div>
           <div className="flex items-center space-x-6">
@@ -1249,6 +1258,12 @@ const GroundStaffDashboard: React.FC = () => {
           </div>
         </div>
       )}
+      
+      <CalendarAnalytics 
+        persona="ground-staff" 
+        isOpen={showCalendar} 
+        onClose={() => setShowCalendar(false)} 
+      />
     </div>
   );
 };
