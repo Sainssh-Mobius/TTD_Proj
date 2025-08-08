@@ -98,6 +98,51 @@ const OperationalDashboard: React.FC = () => {
   const [dayType, setDayType] = useState('normal-day');
   const [ttdSpecialDays, setTtdSpecialDays] = useState<string[]>([]);
   const [regionalFestivals, setRegionalFestivals] = useState<string[]>([]);
+
+  // Chart and Filter State
+  const [chartTimePeriod, setChartTimePeriod] = useState('hourly');
+  const [dateFilterEnabled, setDateFilterEnabled] = useState(false);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [festivalFilterEnabled, setFestivalFilterEnabled] = useState(false);
+  const [selectedFestivals, setSelectedFestivals] = useState<string[]>([]);
+
+  // TTD Festival Calendar 2025
+  const ttdFestivals = [
+    { id: 'vaikunta-ekadashi', name: 'Vaikunta Ekadashi', date: '2025-01-10', category: 'Major', impact: 5.0 },
+    { id: 'makara-sankranti', name: 'Makara Sankranti', date: '2025-01-14', category: 'Special', impact: 2.5 },
+    { id: 'thai-pusam', name: 'Thai Pusam', date: '2025-01-21', category: 'Religious', impact: 2.0 },
+    { id: 'vasant-panchami', name: 'Vasant Panchami', date: '2025-02-02', category: 'Cultural', impact: 1.5 },
+    { id: 'maha-shivaratri', name: 'Maha Shivaratri', date: '2025-02-26', category: 'Major', impact: 4.0 },
+    { id: 'holi', name: 'Holi Festival', date: '2025-03-14', category: 'Cultural', impact: 1.8 },
+    { id: 'ugadi', name: 'Ugadi (Telugu New Year)', date: '2025-03-30', category: 'Special', impact: 3.5 },
+    { id: 'sri-rama-navami', name: 'Sri Rama Navami', date: '2025-04-06', category: 'Major', impact: 4.5 },
+    { id: 'hanuman-jayanti', name: 'Hanuman Jayanti', date: '2025-04-13', category: 'Religious', impact: 2.8 },
+    { id: 'akshaya-tritiya', name: 'Akshaya Tritiya', date: '2025-05-01', category: 'Special', impact: 2.2 },
+    { id: 'narasimha-jayanti', name: 'Narasimha Jayanti', date: '2025-05-12', category: 'Major', impact: 3.8 },
+    { id: 'vat-purnima', name: 'Vat Purnima', date: '2025-06-09', category: 'Cultural', impact: 1.6 },
+    { id: 'guru-purnima', name: 'Guru Purnima', date: '2025-07-13', category: 'Religious', impact: 2.3 },
+    { id: 'nag-panchami', name: 'Nag Panchami', date: '2025-08-01', category: 'Cultural', impact: 1.7 },
+    { id: 'raksha-bandhan', name: 'Raksha Bandhan', date: '2025-08-09', category: 'Cultural', impact: 1.4 },
+    { id: 'krishna-janmashtami', name: 'Krishna Janmashtami', date: '2025-08-16', category: 'Major', impact: 4.2 },
+    { id: 'gowri-ganesha', name: 'Gowri Ganesha Festival', date: '2025-08-27', category: 'Major', impact: 4.8 },
+    { id: 'onam', name: 'Onam Festival', date: '2025-09-05', category: 'Cultural', impact: 2.1 },
+    { id: 'ganesh-chaturthi', name: 'Ganesh Chaturthi', date: '2025-08-29', category: 'Major', impact: 4.6 },
+    { id: 'pitru-paksha', name: 'Pitru Paksha', date: '2025-09-14', category: 'Religious', impact: 2.7 },
+    { id: 'navaratri', name: 'Navaratri Festival', date: '2025-09-21', category: 'Major', impact: 4.3 },
+    { id: 'dussehra', name: 'Dussehra (Vijayadashami)', date: '2025-10-02', category: 'Major', impact: 4.7 },
+    { id: 'karva-chauth', name: 'Karva Chauth', date: '2025-10-17', category: 'Cultural', impact: 1.5 },
+    { id: 'dhanteras', name: 'Dhanteras', date: '2025-10-29', category: 'Special', impact: 2.4 },
+    { id: 'diwali', name: 'Diwali (Deepavali)', date: '2025-11-01', category: 'Major', impact: 4.9 },
+    { id: 'bhai-dooj', name: 'Bhai Dooj', date: '2025-11-03', category: 'Cultural', impact: 1.6 },
+    { id: 'tulsi-vivah', name: 'Tulsi Vivah', date: '2025-11-13', category: 'Religious', impact: 2.0 },
+    { id: 'karthikai-deepam', name: 'Karthikai Deepam', date: '2025-11-15', category: 'Special', impact: 3.2 },
+    { id: 'guru-nanak-jayanti', name: 'Guru Nanak Jayanti', date: '2025-11-24', category: 'Religious', impact: 1.8 },
+    { id: 'ayyappa-mandalam', name: 'Ayyappa Mandalam', date: '2025-11-16', category: 'Special', impact: 2.6 },
+    { id: 'mokshada-ekadashi', name: 'Mokshada Ekadashi', date: '2025-12-10', category: 'Religious', impact: 3.1 },
+    { id: 'christmas', name: 'Christmas', date: '2025-12-25', category: 'Cultural', impact: 1.3 },
+    { id: 'new-year-eve', name: 'New Year Eve', date: '2025-12-31', category: 'Cultural', impact: 1.9 }
+  ];
   const [calculatedMultiplier, setCalculatedMultiplier] = useState(1.0);
 
   const whatIfScenarios = [
@@ -169,6 +214,115 @@ const OperationalDashboard: React.FC = () => {
         : [...prev, festivalId]
     );
   };
+
+  const handleFestivalToggle = (festivalId: string) => {
+    setSelectedFestivals(prev =>
+      prev.includes(festivalId)
+        ? prev.filter(id => id !== festivalId)
+        : [...prev, festivalId]
+    );
+  };
+
+  // Dynamic Chart Data Generation
+  const generateOperationalChartData = () => {
+    const timePeriod = chartTimePeriod || 'hourly';
+    let labels: string[] = [];
+    let dataPoints = 0;
+
+    // Generate time labels based on period
+    switch(timePeriod) {
+      case 'hourly':
+        labels = Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, '0')}:00`);
+        dataPoints = 24;
+        break;
+      case 'daily':
+        labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        dataPoints = 7;
+        break;
+      case 'weekly':
+        labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+        dataPoints = 4;
+        break;
+      case 'monthly':
+        labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        dataPoints = 12;
+        break;
+      case 'yearly':
+        labels = ['2020', '2021', '2022', '2023', '2024', '2025'];
+        dataPoints = 6;
+        break;
+      default:
+        labels = Array.from({ length: 24 }, (_, i) => `${i.toString().padStart(2, '0')}:00`);
+        dataPoints = 24;
+    }
+
+    // Generate base data
+    const currentData = [];
+    const predictedData = [];
+    const simulationData = [];
+
+    for (let i = 0; i < dataPoints; i++) {
+      let baseValue;
+      
+      // Different patterns for different time periods
+      switch(timePeriod) {
+        case 'hourly':
+          baseValue = 35 + Math.sin(i * 0.5) * 25 + Math.sin((i - 6) * Math.PI / 6) * 15;
+          break;
+        case 'daily':
+          baseValue = 45 + (i >= 5 ? 20 : 0) + Math.sin(i * Math.PI / 3.5) * 10;
+          break;
+        case 'weekly':
+          baseValue = 50 + (i === 0 || i === 3 ? 15 : 0) + Math.sin(i * Math.PI / 2) * 8;
+          break;
+        case 'monthly':
+          const festivalMonths = [2, 7, 9, 10];
+          baseValue = 55 + (festivalMonths.includes(i) ? 25 : 0) + Math.sin(i * Math.PI / 6) * 15;
+          break;
+        case 'yearly':
+          baseValue = 40 + (i * 5) + Math.sin(i * Math.PI / 3) * 12;
+          break;
+        default:
+          baseValue = 45 + Math.random() * 20;
+      }
+
+      // Apply date filter if enabled
+      let dateMultiplier = 1;
+      if (dateFilterEnabled && startDate && endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const daysDiff = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+        
+        if (daysDiff <= 7) dateMultiplier = 1.2;
+        else if (daysDiff <= 30) dateMultiplier = 1.0;
+        else dateMultiplier = 0.9;
+      }
+
+      // Apply festival impact if enabled
+      let festivalMultiplier = 1;
+      if (festivalFilterEnabled && selectedFestivals.length > 0) {
+        const totalImpact = selectedFestivals.reduce((sum, festivalId) => {
+          const festival = ttdFestivals.find(f => f.id === festivalId);
+          return sum + (festival ? festival.impact : 1);
+        }, 0);
+        festivalMultiplier = 1 + (totalImpact / selectedFestivals.length - 1) * 0.7;
+      }
+
+      const scenarioMultiplier = calculatedMultiplier;
+
+      const finalCurrentValue = Math.max(20, Math.min(90, baseValue * dateMultiplier * festivalMultiplier));
+      const finalPredictedValue = Math.max(20, Math.min(90, finalCurrentValue * 1.15 + Math.random() * 8));
+      const finalSimulationValue = Math.max(20, Math.min(90, finalCurrentValue * scenarioMultiplier));
+
+      currentData.push(finalCurrentValue);
+      predictedData.push(finalPredictedValue);
+      simulationData.push(finalSimulationValue);
+    }
+
+    return { labels, currentData, predictedData, simulationData, dataPoints };
+  };
+
+  const chartData = generateOperationalChartData();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -867,117 +1021,338 @@ const OperationalDashboard: React.FC = () => {
           </div>
         </div>
         {/* Operational Scenarios */}
-         <div className="space-y-6">
-              <h4 className="font-bold text-gray-800 text-lg flex items-center space-x-2">
-                <BarChart3 className="w-5 h-5" />
-                <span>Operational Scenarios</span>
-              </h4>
-              
-              {/* Realistic Scenario Configuration */}
-              <div className='flex flex-col md:flex-row gap-6'>
-              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200 flex w-full justify-between">
-                <h5 className="font-bold text-gray-800 mb-4 flex items-center space-x-2">
-                  <Target className="w-4 h-4" />
+        <div className="grid grid-cols-1 gap-8">
+          {/* Simulation Controls */}
+          <div className="space-y-6">
+
+            {/* Realistic Scenario Builder */}
+            <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-200">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <h5 className="font-bold text-gray-800 flex items-center space-x-2">
+                  <Target className="w-5 h-5" />
                   <span>Realistic Scenario Builder</span>
                 </h5>
-                <div className='flex w-2/3 flex-row justify-evenly'>
-                {/* Day Type Selection */}
-                <div className="mb-4">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">🗓️ Day Type</label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {dayTypes.map(day => (
-                      <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="dayType"
-                          value={day.id}
-                          checked={dayType === day.id}
-                          onChange={(e) => setDayType(e.target.value)}
-                          className="text-blue-600"
-                        />
-                        <span className="text-sm text-gray-700">{day.name}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
                 
-                {/* TTD Special Days */}
-                <div className="mb-4">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">🛕 TTD Special Days</label>
-                  <div className="space-y-1">
-                    {ttdSpecialDaysConfig.map(day => (
-                      <label key={day.id} className="flex items-center space-x-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={ttdSpecialDays.includes(day.id)}
-                          onChange={() => handleTtdSpecialDayToggle(day.id)}
-                          className="text-purple-600"
-                        />
-                        <span className="text-sm text-gray-700">{day.name}</span>
-                      </label>
-                    ))}
+                {calculatedMultiplier !== 1.0 && (
+                  <div className="flex items-center space-x-2 bg-green-100 px-3 py-1 rounded-full border border-green-300">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-green-600 font-medium text-sm">Live Updates Active</span>
                   </div>
-                </div>
+                )}
+              </div>
+
+              {/* Filter Controls Section */}
+              <div className="bg-white/80 rounded-lg p-4 mb-6 border border-gray-200">
+                <h6 className="font-semibold text-gray-700 mb-3 flex items-center space-x-2">
+                  <span>🔧</span>
+                  <span>Chart & Filter Controls</span>
+                </h6>
                 
-                {/* Regional Festivals */}
-                <div className="mb-4">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">🌍 Regional Festivals</label>
-                  <div className="space-y-1">
-                    {regionalFestivalsConfig.map(festival => (
-                      <label key={festival.id} className="flex items-center space-x-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={regionalFestivals.includes(festival.id)}
-                          onChange={() => handleRegionalFestivalToggle(festival.id)}
-                          className="text-green-600"
-                        />
-                        <span className="text-sm text-gray-700">{festival.name}</span>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                  {/* Time Period Filter */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-gray-600 block">📊 Chart Time Period</label>
+                    <select
+                      value={chartTimePeriod || 'hourly'}
+                      onChange={(e) => setChartTimePeriod(e.target.value)}
+                      className="w-full px-3 py-2 border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm font-medium transition-all duration-200"
+                    >
+                      <option value="hourly">📈 Hourly View</option>
+                      <option value="daily">📅 Daily View</option>
+                      <option value="weekly">📊 Weekly View</option>
+                      <option value="monthly">📋 Monthly View</option>
+                      <option value="yearly">📆 Yearly View</option>
+                    </select>
+                  </div>
+                  
+                  {/* Date Range Filter */}
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <input
+                        type="checkbox"
+                        id="dateFilter"
+                        checked={dateFilterEnabled}
+                        onChange={(e) => setDateFilterEnabled(e.target.checked)}
+                        className="text-blue-600 rounded focus:ring-blue-500"
+                      />
+                      <label htmlFor="dateFilter" className="text-sm font-medium text-gray-600 cursor-pointer">
+                        📅 Custom Date Range
                       </label>
-                    ))}
+                    </div>
+                    
+                    {dateFilterEnabled && (
+                      <div className="space-y-2">
+                        <input
+                          type="date"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
+                          className="w-full px-2 py-2 border border-blue-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="Start Date"
+                        />
+                        <input
+                          type="date"
+                          value={endDate}
+                          onChange={(e) => setEndDate(e.target.value)}
+                          className="w-full px-2 py-2 border border-blue-300 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="End Date"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Festival Filter */}
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <input
+                        type="checkbox"
+                        id="festivalFilter"
+                        checked={festivalFilterEnabled}
+                        onChange={(e) => setFestivalFilterEnabled(e.target.checked)}
+                        className="text-purple-600 rounded focus:ring-purple-500"
+                      />
+                      <label htmlFor="festivalFilter" className="text-sm font-medium text-gray-600 cursor-pointer">
+                        🎉 Festival Impact Analysis
+                      </label>
+                    </div>
+                    
+                    {festivalFilterEnabled && (
+                      <div className="bg-purple-50 rounded-lg p-3 border border-purple-200">
+                        <p className="text-xs text-purple-700 mb-2">
+                          Select festivals from the calendar below to see their impact on operations
+                        </p>
+                        <div className="text-xs text-purple-600">
+                          {selectedFestivals.length > 0 
+                            ? `${selectedFestivals.length} festivals selected` 
+                            : 'No festivals selected'
+                          }
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-                </div>
-                
-                {/* Calculated Impact */}
-                {/* <div className="mt-4 p-3 bg-white/70 rounded-lg border border-blue-300">
-                  <div className="text-sm font-semibold text-gray-700">🧠 Calculated Impact</div>
-                  <div className="text-lg font-bold text-blue-600">
-                    {calculatedMultiplier > 1 ? '+' : ''}{((calculatedMultiplier - 1) * 100).toFixed(0)}% Load Increase
-                  </div>
-                  <div className="text-xs text-gray-600 mt-1">
-                    Multiplier: {calculatedMultiplier.toFixed(2)}x
-                  </div>
-                </div> */}
               </div>
               
-              {/* <div className="grid w-[49%] grid-cols-1 md:grid-cols-2 gap-3">
-                {whatIfScenarios.map(scenario => (
-                  <div
-                    key={scenario.id}
-                    onClick={() => setWhatIfScenario(scenario.id)}
-                    className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
-                      whatIfScenario === scenario.id
-                        ? 'border-blue-500 bg-blue-50 shadow-md'
-                        : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
-                    }`}
-                  >
-                    <div className="font-semibold text-gray-800 mb-1">{scenario.name}</div>
-                    <div className="text-xs text-gray-600 mb-2">{scenario.description}</div>
-                    <div className="text-xs text-blue-600 font-semibold">
-                      Base Load: {scenario.multiplier > 1 ? '+' : ''}{((scenario.multiplier - 1) * 100).toFixed(0)}%
+              {/* Scenario Parameters Section */}
+              <div className="bg-white/90 rounded-lg p-4 mb-6 border border-gray-200">
+                <h6 className="font-semibold text-gray-700 mb-4 flex items-center space-x-2">
+                  <span>⚙️</span>
+                  <span>Scenario Parameters</span>
+                </h6>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Day Type Selection */}
+                  <div className="space-y-3">
+                    <label className="block text-sm font-semibold text-gray-700">🗓️ Day Type</label>
+                    <div className="space-y-2">
+                      {dayTypes.map(day => (
+                        <label key={day.id} className="flex items-center space-x-3 cursor-pointer p-2 hover:bg-blue-50 rounded-lg transition-colors">
+                          <input
+                            type="radio"
+                            name="dayType"
+                            value={day.id}
+                            checked={dayType === day.id}
+                            onChange={(e) => setDayType(e.target.value)}
+                            className="text-blue-600 focus:ring-blue-500"
+                          />
+                          <span className="text-sm text-gray-700 font-medium">{day.name}</span>
+                        </label>
+                      ))}
                     </div>
                   </div>
-                ))}
-              <button
-                onClick={runOperationalAnalysis}
-                className=" col-span-2 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 shadow-lg w-full"
-              >
-                Run Operational Analysis
-              </button>
-              </div> */}
-              
+
+                  {/* TTD Special Days */}
+                  <div className="space-y-3">
+                    <label className="block text-sm font-semibold text-gray-700">🛕 TTD Special Days</label>
+                    <div className="space-y-2 max-h-40 overflow-y-auto">
+                      {ttdSpecialDaysConfig.map(day => (
+                        <label key={day.id} className="flex items-center space-x-3 cursor-pointer p-2 hover:bg-purple-50 rounded-lg transition-colors">
+                          <input
+                            type="checkbox"
+                            checked={ttdSpecialDays.includes(day.id)}
+                            onChange={() => handleTtdSpecialDayToggle(day.id)}
+                            className="text-purple-600 rounded focus:ring-purple-500"
+                          />
+                          <span className="text-sm text-gray-700">{day.name}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Regional Festivals */}
+                  <div className="space-y-3">
+                    <label className="block text-sm font-semibold text-gray-700">🌍 Regional Festivals</label>
+                    <div className="space-y-2 max-h-40 overflow-y-auto">
+                      {regionalFestivalsConfig.map(festival => (
+                        <label key={festival.id} className="flex items-center space-x-3 cursor-pointer p-2 hover:bg-green-50 rounded-lg transition-colors">
+                          <input
+                            type="checkbox"
+                            checked={regionalFestivals.includes(festival.id)}
+                            onChange={() => handleRegionalFestivalToggle(festival.id)}
+                            className="text-green-600 rounded focus:ring-green-500"
+                          />
+                          <span className="text-sm text-gray-700">{festival.name}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
+
+              {/* TTD Festival Calendar */}
+              {festivalFilterEnabled && (
+                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border-2 border-purple-200 shadow-sm">
+                  <div className="flex items-center justify-between mb-6">
+                    <h5 className="font-bold text-purple-900 text-lg flex items-center space-x-3">
+                      <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-2 rounded-lg text-white">
+                        <span className="text-lg">🎉</span>
+                      </div>
+                      <div>
+                        <div>TTD Festival Calendar 2025</div>
+                        <div className="text-sm font-normal text-purple-600 mt-1">
+                          Select festivals to see their impact on operations
+                        </div>
+                      </div>
+                    </h5>
+                    
+                    {selectedFestivals.length > 0 && (
+                      <div className="bg-purple-100 px-4 py-2 rounded-full border border-purple-300">
+                        <span className="text-purple-800 font-semibold text-sm">
+                          {selectedFestivals.length} Festival{selectedFestivals.length !== 1 ? 's' : ''} Selected
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 max-h-80 overflow-y-auto">
+                    {ttdFestivals.map(festival => {
+                      const isSelected = selectedFestivals.includes(festival.id);
+                      const festivalDate = new Date(festival.date);
+                      const isPast = festivalDate < new Date();
+                      const isUpcoming = !isPast && festivalDate <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+                      
+                      return (
+                        <label
+                          key={festival.id}
+                          className={`group relative flex items-start space-x-3 p-4 rounded-xl cursor-pointer transition-all duration-300 border-2 ${
+                            isSelected
+                              ? 'bg-white border-purple-400 shadow-lg ring-2 ring-purple-200'
+                              : isPast
+                                ? 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                                : isUpcoming
+                                  ? 'bg-gradient-to-r from-amber-50 to-yellow-50 border-amber-300 hover:border-amber-400 hover:shadow-md'
+                                  : 'bg-white border-gray-200 hover:bg-purple-50 hover:border-purple-300 hover:shadow-md'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => handleFestivalToggle(festival.id)}
+                            className="text-purple-600 mt-1 flex-shrink-0 w-4 h-4 rounded focus:ring-purple-500"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className={`text-sm font-semibold mb-2 leading-tight ${
+                              isSelected ? 'text-purple-900' : isPast ? 'text-gray-500' : 'text-gray-800'
+                            }`}>
+                              {festival.name}
+                            </div>
+                            
+                            <div className="flex items-center space-x-2 mb-2">
+                              <div className={`text-xs px-2 py-1 rounded-md font-medium flex items-center space-x-1 ${
+                                isPast ? 'bg-gray-200 text-gray-600' :
+                                isUpcoming ? 'bg-amber-200 text-amber-800' : 'bg-blue-100 text-blue-800'
+                              }`}>
+                                <span>📅</span>
+                                <span>{festivalDate.toLocaleDateString('en-US', { 
+                                  month: 'short', 
+                                  day: 'numeric',
+                                  year: 'numeric'
+                                })}</span>
+                              </div>
+                              
+                              {isUpcoming && (
+                                <div className="bg-red-100 text-red-700 text-xs px-2 py-1 rounded-full font-bold animate-pulse">
+                                  SOON
+                                </div>
+                              )}
+                            </div>
+                            
+                            <div className="flex items-center justify-between">
+                              <span className={`text-xs px-3 py-1 rounded-full font-medium ${
+                                festival.category === 'Major' ? 'bg-red-100 text-red-700 border border-red-200' :
+                                festival.category === 'Special' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
+                                festival.category === 'Religious' ? 'bg-purple-100 text-purple-700 border border-purple-200' :
+                                'bg-green-100 text-green-700 border border-green-200'
+                              }`}>
+                                {festival.category}
+                              </span>
+                              <div className="flex items-center space-x-1">
+                                <span className="text-orange-600 font-bold text-sm">
+                                  {festival.impact}x
+                                </span>
+                                <span className="text-xs text-orange-500">impact</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          {/* Selection indicator */}
+                          {isSelected && (
+                            <div className="absolute -top-2 -right-2 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center shadow-lg">
+                              <span className="text-white text-xs">✓</span>
+                            </div>
+                          )}
+                        </label>
+                      );
+                    })}
+                  </div>
+                  
+                  {selectedFestivals.length > 0 && (
+                    <div className="mt-6 bg-white/90 rounded-lg p-4 border border-purple-200">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="text-sm font-semibold text-purple-900 flex items-center space-x-2">
+                          <span>🎯</span>
+                          <span>Active Festival Impact Analysis</span>
+                        </div>
+                        <button
+                          onClick={() => setSelectedFestivals([])}
+                          className="text-purple-600 hover:text-purple-800 text-sm font-medium px-3 py-1 rounded-lg hover:bg-purple-100 transition-colors"
+                        >
+                          Clear All
+                        </button>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedFestivals.map(festivalId => {
+                          const festival = ttdFestivals.find(f => f.id === festivalId);
+                          if (!festival) return null;
+                          return (
+                            <div
+                              key={festivalId}
+                              className="group flex items-center space-x-2 bg-gradient-to-r from-purple-100 to-pink-100 px-3 py-2 rounded-full border border-purple-200 shadow-sm"
+                            >
+                              <span className="text-purple-800 font-medium text-sm">{festival.name}</span>
+                              <div className="flex items-center space-x-1">
+                                <span className="text-orange-600 font-bold text-sm">{festival.impact}x</span>
+                                <button
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleFestivalToggle(festivalId);
+                                  }}
+                                  className="text-purple-600 hover:text-purple-800 ml-1 w-4 h-4 rounded-full hover:bg-purple-200 flex items-center justify-center transition-colors"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
+          </div>
+        </div>
 
         {/* Operational Simulation Control */}
         <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
@@ -1011,7 +1386,18 @@ const OperationalDashboard: React.FC = () => {
             {/* Pilgrim Operations Time Series */}
             <div className="bg-gray-50 rounded-xl p-6">
               <div className="flex items-center justify-between mb-6">
-                <h4 className="font-bold text-gray-800 text-lg">Pilgrim Operations Trends</h4>
+                <div>
+                  <h4 className="font-bold text-gray-800 text-lg">Pilgrim Operations Trends</h4>
+                  <div className="text-sm text-gray-600 mt-1">
+                    {chartTimePeriod ? `${chartTimePeriod.charAt(0).toUpperCase() + chartTimePeriod.slice(1)} View` : 'Hourly View'}
+                    {dateFilterEnabled && startDate && endDate && 
+                      ` | ${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}`
+                    }
+                    {festivalFilterEnabled && selectedFestivals.length > 0 && 
+                      ` | ${selectedFestivals.length} Festival${selectedFestivals.length !== 1 ? 's' : ''} Impact`
+                    }
+                  </div>
+                </div>
                 <div className="flex space-x-4 text-sm">
                   <div className="flex items-center space-x-2">
                     <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
@@ -1030,13 +1416,10 @@ const OperationalDashboard: React.FC = () => {
               
               <div className="h-64 relative">
                 <div className="absolute inset-0 flex items-end justify-between px-2">
-                  {Array.from({length: 24}, (_, i) => {
-                    const hour = i;
-                    const currentHeight = Math.max(20, Math.min(90, 35 + Math.sin(i * 0.5) * 25 + Math.random() * 10));
-                    const predictedHeight = Math.max(20, Math.min(90, currentHeight + 12 + Math.sin(i * 0.3) * 18));
-                    const simulationHeight = simulationMode ? 
-                      Math.max(20, Math.min(90, currentHeight * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))) : 
-                      currentHeight;
+                  {chartData.labels.map((label, i) => {
+                    const currentHeight = chartData.currentData[i];
+                    const predictedHeight = chartData.predictedData[i];
+                    const simulationHeight = simulationMode ? chartData.simulationData[i] : currentHeight;
                     
                     return (
                       <div key={i} className="flex flex-col items-center space-y-1 flex-1">
@@ -1056,8 +1439,8 @@ const OperationalDashboard: React.FC = () => {
                             ></div>
                           )}
                         </div>
-                        <div className="text-xs text-gray-600 transform -rotate-45 origin-center">
-                          {hour.toString().padStart(2, '0')}:00
+                        <div className="text-xs text-gray-600 transform -rotate-45 origin-center whitespace-nowrap">
+                          {label}
                         </div>
                       </div>
                     );
@@ -1067,28 +1450,91 @@ const OperationalDashboard: React.FC = () => {
               
               <div className="mt-4 grid grid-cols-3 gap-4 text-center">
                 <div className="p-3 bg-blue-50 rounded-lg">
-                  <div className="text-lg font-bold text-blue-600">{pilgrimKPIs.currentPilgrims.toLocaleString()}</div>
+                  <div className="text-lg font-bold text-blue-600">
+                    {Math.floor(pilgrimKPIs.currentPilgrims * calculatedMultiplier * 
+                      (festivalFilterEnabled && selectedFestivals.length > 0 ? 
+                        Math.max(...selectedFestivals.map(festivalId => {
+                          const festival = ttdFestivals.find(f => f.id === festivalId);
+                          return festival ? festival.impact : 1.0;
+                        })) : 1.0
+                      )
+                    ).toLocaleString()}
+                  </div>
                   <div className="text-xs text-blue-800">Current Load</div>
                 </div>
                 <div className="p-3 bg-purple-50 rounded-lg">
-                  <div className="text-lg font-bold text-purple-600">{pilgrimKPIs.aiPredictedPeak.toLocaleString()}</div>
+                  <div className="text-lg font-bold text-purple-600">
+                    {Math.floor(pilgrimKPIs.aiPredictedPeak * calculatedMultiplier * 
+                      (festivalFilterEnabled && selectedFestivals.length > 0 ? 
+                        Math.max(...selectedFestivals.map(festivalId => {
+                          const festival = ttdFestivals.find(f => f.id === festivalId);
+                          return festival ? festival.impact : 1.0;
+                        })) : 1.0
+                      )
+                    ).toLocaleString()}
+                  </div>
                   <div className="text-xs text-purple-800">AI Predicted</div>
                 </div>
                 {simulationMode && (
                   <div className="p-3 bg-green-50 rounded-lg">
                     <div className="text-lg font-bold text-green-600">
-                      {Math.floor(pilgrimKPIs.currentPilgrims * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1)).toLocaleString()}
+                      {Math.floor(pilgrimKPIs.currentPilgrims * calculatedMultiplier * 
+                        (festivalFilterEnabled && selectedFestivals.length > 0 ? 
+                          Math.max(...selectedFestivals.map(festivalId => {
+                            const festival = ttdFestivals.find(f => f.id === festivalId);
+                            return festival ? festival.impact : 1.0;
+                          })) : 1.0
+                        ) * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1)
+                      ).toLocaleString()}
                     </div>
                     <div className="text-xs text-green-800">Simulation Load</div>
                   </div>
                 )}
               </div>
+              
+              {/* Filter Impact Summary */}
+              {(dateFilterEnabled || (festivalFilterEnabled && selectedFestivals.length > 0) || calculatedMultiplier !== 1.0) && (
+                <div className="mt-4 bg-white/80 rounded-lg p-4 border border-gray-200">
+                  <h6 className="font-semibold text-gray-700 mb-2 flex items-center space-x-2">
+                    <span>📈</span>
+                    <span>Active Filter Impact</span>
+                  </h6>
+                  <div className="flex flex-wrap gap-2 text-sm">
+                    {dateFilterEnabled && startDate && endDate && (
+                      <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full border border-blue-200">
+                        Custom Date Range Active
+                      </div>
+                    )}
+                    {festivalFilterEnabled && selectedFestivals.length > 0 && (
+                      <div className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full border border-purple-200">
+                        {selectedFestivals.length} Festival Impact{selectedFestivals.length !== 1 ? 's' : ''}
+                      </div>
+                    )}
+                    {calculatedMultiplier !== 1.0 && (
+                      <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full border border-green-200">
+                        Scenario Multiplier: {calculatedMultiplier.toFixed(2)}x
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Traffic Operations Time Series */}
             <div className="bg-gray-50 rounded-xl p-6">
               <div className="flex items-center justify-between mb-6">
-                <h4 className="font-bold text-gray-800 text-lg">Traffic Operations Trends</h4>
+                <div>
+                  <h4 className="font-bold text-gray-800 text-lg">Traffic Operations Trends</h4>
+                  <div className="text-sm text-gray-600 mt-1">
+                    {chartTimePeriod ? `${chartTimePeriod.charAt(0).toUpperCase() + chartTimePeriod.slice(1)} View` : 'Hourly View'}
+                    {dateFilterEnabled && startDate && endDate && 
+                      ` | ${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}`
+                    }
+                    {festivalFilterEnabled && selectedFestivals.length > 0 && 
+                      ` | ${selectedFestivals.length} Festival${selectedFestivals.length !== 1 ? 's' : ''} Impact`
+                    }
+                  </div>
+                </div>
                 <div className="flex space-x-4 text-sm">
                   <div className="flex items-center space-x-2">
                     <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
@@ -1107,34 +1553,32 @@ const OperationalDashboard: React.FC = () => {
               
               <div className="h-64 relative">
                 <div className="absolute inset-0 flex items-end justify-between px-2">
-                  {Array.from({length: 24}, (_, i) => {
-                    const hour = i;
-                    const currentHeight = Math.max(15, Math.min(85, 30 + Math.sin(i * 0.4) * 20 + Math.random() * 8));
-                    const predictedHeight = Math.max(15, Math.min(85, currentHeight + 8 + Math.sin(i * 0.2) * 15));
-                    const simulationHeight = simulationMode ? 
-                      Math.max(15, Math.min(85, currentHeight * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1))) : 
-                      currentHeight;
+                  {chartData.labels.map((label, i) => {
+                    // Adjust data for traffic (generally lower values than pilgrim data)
+                    const trafficCurrentHeight = Math.max(15, Math.min(85, chartData.currentData[i] * 0.8));
+                    const trafficPredictedHeight = Math.max(15, Math.min(85, chartData.predictedData[i] * 0.8));
+                    const trafficSimulationHeight = simulationMode ? Math.max(15, Math.min(85, chartData.simulationData[i] * 0.8)) : trafficCurrentHeight;
                     
                     return (
                       <div key={i} className="flex flex-col items-center space-y-1 flex-1">
                         <div className="flex items-end space-x-1 h-48">
                           <div 
                             className="w-2 bg-orange-500 rounded-t transition-all duration-500"
-                            style={{height: `${currentHeight}%`}}
+                            style={{height: `${trafficCurrentHeight}%`}}
                           ></div>
                           <div 
                             className="w-2 bg-red-500 rounded-t opacity-70 transition-all duration-500"
-                            style={{height: `${predictedHeight}%`}}
+                            style={{height: `${trafficPredictedHeight}%`}}
                           ></div>
                           {simulationMode && (
                             <div 
                               className="w-2 bg-teal-500 rounded-t animate-pulse transition-all duration-500"
-                              style={{height: `${simulationHeight}%`}}
+                              style={{height: `${trafficSimulationHeight}%`}}
                             ></div>
                           )}
                         </div>
-                        <div className="text-xs text-gray-600 transform -rotate-45 origin-center">
-                          {hour.toString().padStart(2, '0')}:00
+                        <div className="text-xs text-gray-600 transform -rotate-45 origin-center whitespace-nowrap">
+                          {label}
                         </div>
                       </div>
                     );
@@ -1144,22 +1588,74 @@ const OperationalDashboard: React.FC = () => {
               
               <div className="mt-4 grid grid-cols-3 gap-4 text-center">
                 <div className="p-3 bg-orange-50 rounded-lg">
-                  <div className="text-lg font-bold text-orange-600">{trafficKPIs.currentVehicles.toLocaleString()}</div>
+                  <div className="text-lg font-bold text-orange-600">
+                    {Math.floor(trafficKPIs.currentVehicles * calculatedMultiplier * 
+                      (festivalFilterEnabled && selectedFestivals.length > 0 ? 
+                        Math.max(...selectedFestivals.map(festivalId => {
+                          const festival = ttdFestivals.find(f => f.id === festivalId);
+                          return festival ? festival.impact : 1.0;
+                        })) * 0.8 : 1.0 // Traffic has lower festival impact
+                      )
+                    ).toLocaleString()}
+                  </div>
                   <div className="text-xs text-orange-800">Current Flow</div>
                 </div>
                 <div className="p-3 bg-red-50 rounded-lg">
-                  <div className="text-lg font-bold text-red-600">{trafficKPIs.aiPredictedPeak.toLocaleString()}</div>
+                  <div className="text-lg font-bold text-red-600">
+                    {Math.floor(trafficKPIs.aiPredictedPeak * calculatedMultiplier * 
+                      (festivalFilterEnabled && selectedFestivals.length > 0 ? 
+                        Math.max(...selectedFestivals.map(festivalId => {
+                          const festival = ttdFestivals.find(f => f.id === festivalId);
+                          return festival ? festival.impact : 1.0;
+                        })) * 0.8 : 1.0
+                      )
+                    ).toLocaleString()}
+                  </div>
                   <div className="text-xs text-red-800">AI Predicted</div>
                 </div>
                 {simulationMode && (
                   <div className="p-3 bg-teal-50 rounded-lg">
                     <div className="text-lg font-bold text-teal-600">
-                      {Math.floor(trafficKPIs.currentVehicles * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1)).toLocaleString()}
+                      {Math.floor(trafficKPIs.currentVehicles * calculatedMultiplier * 
+                        (festivalFilterEnabled && selectedFestivals.length > 0 ? 
+                          Math.max(...selectedFestivals.map(festivalId => {
+                            const festival = ttdFestivals.find(f => f.id === festivalId);
+                            return festival ? festival.impact : 1.0;
+                          })) * 0.8 : 1.0
+                        ) * (whatIfScenarios.find(s => s.id === whatIfScenario)?.multiplier || 1)
+                      ).toLocaleString()}
                     </div>
                     <div className="text-xs text-teal-800">Simulation Flow</div>
                   </div>
                 )}
               </div>
+              
+              {/* Filter Impact Summary */}
+              {(dateFilterEnabled || (festivalFilterEnabled && selectedFestivals.length > 0) || calculatedMultiplier !== 1.0) && (
+                <div className="mt-4 bg-white/80 rounded-lg p-4 border border-gray-200">
+                  <h6 className="font-semibold text-gray-700 mb-2 flex items-center space-x-2">
+                    <span>🚗</span>
+                    <span>Traffic Filter Impact</span>
+                  </h6>
+                  <div className="flex flex-wrap gap-2 text-sm">
+                    {dateFilterEnabled && startDate && endDate && (
+                      <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full border border-blue-200">
+                        Custom Date Range Active
+                      </div>
+                    )}
+                    {festivalFilterEnabled && selectedFestivals.length > 0 && (
+                      <div className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full border border-purple-200">
+                        {selectedFestivals.length} Festival Impact{selectedFestivals.length !== 1 ? 's' : ''} (Reduced)
+                      </div>
+                    )}
+                    {calculatedMultiplier !== 1.0 && (
+                      <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full border border-green-200">
+                        Traffic Multiplier: {calculatedMultiplier.toFixed(2)}x
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
