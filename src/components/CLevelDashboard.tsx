@@ -921,11 +921,6 @@ const CLevelDashboard: React.FC = () => {
     return 'text-green-600';
   };
 
-  const renderInsightsTab = () => {
-    // This function was declared but never implemented
-    return null;
-  };
-
   return (
     <div className="max-w-full mx-auto">
       {/* Executive Command Header */}
