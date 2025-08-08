@@ -13,6 +13,7 @@ const OperationalDashboard: React.FC = () => {
     aiPredictedPeak: 52000,
     queueWaitTime: 35,
     darshanSlots: 2156,
+  Shield,
     queueEfficiency: 87.3,
     crowdDensity: 78.5
   });
