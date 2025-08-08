@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Users, MapPin, AlertTriangle, Radio, Activity, Zap, Target, Bell, MessageSquare, Bus, Search, Car, Eye, CheckCircle, UserCheck, X, ChevronDown } from 'lucide-react';
+import AnalyticsCalendar from './AnalyticsCalendar';
 
 const GroundStaffDashboard: React.FC = () => {
   // Pilgrim Management KPIs (Ground Staff View)
@@ -407,6 +408,11 @@ const GroundStaffDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Analytics Calendar */}
+      <div className="mb-8">
+        <AnalyticsCalendar persona="ground-staff" />
       </div>
 
       <div className="space-y-8">
