@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, Users,  AlertTriangle, Brain, Target, Zap, BarChart3, Globe, Shield, Clock, Activity, Car, MapPin } from 'lucide-react';
+import AnalyticsCalendar from './AnalyticsCalendar';
 
 const CLevelDashboard: React.FC = () => {
   // Enhanced state management for better UX
@@ -696,6 +697,11 @@ const CLevelDashboard: React.FC = () => {
             );
           })}
         </div>
+      </div>
+
+      {/* Analytics Calendar */}
+      <div className="mb-8">
+        <AnalyticsCalendar persona="c-level" />
       </div>
 
       {/* Tab Content */}
