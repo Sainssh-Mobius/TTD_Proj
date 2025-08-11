@@ -2271,7 +2271,7 @@ const CLevelDashboard: React.FC = () => {
                   <div className="bg-gradient-to-r from-indigo-500 to-purple-600 p-2 rounded-lg text-white">
                     <Activity className="w-5 h-5" />
                   </div>
-                  <h4 className="font-bold text-gray-800 text-lg">Resource Allocation Simulation</h4>
+                  <h4 className="font-bold text-gray-800 text-lg">Resource Allocation</h4>
                 </div>
                 <div className="flex items-center space-x-6">
                   <div className="flex space-x-4 text-sm">
