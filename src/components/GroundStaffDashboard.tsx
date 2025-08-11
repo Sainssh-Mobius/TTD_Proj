@@ -586,7 +586,7 @@ const GroundStaffDashboard: React.FC = () => {
                 <Target className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-800">My Performance</h3>
+                <h3 className="text-lg font-bold text-gray-800">Team Performance</h3>
                 <p className="text-sm text-gray-600">Today's metrics</p>
               </div>
             </div>
@@ -696,7 +696,7 @@ const GroundStaffDashboard: React.FC = () => {
                 <CheckCircle className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-800">My Tasks</h3>
+                <h3 className="text-lg font-bold text-gray-800">Team Tasks</h3>
                 <p className="text-sm text-gray-600">{assignedTasks.filter(t => t.status !== 'completed').length} active tasks</p>
               </div>
             </div>
